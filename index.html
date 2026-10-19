@@ -878,6 +878,10 @@ a{color:inherit}
 .mt-card:hover{box-shadow:var(--sh-hover);border-color:var(--brand)}
 .mt-card.arrastando{opacity:.4}
 .mt-nome{font-size:.79rem;font-weight:600;line-height:1.3}
+.mt-abre{cursor:pointer}
+.mt-abre:hover{color:var(--brand);text-decoration:underline;text-underline-offset:2px}
+.mt-edit{width:20px!important;height:20px!important;font-size:.7rem;opacity:.55}
+.mt-card:hover .mt-edit{opacity:1}
 .mt-prio{font-family:var(--mono);font-size:.66rem;font-weight:800;flex:none;padding-top:1px}
 .mt-cli{font-size:.66rem;font-weight:600;display:inline-flex;align-items:center;gap:4px}
 .mt-cli i{width:6px;height:6px;border-radius:50%;display:inline-block}
@@ -8501,6 +8505,11 @@ function AddNoSprint({sprint,quem,cliente,compacto,rotulo,prio}){
 function MontarSprint({sprint,frozen,filtro,passa}){
   const {db,update,flash,go}=useDB();
   const [arrasto,setArrasto]=useState(null);
+  /* Abrir a tarefa inteira (prazo, prioridade, situação, quem fez,
+     subtarefas…) sem sair da distribuição. */
+  const [modal,setModal]=useState(null);
+  const salvarT=useSalvarTarefa(()=>setModal(null));
+  const abrir=(t)=>setModal(paraEdicao(t));
   /* clientes sem tarefa no sprint que a pessoa abriu para escrever (lista escrita) */
   const [abertos,setAbertos]=useState([]);
   const abrirCliente=(id)=>{ setAbertos(x=>x.includes(id)?x:[...x,id]);
@@ -8612,9 +8621,9 @@ function MontarSprint({sprint,frozen,filtro,passa}){
       <div className="row" style={{gap:6,alignItems:'flex-start'}}>
         <span className="mt-prio" style={{color:PRIO_C[t.prio||'Média'].fg}}>{PRIO_SIGLA[t.prio||'Média']}</span>
         <div style={{flex:1,minWidth:0}}>
-          <div className="mt-nome">{t.name}</div>
+          <div className="mt-nome mt-abre" title="Abrir a tarefa para editar" onClick={()=>abrir(t)}>{t.name}</div>
           <div className="row" style={{gap:4,flexWrap:'wrap'}}>
-            {contaSubs(t).n>0&&<TagSubs t={t}/>}
+            {contaSubs(t).n>0&&<TagSubs t={t} onClick={()=>abrir(t)}/>}
             {t.carriedFrom&&<TagRepassada t={t} mini/>}
           </div>
           <div className="row" style={{gap:5,flexWrap:'wrap',marginTop:2}}>
@@ -8622,12 +8631,17 @@ function MontarSprint({sprint,frozen,filtro,passa}){
                 <i style={{background:corDoCliente(t.proj)}}></i>{t.proj.name}</span>
               : <span className="muted" style={{fontSize:'.66rem'}}>tarefa geral</span>}
             {ini&&<span className="muted" style={{fontSize:'.64rem'}}>{ini.nome}</span>}
+            {t.date&&<span className="mono" style={{fontSize:'.64rem',color:taskAtrasada(t)?'var(--coral)':'var(--text-3)',
+              fontWeight:taskAtrasada(t)?700:500}}>até {fmtBR(t.date).slice(0,5)}</span>}
+            {t.column&&t.column!=='andamento'&&t.column!=='backlog'&&<span style={{fontSize:'.62rem',fontWeight:700,
+              color:COL_COLOR[t.column]}}>{COL_LABEL[t.column]}</span>}
           </div>
         </div>
         <div className="row" style={{gap:3,alignItems:'center',flex:'none'}}>
           <input type="number" min="0" step="0.5" className="mt-h" value={t.estHoras||''} placeholder="?"
             title="Horas estimadas" onChange={e=>setHoras(t.id,e.target.value)}/>
           <span className="muted" style={{fontSize:'.66rem'}}>h</span>
+          <button className="icon-btn mt-edit" onClick={()=>abrir(t)} title="Editar tarefa">✎</button>
         </div>
       </div>
       {!frozen&&naColuna&&<div className="mt-quem">
@@ -8654,12 +8668,15 @@ function MontarSprint({sprint,frozen,filtro,passa}){
     const atras=taskAtrasada(t);
     return (<tr>
       <td>
-        <div style={{fontWeight:600,fontSize:'.82rem'}}>{t.name}</div>
+        <div className="mt-abre" style={{fontWeight:600,fontSize:'.82rem'}} title="Abrir a tarefa para editar"
+          onClick={()=>abrir(t)}>{t.name}</div>
         {(t.obs||t.importadoDe)&&<div className="muted" style={{fontSize:'.68rem',marginTop:1}}>
           {t.obs||('da planilha · '+t.importadoDe)}</div>}
         <div className="row" style={{gap:5,flexWrap:'wrap'}}>
-          {contaSubs(t).n>0&&<TagSubs t={t}/>}
+          {contaSubs(t).n>0&&<TagSubs t={t} onClick={()=>abrir(t)}/>}
           {t.carriedFrom&&<TagRepassada t={t}/>}
+          {t.column&&t.column!=='andamento'&&t.column!=='backlog'&&<span style={{fontSize:'.66rem',fontWeight:700,
+            color:COL_COLOR[t.column]}}>{COL_LABEL[t.column]}</span>}
         </div>
       </td>
       <td>{t.proj
@@ -8673,13 +8690,17 @@ function MontarSprint({sprint,frozen,filtro,passa}){
       <td><span className="mono" style={{fontSize:'.74rem',color:atras?'var(--coral)':'var(--text-2)',
         fontWeight:atras?700:500}}>{t.date?fmtBR(t.date):'—'}</span></td>
       <td><span className="mt-prio" style={{color:PRIO_C[t.prio||'Média'].fg}}>{PRIO_SIGLA[t.prio||'Média']}</span></td>
+      {frozen&&<td style={{textAlign:'right'}}>
+        <button className="icon-btn" style={{width:24,height:24}} onClick={()=>abrir(t)} title="Editar tarefa">✎</button></td>}
       {!frozen&&<td style={{textAlign:'right'}}>
         {naColuna
           ? <div className="row" style={{gap:4,justifyContent:'flex-end'}}>
+              <button className="icon-btn" style={{width:24,height:24}} onClick={()=>abrir(t)} title="Editar tarefa">✎</button>
               <BtnProximo t={t}/>
               <button className="mt-btn" onClick={()=>tiraDaSemana(t.id)} title="Tirar deste sprint">tirar</button>
             </div>
           : <div className="row" style={{gap:4,justifyContent:'flex-end'}}>
+              <button className="icon-btn" style={{width:24,height:24}} onClick={()=>abrir(t)} title="Editar tarefa">✎</button>
               <button className="mt-btn forte" onClick={()=>soParaSemana(t.id)}
                 title="Põe no sprint sem escolher quem faz">→ sprint</button>
               <select className="mt-sel" style={{width:118}} value="" onChange={e=>e.target.value&&paraSemana(t.id,e.target.value)}>
@@ -8694,7 +8715,7 @@ function MontarSprint({sprint,frozen,filtro,passa}){
   const Cabecalho=({com})=>(<thead><tr>
     <th>Tarefa</th><th style={{width:132}}>Cliente</th><th style={{width:104}}>Quem faz</th>
     <th style={{width:66,textAlign:'right'}}>Horas</th><th style={{width:86}}>Prazo</th>
-    <th style={{width:46}}>Prior.</th>{!frozen&&<th style={{width:com||104}}></th>}
+    <th style={{width:46}}>Prior.</th><th style={{width:frozen?40:(com||104)+28}}></th>
   </tr></thead>);
 
   /* A semana em texto puro — é o que se manda no grupo da equipe. */
@@ -8925,6 +8946,7 @@ function MontarSprint({sprint,frozen,filtro,passa}){
           </div>);})}
       </div>
     </div>)}
+    {modal&&<TaskModal db={db} init={modal} close={()=>setModal(null)} onSave={salvarT}/>}
   </div>);
 }
 
