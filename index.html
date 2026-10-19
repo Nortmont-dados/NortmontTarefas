@@ -1008,6 +1008,10 @@ table.tbl.dist tr:hover td{background:#fafbfb}
 /* análise comercial */
 .anc-kpis{grid-template-columns:repeat(4,1fr);margin-bottom:14px}
 .anc-vazio{margin-bottom:14px;border-left:4px solid #2E7FA8}
+.dist-cli-b{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--border);background:#fff;border-radius:999px;padding:5px 12px 5px 9px;font-size:.76rem;font-weight:600;color:var(--navy);cursor:pointer}
+.dist-cli-b:hover{border-color:var(--brand);color:var(--brand);border-style:solid}
+.dist-cli-b i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.dist-cli-b svg{width:12px;height:12px}
 .log{display:flex;flex-direction:column}
 .log-dia{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);padding:14px 0 6px;border-bottom:1px solid var(--border)}
 .log-dia:first-child{padding-top:0}
@@ -8497,6 +8501,10 @@ function AddNoSprint({sprint,quem,cliente,compacto,rotulo,prio}){
 function MontarSprint({sprint,frozen,filtro,passa}){
   const {db,update,flash,go}=useDB();
   const [arrasto,setArrasto]=useState(null);
+  /* clientes sem tarefa no sprint que a pessoa abriu para escrever (lista escrita) */
+  const [abertos,setAbertos]=useState([]);
+  const abrirCliente=(id)=>{ setAbertos(x=>x.includes(id)?x:[...x,id]);
+    setTimeout(()=>{ const el=document.getElementById('dist-'+id); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); },60); };
   const [alvo,setAlvo]=useState('');
   /* Por quem faz (a conta de horas é por pessoa) ou por cliente (o que
      cada um recebe nesta quinzena). */
@@ -8768,8 +8776,8 @@ function MontarSprint({sprint,frozen,filtro,passa}){
         const lista=col.itens, usado=horas(col.todas), cap=m?capDe(m):0;
         const livre=cap-usado, pct=cap?Math.min(100,usado/cap*100):0, estourou=!!(cap&&usado>cap);
         const faltaEst=semEst(col.todas);
-        if(!m&&!lista.length) return null;        // cliente sem nada no sprint não ocupa espaço
-        return (<div key={col.k} className="card" style={{marginBottom:12,overflow:'hidden'}}>
+        if(!m&&!lista.length&&!abertos.includes(col.k)) return null;   // cliente sem nada no sprint só aparece se for aberto abaixo
+        return (<div key={col.k} id={'dist-'+col.k} className="card" style={{marginBottom:12,overflow:'hidden'}}>
           <div className="dist-h">
             {m? <Avatar db={db} id={m.id} size="sm"/>
               : <span style={{width:12,height:12,borderRadius:'50%',background:col.cor,flex:'none'}}></span>}
@@ -8805,9 +8813,19 @@ function MontarSprint({sprint,frozen,filtro,passa}){
                 Nada definido para {col.nome} neste sprint — escreva abaixo ou puxe do banco.</div>}
           {!frozen&&<div style={{padding:'10px 16px 13px'}}>
             <AddNoSprint sprint={sprint} quem={m?m.id:null} cliente={col.cliente?col.cliente.id:(col.k==='__geral'?'':(filtro.cli!=='Todos'&&filtro.cli!=='Gerais'?filtro.cli:null))} prio={filtro.prio!=='Todas'?filtro.prio:null}
-              rotulo={'tarefa para '+col.nome.split(' ')[0]+' neste sprint'}/>
+              rotulo={m? 'tarefa para '+col.nome.split(' ')[0]+' neste sprint' : 'nova tarefa para '+col.nome+' neste sprint'}/>
           </div>}
         </div>);})}
+
+      {/* ---- clientes que ainda não têm nada no sprint ---- */}
+      {porQuem==='cliente'&&!frozen&&(()=>{ const resto=colunas.filter(c=>!c.membro&&!c.itens.length&&!abertos.includes(c.k));
+        return resto.length? (<div className="card card-pad dist-outros" style={{marginBottom:12}}>
+          <div style={{fontWeight:700,fontSize:'.84rem',marginBottom:4}}>Adicionar tarefa em outro cliente</div>
+          <div className="muted" style={{fontSize:'.72rem',marginBottom:10}}>Clientes sem nada neste sprint. Clique para abrir a seção e escrever a tarefa.</div>
+          <div className="row" style={{gap:6,flexWrap:'wrap'}}>{resto.map(c=>(
+            <button key={c.k} className="dist-cli-b" onClick={()=>abrirCliente(c.k)}>
+              <i style={{background:c.cor}}></i>{I.plus} {c.nome}</button>))}</div>
+        </div>) : null; })()}
 
       {/* ---- banco ---- */}
       <div className="card" style={{overflow:'hidden'}}>
@@ -8902,7 +8920,7 @@ function MontarSprint({sprint,frozen,filtro,passa}){
               {!lista.length&&<div className="muted" style={{fontSize:'.74rem',padding:'12px 4px',textAlign:'center'}}>
                 {frozen?'—':'Solte tarefas aqui'}</div>}
               {!frozen&&<AddNoSprint sprint={sprint} quem={m?m.id:null} cliente={cli?cli.id:(col.k==='__geral'?'':(filtro.cli!=='Todos'&&filtro.cli!=='Gerais'?filtro.cli:null))} prio={filtro.prio!=='Todas'?filtro.prio:null}
-                compacto rotulo={m? ('tarefa para '+m.name.split(' ')[0]) : ('tarefa para '+col.nome.split(' ')[0])}/>}
+                compacto rotulo={m? ('tarefa para '+m.name.split(' ')[0]) : ('tarefa para '+col.nome)}/>}
             </div>
           </div>);})}
       </div>
@@ -9879,7 +9897,8 @@ function SprintPage(){
   };
   const who=f.resp;
   const sprint=db.sprints.find(s=>s.id===sel)||db.sprints.find(s=>s.id===db.currentSprint);
-  const frozen=sprint.id!==db.currentSprint;
+  /* Travado só o sprint que já passou. O atual e os próximos (planejamento) são editáveis. */
+  const frozen=sprint.id!==db.currentSprint&&sprint.end<hojeISO();
   // atividades do sprint selecionado (agregadas de todos os projetos)
   // O sprint é montado pelas DATAS: entra tudo (tarefa geral ou atividade de
   // projeto) cuja janela de construção cruza a semana. Na semana atual entram
