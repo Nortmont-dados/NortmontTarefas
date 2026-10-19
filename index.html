@@ -2476,8 +2476,12 @@ const STATUS_C = {'Em andamento':{bg:'#ece9fb',fg:'#0F4245'},'Pausado':{bg:'#fef
    ------------------------------------------------------------ */
 /* Cores de cliente: derivadas do guia — teal, navy, azuis de apoio e
    verdes; os tons quentes entram só como diferenciadores, em minoria. */
+/* Paleta dos clientes: as 12 originais + 12 novas. Todas escuras o bastante
+   para texto branco por cima (contraste de 4,8:1 a 10:1). */
 const CORES_CLIENTE=['#0F4245','#173164','#2F8F6E','#3F598C','#5A7D5A','#0b5c60',
-                     '#C58B2A','#B33A3A','#2c4a52','#7a9a7a','#1a5f63','#4a5a5c'];
+                     '#C58B2A','#B33A3A','#2c4a52','#7a9a7a','#1a5f63','#4a5a5c',
+                     '#6B3FA0','#8E3B6E','#A23B2A','#B5562B','#8A6D1F','#5B6B1E',
+                     '#11706F','#1F5F8B','#2E4A9E','#4B3B8F','#6A2C4E','#7A4A2A'];
 const corDoCliente=(p)=> (p&&p.cor)||'#4a5a5c';
 const CINZA_GERAL='#4a5a5c';   // tarefas sem cliente
 
@@ -10113,7 +10117,8 @@ function SprintPage(){
 /* ============================================================
    MÓDULO 5 — EQUIPE (permissões + cor do avatar)
    ============================================================ */
-const AVATAR_COLORS=['#0F4245','#173164','#3F598C','#2F8F6E','#5A7D5A','#0b5c60','#C58B2A','#B33A3A','#2c4a52','#4a5a5c'];
+const AVATAR_COLORS=['#0F4245','#173164','#3F598C','#2F8F6E','#5A7D5A','#0b5c60','#C58B2A','#B33A3A','#2c4a52','#4a5a5c',
+                     '#6B3FA0','#8E3B6E','#A23B2A','#B5562B','#8A6D1F','#11706F','#1F5F8B','#2E4A9E','#5C4D7D','#874356'];
 const PERM_LABEL={admin:'Administrador',editor:'Editor',viewer:'Visualizador',nenhum:'Sem acesso'};
 function TeamPage(){
   const {db,update,flash}=useDB();
