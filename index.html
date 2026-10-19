@@ -10157,7 +10157,7 @@ function TeamPage(){
         {t.email&&t.perm!=='nenhum'
           ? <div className="mb-acesso ok" title="Entra no sistema com esta conta Google">{I.check} {t.email}</div>
           : <div className="mb-acesso nao">{t.email? t.email+' · sem acesso' : 'sem e-mail · não entra no sistema'}</div>}
-        <div className="row" style={{gap:20}}><span className="stat-mini"><span className="n" style={{fontSize:'1.2rem'}}>{l}</span><span className="l">clientes</span></span><span className="stat-mini"><span className="n" style={{fontSize:'1.2rem'}}>{aw}</span><span className="l">ativ./semana</span></span></div>
+        <div className="row" style={{gap:20}}><span className="stat-mini"><span className="n" style={{fontSize:'1.2rem'}}>{l}</span><span className="l">clientes</span></span><span className="stat-mini"><span className="n" style={{fontSize:'1.2rem'}}>{aw}</span><span className="l">ativ./semana</span></span><span className="stat-mini"><span className="n" style={{fontSize:'1.2rem'}}>{+t.cap||+t.capacity||40}h</span><span className="l">por semana</span></span></div>
         <div><div className="between" style={{marginBottom:4}}><span className="muted" style={{fontSize:'.72rem'}}>Alocação</span><span className="mono" style={{fontSize:'.72rem',fontWeight:700,color:pct>85?'var(--coral)':'var(--brand)'}}>{pct}%</span></div><div className="bar-track"><div className="bar-fill" style={{width:pct+'%',background:pct>85?'var(--coral)':t.color}}></div></div></div>
         <button className="btn btn-ghost btn-sm" onClick={()=>setModal({...t})}>Editar</button>
       </div>);})}</div>
@@ -10176,7 +10176,8 @@ function MemberModal({m,close,onSave,onDelete}){
     if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ setErro('Esse e-mail não parece válido.'); return; }
     const outro=email&&(db.team||[]).find(x=>x.id!==f.id&&String(x.email||'').trim().toLowerCase()===email);
     if(outro){ setErro('Esse e-mail já está cadastrado para '+outro.name+'.'); return; }
-    onSave({...f,email});
+    const cap=Math.max(0,+f.cap||+f.capacity||0);
+    onSave({...f,email,cap:cap||40,capacity:cap||40});
   };
   return (<div className="overlay" onClick={close}><div className="modal" onClick={e=>e.stopPropagation()}>
     <div className="modal-h"><h3>{m.id?'Editar membro':'Novo membro'}</h3><button className="x" onClick={close}>{I.x}</button></div>
@@ -10190,6 +10191,13 @@ function MemberModal({m,close,onSave,onDelete}){
         <div className="fld"><label>Cargo de acesso</label><select className="sel" value={f.perm} onChange={e=>set('perm',e.target.value)}>{Object.entries(PERM_LABEL).map(([k,l])=><option key={k} value={k}>{l}</option>)}</select>
           <div className="muted" style={{fontSize:'.72rem',marginTop:4}}>{CARGO_DESC[f.perm]||''}</div></div>
       </div>
+      <div className="fld"><label>Horas disponíveis por semana</label>
+        <div className="row" style={{gap:10,alignItems:'center'}}>
+          <input type="number" min="0" max="80" step="1" className="inp" style={{width:110}} value={f.cap!=null&&f.cap!==''?f.cap:(f.capacity||'')}
+            onChange={e=>setF(x=>({...x,cap:e.target.value,capacity:e.target.value}))} placeholder="40"/>
+          <span className="muted" style={{fontSize:'.76rem'}}>h por semana{(+f.cap||+f.capacity)? (()=>{ const ns=Math.max(1,Math.round((+((db.sprintCfg||{}).dias)||14)/7)); return ' · '+(+f.cap||+f.capacity)*ns+'h num sprint de '+ns+' semana'+(ns>1?'s':''); })() : ''}</span>
+        </div>
+        <div className="muted" style={{fontSize:'.72rem',marginTop:4}}>É a régua da distribuição do sprint: mostra quantas horas a pessoa ainda tem livres e avisa quando passa do limite.</div></div>
       <div className="fld"><label>Cor do avatar</label><div className="row" style={{flexWrap:'wrap',gap:8}}>{AVATAR_COLORS.map(c=><button key={c} onClick={()=>set('color',c)} style={{width:30,height:30,borderRadius:'50%',background:c,border:f.color===c?'3px solid #000019':'2px solid #fff',boxShadow:'0 0 0 1px #ddd',cursor:'pointer'}}/>)}</div></div>
     </div>
     {erro&&<div className="nv-erro" style={{margin:'0 22px 12px'}}>{erro}</div>}
