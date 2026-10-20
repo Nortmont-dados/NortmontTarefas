@@ -610,6 +610,17 @@ a{color:inherit}
 .sim-bar button{background:#C58B2A;color:#fff;border:none;border-radius:7px;padding:4px 12px;
   font-size:.76rem;font-weight:700;cursor:pointer;margin-left:auto;white-space:nowrap}
 .sim-bar button:hover{background:#C58B2A}
+.sel-cor{display:flex;flex-direction:column;gap:8px;max-width:100%}
+.sel-cor-marca{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.sel-cor-grade{display:flex;flex-wrap:wrap;gap:8px 4px}
+.sel-cor-fam{display:flex;flex-direction:column;gap:4px;flex:none}
+.sw2{width:20px;height:20px;border-radius:6px;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .12s;flex:none;position:relative}
+.sw2.r{border-radius:50%;width:22px;height:22px}
+.sw2:hover{transform:scale(1.15);z-index:1}
+.sw2.on{border-color:#12122b;box-shadow:0 0 0 2px #fff inset}
+.sw-livre{display:inline-flex;align-items:center;justify-content:center;background:conic-gradient(#DC2626,#C2410C,#A16207,#15803D,#0F766E,#2563EB,#7C3AED,#C026D3,#DC2626);
+  color:#fff;font-weight:800;font-size:.8rem;text-shadow:0 0 3px rgba(0,0,0,.6);overflow:hidden}
+.sw-livre input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:0;padding:0}
 .swatch{width:20px;height:20px;border-radius:6px;border:2px solid transparent;cursor:pointer;padding:0;transition:.12s}
 .swatch:hover{transform:scale(1.12)}
 .swatch.on{border-color:#12122b;box-shadow:0 0 0 2px #fff inset}
@@ -878,6 +889,11 @@ a{color:inherit}
 .mt-card:hover{box-shadow:var(--sh-hover);border-color:var(--brand)}
 .mt-card.arrastando{opacity:.4}
 .mt-nome{font-size:.79rem;font-weight:600;line-height:1.3}
+.th-ord{cursor:pointer;user-select:none;white-space:nowrap}
+.th-ord:hover{color:var(--brand)}
+.th-ord.on{color:var(--brand)}
+.th-seta{display:inline-block;margin-left:4px;font-size:.62rem;opacity:.35}
+.th-ord:hover .th-seta{opacity:.7}.th-ord.on .th-seta{opacity:1}
 .mt-abre{cursor:pointer}
 .dpick{position:relative;display:inline-block;cursor:pointer;border-radius:5px;padding:1px 4px;margin:-1px -4px;white-space:nowrap}
 .dpick:hover{background:var(--bg-2,#eef1f0);text-decoration:underline dotted;text-underline-offset:2px}
@@ -2487,14 +2503,33 @@ const STATUS_C = {'Em andamento':{bg:'#ece9fb',fg:'#0F4245'},'Pausado':{bg:'#fef
    a forma diz o que é (barra = construção, ▲ = entrega) e a cor diz
    de quem é. Assim a semana inteira se lê de relance.
    ------------------------------------------------------------ */
-/* Cores de cliente: derivadas do guia — teal, navy, azuis de apoio e
-   verdes; os tons quentes entram só como diferenciadores, em minoria. */
-/* Paleta dos clientes: as 12 originais + 12 novas. Todas escuras o bastante
-   para texto branco por cima (contraste de 4,8:1 a 10:1). */
-const CORES_CLIENTE=['#0F4245','#173164','#2F8F6E','#3F598C','#5A7D5A','#0b5c60',
-                     '#C58B2A','#B33A3A','#2c4a52','#7a9a7a','#1a5f63','#4a5a5c',
-                     '#6B3FA0','#8E3B6E','#A23B2A','#B5562B','#8A6D1F','#5B6B1E',
-                     '#11706F','#1F5F8B','#2E4A9E','#4B3B8F','#6A2C4E','#7A4A2A'];
+/* ------------------------------------------------------------
+   PALETA DE CORES (clientes e equipe)
+   22 famílias, do vermelho ao grafite, cada uma em 3 tons (vivo, médio,
+   escuro). Todas aguentam texto branco por cima (contraste ≥ 4,5:1).
+   Na frente vêm os tons da marca, e no fim há a cor personalizada.
+   ------------------------------------------------------------ */
+const CORES_MARCA=['#0F4245','#0b5c60','#2c4a52','#173164','#3F598C','#2F8F6E','#5A7D5A','#C58B2A','#B33A3A','#4a5a5c'];
+const PALETA_FAMILIAS=[
+  ['Vermelho',['#DC2626','#B91C1C','#7F1D1D']],['Coral',['#D03A22','#B4321C','#82230F']],
+  ['Laranja',['#C2410C','#9A3412','#7C2D12']],['Âmbar',['#B45309','#92400E','#78350F']],
+  ['Mostarda',['#A16207','#854D0E','#713F12']],['Oliva',['#6B7A12','#556010','#3F470C']],
+  ['Lima',['#4D7C0F','#3F6212','#365314']],['Verde',['#15803D','#166534','#14532D']],
+  ['Esmeralda',['#047857','#065F46','#064E3B']],['Turquesa',['#0F766E','#115E59','#134E4A']],
+  ['Petróleo',['#0E7490','#155E75','#164E63']],['Céu',['#0369A1','#075985','#0C4A6E']],
+  ['Azul',['#2563EB','#1D4ED8','#1E3A8A']],['Índigo',['#4F46E5','#4338CA','#312E81']],
+  ['Violeta',['#7C3AED','#6D28D9','#4C1D95']],['Roxo',['#9333EA','#7E22CE','#581C87']],
+  ['Magenta',['#C026D3','#A21CAF','#701A75']],['Pink',['#DB2777','#BE185D','#831843']],
+  ['Rosa',['#E11D48','#BE123C','#881337']],['Marrom',['#8B5E3C','#6F4518','#4A2C17']],
+  ['Ardósia',['#475569','#334155','#0F172A']],['Grafite',['#57534E','#44403C','#1C1917']]];
+const CORES_CLIENTE=[...CORES_MARCA,...PALETA_FAMILIAS.reduce((a,[n,l])=>a.concat(l),[])];
+/* Para dar cor sozinho a um cliente ou pessoa nova: pula de uma família
+   distante para outra, assim os vizinhos nunca saem parecidos. */
+const CORES_AUTO=(()=>{ const ord=[0,12,7,15,2,10,19,5,13,8,17,3,11,6,14,1,9,16,4,18,20,21], r=[];
+  [1,0,2].forEach(t=>ord.forEach(i=>r.push(PALETA_FAMILIAS[i][1][t]))); return r; })();
+const nomeDaCor=(c)=>{ const u=(c||'').toUpperCase();
+  for(const [n,l] of PALETA_FAMILIAS){ const k=l.findIndex(x=>x.toUpperCase()===u); if(k>=0) return n+' · '+['vivo','médio','escuro'][k]; }
+  return CORES_MARCA.some(x=>x.toUpperCase()===u)? 'Tom da marca' : 'Personalizada'; };
 const corDoCliente=(p)=> (p&&p.cor)||'#4a5a5c';
 const CINZA_GERAL='#4a5a5c';   // tarefas sem cliente
 
@@ -5207,6 +5242,22 @@ function CelCliente({db,t,onChange}){
 const subsDe=(t)=>Array.isArray(t&&t.subs)? t.subs : [];
 const contaSubs=(t)=>{ const l=subsDe(t); return {n:l.length,feitas:l.filter(x=>x.feito).length}; };
 /* Marcador compacto: 2/5, verde quando tudo está feito. */
+/* Escolher cor: tons da marca, a paleta em colunas por família (vivo em
+   cima, escuro embaixo) e, no fim, qualquer cor pelo seletor do sistema. */
+function SeletorCor({valor,onChange,redondo}){
+  const v=(valor||'').toUpperCase();
+  const fora=!!valor&&!CORES_CLIENTE.some(c=>c.toUpperCase()===v);
+  const B=(c)=>(<button key={c} type="button" className={"sw2"+(redondo?' r':'')+(v===c.toUpperCase()?' on':'')}
+    style={{background:c}} onClick={()=>onChange(c)} title={nomeDaCor(c)+' · '+c}/>);
+  return (<div className="sel-cor">
+    <div className="sel-cor-marca">{CORES_MARCA.map(B)}
+      <label className={"sw2 sw-livre"+(redondo?' r':'')+(fora?' on':'')} title="Escolher qualquer cor"
+        style={fora?{background:valor}:null}>
+        {!fora&&'+'}<input type="color" value={/^#[0-9a-f]{6}$/i.test(valor||'')?valor:'#0F4245'}
+          onChange={e=>onChange(e.target.value)}/></label></div>
+    <div className="sel-cor-grade">{PALETA_FAMILIAS.map(([n,l])=>(<div key={n} className="sel-cor-fam" title={n}>{l.map(B)}</div>))}</div>
+  </div>);
+}
 /* Data que se troca clicando nela: o texto continua com cara de texto,
    mas por cima há um campo de data invisível que abre o calendário. */
 function DataPick({valor,onChange,curto,prefixo,vazio,cor,peso,desativado,title}){
@@ -5350,6 +5401,60 @@ function noPeriodo(t,per,db){
   if(per==='mes') return t.date.slice(0,7)===h.slice(0,7);
   return true;
 }
+/* ------------------------------------------------------------
+   ORDENAR PELA COLUNA
+   Clique no nome da coluna: crescente; de novo: decrescente; de novo:
+   volta à ordem padrão (prioridade e prazo). A escolha fica guardada.
+   ------------------------------------------------------------ */
+const ORD_PRIO={'Alta':0,'Média':1,'Baixa':2};
+const ORD_STATUS={backlog:0,andamento:1,revisao:2,concluido:3,cancelado:4};
+function chaveOrdem(db,t,k){
+  switch(k){
+    case 'nome': return (t.name||'').toLowerCase();
+    case 'cli': return t.proj? t.proj.name.toLowerCase() : null;
+    case 'quem': return nomesResp(db,t)? nomesResp(db,t).toLowerCase() : null;
+    case 'prio': return ORD_PRIO[t.prio||'Média'];
+    case 'status': return ORD_STATUS[t.column||'backlog']==null? 9 : ORD_STATUS[t.column||'backlog'];
+    case 'prazo': return t.date||null;
+    case 'horas': return +t.estHoras||null;
+    case 'constr': return t.buildStart||null;
+    case 'sprint': return t.buildStart||t.date||null;
+    case 'criada': return t.criadaEm||null;
+    case 'fase': return t.peId? (t.peId+'|'+(t.faseId||'')) : null;
+    case 'obs': return t.obs? 0 : null;
+    default: return 0;
+  }
+}
+function ordenarTarefas(db,L,ord){
+  if(!ord||!ord.k) return L;
+  const m=ord.dir==='desc'?-1:1;
+  return L.slice().sort((a,b)=>{
+    const x=chaveOrdem(db,a,ord.k), y=chaveOrdem(db,b,ord.k);
+    /* o que está em branco (sem prazo, sem horas…) fica sempre no fim */
+    if(x==null&&y!=null) return 1; if(y==null&&x!=null) return -1;
+    if(x!=null&&y!=null){
+    if(typeof x==='string'&&typeof y==='string'&&ord.k!=='prazo'&&ord.k!=='constr'&&ord.k!=='sprint'&&ord.k!=='criada'){
+      const c=x.localeCompare(y,'pt-BR',{sensitivity:'base',numeric:true}); if(c) return c*m; }
+    else{ if(x<y) return -m; if(x>y) return m; }
+    }
+    return (ORD_PRIO[a.prio||'Média']-ORD_PRIO[b.prio||'Média'])||((a.date||'9999')<(b.date||'9999')?-1:1);
+  });
+}
+function useOrdem(nome){
+  const chave=LS_KEY+':ord:'+nome;
+  const [ord,setOrdS]=useState(()=>{ try{ return JSON.parse(localStorage.getItem(chave)||'null')||{k:'',dir:'asc'}; }catch(e){ return {k:'',dir:'asc'}; } });
+  const setOrd=(k)=>setOrdS(o=>{
+    const n= o.k!==k? {k,dir:'asc'} : (o.dir==='asc'? {k,dir:'desc'} : {k:'',dir:'asc'});
+    try{ localStorage.setItem(chave,JSON.stringify(n)); }catch(e){}
+    return n; });
+  return [ord,setOrd];
+}
+function ThOrd({k,ord,setOrd,children,style}){
+  const on=ord.k===k;
+  return (<th style={style} className={"th-ord"+(on?' on':'')} onClick={()=>setOrd(k)}
+    title={on? (ord.dir==='asc'?'Ordem crescente · clique para inverter':'Ordem decrescente · clique para voltar ao padrão') : 'Clique para ordenar por esta coluna'}>
+    {children}<span className="th-seta">{on? (ord.dir==='asc'?'▲':'▼') : '↕'}</span></th>);
+}
 function TasksPage(){
   const {db,update,go,flash,auth}=useDB();
   const [f,setF]=useState({q:'',resp:'Todos',cli:'Todos',status:'Abertas',per:'todos'});
@@ -5358,6 +5463,7 @@ function TasksPage(){
   const [agrupar,setAgrupar]=useState('cli');     // cli | resp | status | nenhum
   const [colsExtra,setColsExtra]=useState(false); // colunas de planejamento
   const [obsDe,setObsDe]=useState(null);
+  const [ord,setOrd]=useOrdem('tarefas');
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
   const limpar=()=>setF({q:'',resp:'Todos',cli:'Todos',status:'Abertas',per:'todos'});
 
@@ -5375,8 +5481,8 @@ function TasksPage(){
     });
     const pOrd={'Alta':0,'Média':1,'Baixa':2};
     L.sort((a,b)=>(pOrd[a.prio||'Média']-pOrd[b.prio||'Média'])||((a.date||'9999')<(b.date||'9999')?-1:1));
-    return L;
-  },[todas,f]);
+    return ordenarTarefas(db,L,ord);
+  },[todas,f,ord]);
 
   /* ---- agrupamento: é o que a planilha faz e o que dá conforto de leitura ---- */
   const grupos=useMemo(()=>{
@@ -5502,17 +5608,17 @@ function TasksPage(){
         <div className="tbl-wrap"><table className="tbl tarefas">
           <thead><tr>
             <th style={{width:30}}></th>
-            <th>Tarefa</th>
-            <th style={{width:132}}>Cliente</th>
-            {agrupar!=='resp'&&<th style={{width:132}}>Quem faz</th>}
-            <th style={{width:64}}>Prior.</th>
-            {agrupar!=='status'&&<th style={{width:132}}>Status</th>}
-            <th style={{width:112}}>Prazo</th>
-            <th style={{width:70}}>Horas</th>
-            {colsExtra&&<th style={{width:200}}>Construção</th>}
-            {colsExtra&&<th style={{width:64}}>Sprint</th>}
-            {colsExtra&&<th style={{width:86}}>Criada em</th>}
-            <th style={{width:34}}>Obs</th>
+            <ThOrd k="nome" ord={ord} setOrd={setOrd}>Tarefa</ThOrd>
+            <ThOrd k="cli" ord={ord} setOrd={setOrd} style={{width:132}}>Cliente</ThOrd>
+            {agrupar!=='resp'&&<ThOrd k="quem" ord={ord} setOrd={setOrd} style={{width:132}}>Quem faz</ThOrd>}
+            <ThOrd k="prio" ord={ord} setOrd={setOrd} style={{width:64}}>Prior.</ThOrd>
+            {agrupar!=='status'&&<ThOrd k="status" ord={ord} setOrd={setOrd} style={{width:132}}>Status</ThOrd>}
+            <ThOrd k="prazo" ord={ord} setOrd={setOrd} style={{width:112}}>Prazo</ThOrd>
+            <ThOrd k="horas" ord={ord} setOrd={setOrd} style={{width:70}}>Horas</ThOrd>
+            {colsExtra&&<ThOrd k="constr" ord={ord} setOrd={setOrd} style={{width:200}}>Construção</ThOrd>}
+            {colsExtra&&<ThOrd k="sprint" ord={ord} setOrd={setOrd} style={{width:64}}>Sprint</ThOrd>}
+            {colsExtra&&<ThOrd k="criada" ord={ord} setOrd={setOrd} style={{width:86}}>Criada em</ThOrd>}
+            <ThOrd k="obs" ord={ord} setOrd={setOrd} style={{width:34}}>Obs</ThOrd>
             <th style={{width:86}}></th>
           </tr></thead>
           <tbody>{g.itens.map(t=>{
@@ -6642,10 +6748,7 @@ function Cockpit({p,mutate}){
                 <span className="muted" style={{fontSize:'.8rem'}}>h/mês</span></span>
             </div>
             <div className="muted" style={{fontSize:'.72rem',marginBottom:6}}>Cor deste cliente no calendário</div>
-            <div className="row" style={{gap:4,flexWrap:'wrap'}}>
-              {CORES_CLIENTE.map(c=>(<button key={c} className={"swatch"+(corDoCliente(p)===c?' on':'')}
-                style={{background:c}} onClick={()=>mutate(pr=>pr.cor=c)} title={c}/>))}
-            </div>
+            <SeletorCor valor={corDoCliente(p)} onChange={c=>mutate(pr=>pr.cor=c)}/>
           </div>
         </div>
       </div>
@@ -6669,10 +6772,7 @@ function TabOverview({p,mutate}){
         <Info label="Horas planejadas/mês"><div className="row" style={{gap:4,alignItems:'baseline'}}>
           <LiveInput className="mini-sel" type="number" value={p.horasPlan||0}
             onCommit={v=>mutate(pr=>pr.horasPlan=+v||0)}/><span className="muted" style={{fontSize:'.76rem'}}>h</span></div></Info>
-        <Info label="Cor no calendário"><div className="row" style={{gap:4,flexWrap:'wrap'}}>
-          {CORES_CLIENTE.map(c=>(<button key={c} className={"swatch"+(corDoCliente(p)===c?' on':'')}
-            style={{background:c}} onClick={()=>mutate(pr=>pr.cor=c)} title={c}/>))}
-        </div></Info>
+        <Info label="Cor no calendário"><SeletorCor valor={corDoCliente(p)} onChange={c=>mutate(pr=>pr.cor=c)}/></Info>
         <Info label="Tier"><select className="mini-sel" value={p.tier} onChange={e=>mutate(pr=>pr.tier=e.target.value)}>{db.tiers.map(x=><option key={x}>{x}</option>)}</select></Info>
         <Info label="Tipo"><select className="mini-sel" value={p.tipo} onChange={e=>mutate(pr=>pr.tipo=e.target.value)}>{db.tipos.map(x=><option key={x}>{x}</option>)}</select></Info>
         <Info label="Setor"><select className="mini-sel" value={p.setor} onChange={e=>mutate(pr=>pr.setor=e.target.value)}>{db.setores.map(x=><option key={x}>{x}</option>)}</select></Info>
@@ -7869,6 +7969,7 @@ function TabTarefas({p,mutate}){
   const [agrupar,setAgrupar]=useState('fase');   // fase | resp | status | nenhum
   const [colsExtra,setColsExtra]=useState(false);
   const [modal,setModal]=useState(null);
+  const [ord,setOrd]=useOrdem('tarefas_cliente');
   const [obsDe,setObsDe]=useState(null);
   const [sessoesDe,setSessoesDe]=useState(null);
   const [fechados,setFechados]=useState([]);     // grupos recolhidos
@@ -7896,8 +7997,8 @@ function TabTarefas({p,mutate}){
     });
     const pOrd={'Alta':0,'Média':1,'Baixa':2};
     L.sort((a,b)=>(pOrd[a.prio||'Média']-pOrd[b.prio||'Média'])||((a.date||'9999')<(b.date||'9999')?-1:1));
-    return L;
-  },[todas,f]);
+    return ordenarTarefas(db,L,ord);
+  },[todas,f,ord]);
 
   const grupos=useMemo(()=>{
     if(agrupar==='nenhum') return [{k:'t',titulo:'Todas as tarefas',cor:'#4a5a5c',itens:lista}];
@@ -8008,15 +8109,16 @@ function TabTarefas({p,mutate}){
         </div>
         {fechados.indexOf(g.k)<0&&<div className="tbl-wrap"><table className="tbl tarefas">
           <thead><tr>
-            <th style={{width:30}}></th><th>Tarefa</th>
-            {agrupar!=='resp'&&<th style={{width:132}}>Quem faz</th>}
-            <th style={{width:60}}>Prior.</th>
-            {agrupar!=='status'&&<th style={{width:130}}>Status</th>}
-            <th style={{width:110}}>Prazo</th><th style={{width:64}}>Horas</th>
-            {colsExtra&&<th style={{width:196}}>Construção</th>}
-            {colsExtra&&<th style={{width:84}}>Criada em</th>}
-            {agrupar!=='fase'&&<th style={{width:150}}>Fase</th>}
-            <th style={{width:30}}>Obs</th><th style={{width:52}}></th>
+            <th style={{width:30}}></th><ThOrd k="nome" ord={ord} setOrd={setOrd}>Tarefa</ThOrd>
+            {agrupar!=='resp'&&<ThOrd k="quem" ord={ord} setOrd={setOrd} style={{width:132}}>Quem faz</ThOrd>}
+            <ThOrd k="prio" ord={ord} setOrd={setOrd} style={{width:60}}>Prior.</ThOrd>
+            {agrupar!=='status'&&<ThOrd k="status" ord={ord} setOrd={setOrd} style={{width:130}}>Status</ThOrd>}
+            <ThOrd k="prazo" ord={ord} setOrd={setOrd} style={{width:110}}>Prazo</ThOrd>
+            <ThOrd k="horas" ord={ord} setOrd={setOrd} style={{width:64}}>Horas</ThOrd>
+            {colsExtra&&<ThOrd k="constr" ord={ord} setOrd={setOrd} style={{width:196}}>Construção</ThOrd>}
+            {colsExtra&&<ThOrd k="criada" ord={ord} setOrd={setOrd} style={{width:84}}>Criada em</ThOrd>}
+            {agrupar!=='fase'&&<ThOrd k="fase" ord={ord} setOrd={setOrd} style={{width:150}}>Fase</ThOrd>}
+            <ThOrd k="obs" ord={ord} setOrd={setOrd} style={{width:30}}>Obs</ThOrd><th style={{width:52}}></th>
           </tr></thead>
           <tbody>{g.itens.map(t=>{
             const atras=taskAtrasada(t), feito=t.column==='concluido';
@@ -9290,7 +9392,7 @@ function tipoPeloNome(nome){
 /* ---------------- gravar na base ---------------- */
 function corLivreDeCliente(d){
   const usadas=(d.projects||[]).map(p=>p.cor);
-  return CORES_CLIENTE.find(c=>usadas.indexOf(c)<0)||CORES_CLIENTE[(d.projects||[]).length%CORES_CLIENTE.length];
+  return CORES_AUTO.find(c=>usadas.indexOf(c)<0)||CORES_AUTO[(d.projects||[]).length%CORES_AUTO.length];
 }
 /* Cliente criado pela importação nasce enxuto: nome, cor e o método.
    Entregáveis e tarefas-padrão ficam de fora para não inventar trabalho. */
@@ -9319,7 +9421,7 @@ function clienteDaImportacao(d,nome){
 function pessoaDaImportacao(d,nome){
   const igual=(d.team||[]).find(m=>chaveImp(m.name)===chaveImp(nome));
   if(igual) return igual.id;
-  const cor=CORES_CLIENTE[(d.team||[]).length%CORES_CLIENTE.length];
+  const cor=CORES_AUTO[(d.team||[]).length%CORES_AUTO.length];
   const id='m'+uid();
   d.team.push({id,name:nome,importado:true,role:'Consultor(a)',color:cor,cap:40,capacity:40,email:'',perm:'editor'});
   return id;
@@ -10244,8 +10346,7 @@ function SprintPage(){
 /* ============================================================
    MÓDULO 5 — EQUIPE (permissões + cor do avatar)
    ============================================================ */
-const AVATAR_COLORS=['#0F4245','#173164','#3F598C','#2F8F6E','#5A7D5A','#0b5c60','#C58B2A','#B33A3A','#2c4a52','#4a5a5c',
-                     '#6B3FA0','#8E3B6E','#A23B2A','#B5562B','#8A6D1F','#11706F','#1F5F8B','#2E4A9E','#5C4D7D','#874356'];
+const AVATAR_COLORS=CORES_CLIENTE;
 const PERM_LABEL={admin:'Administrador',editor:'Editor',viewer:'Visualizador',nenhum:'Sem acesso'};
 function TeamPage(){
   const {db,update,flash}=useDB();
@@ -10306,7 +10407,7 @@ function MemberModal({m,close,onSave,onDelete}){
           <span className="muted" style={{fontSize:'.76rem'}}>h por semana{(+f.cap||+f.capacity)? (()=>{ const ns=Math.max(1,Math.round((+((db.sprintCfg||{}).dias)||14)/7)); return ' · '+(+f.cap||+f.capacity)*ns+'h num sprint de '+ns+' semana'+(ns>1?'s':''); })() : ''}</span>
         </div>
         <div className="muted" style={{fontSize:'.72rem',marginTop:4}}>É a régua da distribuição do sprint: mostra quantas horas a pessoa ainda tem livres e avisa quando passa do limite.</div></div>
-      <div className="fld"><label>Cor do avatar</label><div className="row" style={{flexWrap:'wrap',gap:8}}>{AVATAR_COLORS.map(c=><button key={c} onClick={()=>set('color',c)} style={{width:30,height:30,borderRadius:'50%',background:c,border:f.color===c?'3px solid #000019':'2px solid #fff',boxShadow:'0 0 0 1px #ddd',cursor:'pointer'}}/>)}</div></div>
+      <div className="fld"><label>Cor do avatar</label><SeletorCor redondo valor={f.color} onChange={c=>set('color',c)}/></div>
     </div>
     {erro&&<div className="nv-erro" style={{margin:'0 22px 12px'}}>{erro}</div>}
     <div className="modal-f">{onDelete?<button className="btn btn-danger" onClick={onDelete}>Remover</button>:<span/>}<div className="row"><button className="btn btn-ghost" onClick={close}>Cancelar</button><button className="btn btn-primary" onClick={salvar}>Salvar</button></div></div>
