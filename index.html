@@ -4251,6 +4251,23 @@ function App({nuvem}={}){
     return novo;
   });
   const flash=(m)=>{setToast(m);setTimeout(()=>setToast(null),2400);};
+  /* Sprint pela data de hoje: quem pode editar faz a virada (e ela vai
+     para a planilha); quem só visualiza recebe pronta na próxima leitura. */
+  useEffect(()=>{
+    if(auth.papel==='viewer') return;
+    const ver=()=>{
+      if(!sprintVencido(dbRef.current)) return;
+      let r=null;
+      update(d=>{ r=virarSprintPelaData(d); return d; });
+      setTimeout(()=>{ if(r&&r.para) flash('Sprint atual: '+rotuloSprint(r.para)
+        +(r.repassadas? ' · '+r.repassadas+' tarefa(s) em aberto vieram do anterior' : '')); },80);
+    };
+    const t0=setTimeout(ver,nuvem?2500:500);
+    const t=setInterval(()=>{ if(!document.hidden) ver(); },5*60000);
+    const vis=()=>{ if(!document.hidden) ver(); };
+    document.addEventListener('visibilitychange',vis);
+    return ()=>{ clearTimeout(t0); clearInterval(t); document.removeEventListener('visibilitychange',vis); };
+  },[db.currentSprint,auth.papel]);
   const go=(page,projectId=null)=>{setRoute({page,projectId});setSbOpen(false);try{window.scrollTo(0,0);}catch(e){}};
   const filterActive=Object.entries(filter).some(([k,v])=> k==='arquivo' ? v!=='Ativos' : (v!=='Todos'&&v!=='Todas'));
   const filtered=useMemo(()=> db.projects.filter(p=>{
@@ -9411,6 +9428,69 @@ function aplicarImportacao(d,plano,cfg){
    os horários que ficaram para trás e guarda de onde veio: é a marca
    de "repassada", com a conta de quantas vezes já foi adiada.
    ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   FECHAR UM SPRINT
+   Tira a foto do sprint (o que havia, quem fazia, horas, como terminou)
+   e leva o que ficou em aberto para o sprint de destino.
+   Usado pelo botão "Novo sprint" e pela virada automática pela data.
+   ------------------------------------------------------------ */
+function fecharSprintEm(d,cur,prox,auto){
+  const noSprint=[];   /* as tarefas DE VERDADE (allTasks devolve cópias, e aqui se escreve) */
+  (d.projects||[]).forEach(p=>(p.activities||[]).forEach(a=>{ if(taskEmSprint(a,cur)) noSprint.push([a,p]); }));
+  (d.tasks||[]).forEach(a=>{ if(taskEmSprint(a,cur)) noSprint.push([a,null]); });
+  const levar=(a)=>{
+    if(a.column==='concluido'||a.column==='cancelado') return false;
+    a.buildStart=prox.start; a.buildEnd=prox.end;
+    if(!a.date||a.date<prox.start) a.date=prox.end;
+    podaSessoes(a);
+    a.carriedFrom=rotuloSprint(cur); a.carriedN=(+a.carriedN||0)+1;
+    return true;
+  };
+  let carried=0;
+  const registro={fechadoEm:hojeISO(),paraOSprint:prox.id,itens:[]};
+  if(auto) registro.automatico=true;
+  noSprint.forEach(([a,proj])=>{
+    const repassada=levar(a);
+    if(repassada) carried++;
+    registro.itens.push({id:a.id,name:a.name,
+      cliente:proj? proj.name : '', pid:proj? proj.id : null,
+      quem:respsDe(a).slice(), horas:+a.estHoras||0,
+      status:a.column||'backlog', tipo:a.type||'Outro', prio:a.prio||'Média',
+      criadaEm:a.criadaEm||'', repassada});
+  });
+  cur.frozen=true;
+  cur.registro=registro;
+  prox.frozen=false;
+  d.currentSprint=prox.id;
+  return {registrados:registro.itens.length,repassadas:carried};
+}
+/* O sprint atual acompanha o calendário: passou do último dia, o sprint
+   é fechado sozinho e o da data de hoje vira o atual. Sprint aberto
+   adiantado (pelo botão) é respeitado até chegar a vez dele. */
+function sprintVencido(d){
+  if(!d||!d.sprints) return false;
+  const cur=d.sprints.find(x=>x.id===d.currentSprint);
+  return !cur || cur.end<hojeISO();
+}
+function virarSprintPelaData(d){
+  if(!sprintVencido(d)) return null;
+  aplicarCfgSprint(d);
+  d.sprints=d.sprints||[];
+  const hoje=hojeISO();
+  const cur=d.sprints.find(x=>x.id===d.currentSprint);
+  let alvo=d.sprints.find(x=>x.start<=hoje&&x.end>=hoje);
+  if(!alvo){
+    const novo=sprintDaData(hojeDate());
+    alvo=d.sprints.find(x=>x.id===novo.id);
+    if(alvo){ alvo.start=novo.start; alvo.end=novo.end; }
+    else{ alvo=novo; d.sprints.push(alvo); d.sprints.sort((a,b)=>a.start<b.start?-1:1); }
+  }
+  let r={registrados:0,repassadas:0};
+  if(cur&&cur.id!==alvo.id&&!(cur.frozen&&cur.registro)) r=fecharSprintEm(d,cur,alvo,true);
+  alvo.frozen=false;
+  d.currentSprint=alvo.id;
+  return {de:cur||null,para:alvo,...r};
+}
 function sprintSeguinte(d,sp){
   const base=sp? dLocal(sp.start) : inicioDoSprint(TODAY);
   const prox=sprintDaData(addDays(base,SPRINT_DIAS));
@@ -9926,6 +10006,7 @@ function SprintPage(){
   const [importar,setImportar]=useState(false);
   const [periodo,setPeriodo]=useState(false);
   const [view,setView]=useState('kanban'); const [sel,setSel]=useState(db.currentSprint);
+  useEffect(()=>{ setSel(db.currentSprint); },[db.currentSprint]);
   /* Um só conjunto de filtros para os dois modos — o que você filtra na
      distribuição continua filtrado ao acompanhar. */
   const [f,setF]=useState({q:'',cli:'Todos',resp:'Todos',prio:'Todas'});
@@ -10018,34 +10099,9 @@ function SprintPage(){
       /* a quinzena seguinte pode já existir (alguém empurrou tarefa para
          lá); nesse caso ela é reaproveitada, não duplicada */
       const prox=sprintSeguinte(d,cur);
-      /* as tarefas DE VERDADE (allTasks devolve cópias, e aqui se escreve) */
-      const noSprint=[];
-      (d.projects||[]).forEach(p=>(p.activities||[]).forEach(a=>{ if(taskEmSprint(a,cur)) noSprint.push([a,p]); }));
-      (d.tasks||[]).forEach(a=>{ if(taskEmSprint(a,cur)) noSprint.push([a,null]); });
-      const levar=(a)=>{
-        if(a.column==='concluido'||a.column==='cancelado') return false;
-        a.buildStart=prox.start; a.buildEnd=prox.end;
-        if(!a.date||a.date<prox.start) a.date=prox.end;
-        podaSessoes(a);
-        a.carriedFrom=rotuloSprint(cur); a.carriedN=(+a.carriedN||0)+1;
-        return true;
-      };
-      let carried=0;
-      const registro={fechadoEm:hojeISO(),paraOSprint:prox.id,itens:[]};
-      noSprint.forEach(([a,proj])=>{
-        const repassada=levar(a);
-        if(repassada) carried++;
-        registro.itens.push({id:a.id,name:a.name,
-          cliente:proj? proj.name : '', pid:proj? proj.id : null,
-          quem:respsDe(a).slice(), horas:+a.estHoras||0,
-          status:a.column||'backlog', tipo:a.type||'Outro', prio:a.prio||'Média',
-          criadaEm:a.criadaEm||'', repassada});
-      });
-      cur.frozen=true;
-      cur.registro=registro;
-      d.currentSprint=prox.id;
+      const r=fecharSprintEm(d,cur,prox);
       destino=prox.id;
-      aviso='Sprint '+rotuloSprint(prox)+' aberto · '+registro.itens.length+' tarefa(s) registradas no anterior, '+carried+' repassadas';
+      aviso='Sprint '+rotuloSprint(prox)+' aberto · '+r.registrados+' tarefa(s) registradas no anterior, '+r.repassadas+' repassadas';
       return d;
     });
     /* fora do update: mexer em estado de tela durante a gravação confunde o React */
