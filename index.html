@@ -3662,6 +3662,9 @@ const ACT_SEED = {
 
 const MANAGERS = ['Wagner','Lara'];
 let _uid=1000; const uid=()=> 'id'+(++_uid)+Math.floor(Math.random()*9999);
+/* nome de arquivo sem acento nem espaço — usado ao baixar relatórios */
+function slug(t){return String(t||'Projeto').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'')||'Projeto';}
 
 /* ===== ABAS DO SISTEMA (base do controle de permissão por usuário) ===== */
 const ABAS = [
@@ -5880,7 +5883,7 @@ function AddRapido({padrao,rotulo,compacto}){
     const fl=faltaNaTarefa(f); if(temFalta(fl)){ setTentou(true); flash(textoFalta(fl)); return; }
     setTentou(false);
     const bs=pd.buildStart||'', be=pd.buildEnd||bs;
-    const nova={id:uid(),name:nome,type:tipoPeloNome(nome,d),prio:f.prio,
+    const nova={id:uid(),name:nome,type:tipoPeloNome(nome,db),prio:f.prio,
       assignees:f.assignees||[],assignee:(f.assignees||[])[0]||'',
       projectId:f.projectId||null,deliverableId:'',notes:'',obs:'',
       date:f.date||be||'',buildStart:bs,buildEnd:be,hora:'',durMin:0,sessoes:{},
