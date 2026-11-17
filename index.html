@@ -631,6 +631,22 @@ a{color:inherit}
 .cel-sel.num{text-align:center;width:52px}
 /* Cliente como etiqueta colorida — lê como tag e funciona como seletor */
 .cel-sel.prio{text-align:center;font-size:.76rem}
+.cel-sel.tipo{font-size:.74rem;font-weight:700}
+.tt-lista{display:flex;flex-direction:column}
+.tt-linha{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.tt-linha:last-child{border-bottom:none}
+.tt-novo{border-top:1px solid var(--border);border-bottom:none;margin-top:6px;padding-top:12px}
+.tt-cor{width:30px;height:30px;padding:0;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer;flex:none}
+.tt-nome{width:210px;flex:none}
+.tt-balde{width:200px;flex:none}
+.tt-usos{font-size:.73rem;min-width:92px}
+.sel-sm{padding:5px 8px;font-size:.76rem;height:auto}
+.tt-ico{padding:4px 7px;min-width:0}
+.tt-del:hover{color:#B33A3A}
+.tt-apagar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;
+  background:#fff8e7;border:1px solid #f0dca8;border-radius:10px;font-size:.8rem}
+.aviso-erro{padding:8px 12px;background:#fdecea;border:1px solid #f3c6c0;border-radius:10px;color:#B33A3A;font-size:.8rem}
+@media (max-width:760px){.tt-linha{flex-wrap:wrap}.tt-nome,.tt-balde{width:100%}}
 .cel-nome{border:1px solid transparent;background:transparent;border-radius:6px;padding:3px 6px;width:100%;
   font-size:.83rem;font-weight:600;font-family:inherit;color:var(--text-1)}
 .cel-nome:hover{border-color:var(--border);background:#fff}
@@ -3469,13 +3485,69 @@ const TIER_C = (t)=> /SCP/i.test(t)?{bg:'#ece9fb',fg:'#08292b'} : /Completo/i.te
 // Entregáveis × Atividades
 const DLV_STATUS = ['Pendente','Em andamento','Em revisão','Concluído'];
 const DLV_STATUS_C = {'Pendente':'#8b9a99','Em andamento':'#0F4245','Em revisão':'#C58B2A','Concluído':'#2F8F6E'};
-const ACT_TYPES = ['Reunião','Entrega','Fechamento','Documento','Análise','Ligação','E-mail','Pesquisa','Outro'];
 // Prioridade das tarefas (vale tanto para atividades de projeto quanto para tarefas gerais)
 const PRIOS = ['Alta','Média','Baixa'];
 const PRIO_C = {'Alta':{bg:'#fdecea',fg:'#B33A3A'},'Média':{bg:'#fef9e7',fg:'#b7950b'},'Baixa':{bg:'#eef0f7',fg:'#4a5a5c'}};
 /* P1/P2/P3 é como a equipe escreve; o sistema guarda Alta/Média/Baixa */
 const PRIO_SIGLA={'Alta':'P1','Média':'P2','Baixa':'P3'};
+/* Cores de origem dos tipos de tarefa. Depois que a lista virou editável
+   isto é só a reserva, para um tipo que veio de uma base antiga. */
 const ACT_TYPE_C = {'Reunião':'#0F4245','Entrega':'#2F8F6E','Fechamento':'#0F4245','Documento':'#3F598C','Análise':'#173164','Ligação':'#e67e22','E-mail':'#2F8F6E','Pesquisa':'#C58B2A','Outro':'#7f8c8d'};
+/* Os três baldes da análise "Tipo de trabalho". Estes são fixos: é o que o
+   gráfico sabe desenhar. O que é editável é quais tipos caem em cada um. */
+const BALDES=[['reuniao','Reunião'],['entrega','Entrega'],['construcao','Construção · back office']];
+const BALDE_ROT=(b)=>(BALDES.find(x=>x[0]===b)||[,'Construção · back office'])[1];
+/* Tipos de tarefa que o sistema traz de fábrica. A partir daqui a lista
+   mora no banco (db.tiposTarefa) e é editada em Configurações. */
+const TIPOS_TAREFA0=[
+  {id:'tt_reuniao',   nome:'Reunião',   balde:'reuniao',   cor:'#0F4245'},
+  {id:'tt_entrega',   nome:'Entrega',   balde:'entrega',   cor:'#2F8F6E'},
+  {id:'tt_fechamento',nome:'Fechamento',balde:'construcao',cor:'#0F4245'},
+  {id:'tt_documento', nome:'Documento', balde:'construcao',cor:'#3F598C'},
+  {id:'tt_analise',   nome:'Análise',   balde:'construcao',cor:'#173164'},
+  {id:'tt_ligacao',   nome:'Ligação',   balde:'construcao',cor:'#e67e22'},
+  {id:'tt_email',     nome:'E-mail',    balde:'construcao',cor:'#2F8F6E'},
+  {id:'tt_pesquisa',  nome:'Pesquisa',  balde:'construcao',cor:'#C58B2A'},
+  {id:'tt_outro',     nome:'Outro',     balde:'construcao',cor:'#7f8c8d'},
+];
+const tiposTarefa=(db)=>(db&&Array.isArray(db.tiposTarefa)&&db.tiposTarefa.length)? db.tiposTarefa : TIPOS_TAREFA0;
+const tipoNomes=(db)=>tiposTarefa(db).map(x=>x.nome);
+const tipoDe=(db,n)=>tiposTarefa(db).find(x=>x.nome===n)||null;
+/* Em que balde da análise um tipo cai. Tipo que não está mais na lista
+   (base antiga, ou tipo excluído) volta para a regra de fábrica, para que
+   nenhuma hora suma do gráfico. */
+const TIPO_BALDE=(db,n)=>{ const t=tipoDe(db,n); if(t) return t.balde;
+  return n==='Reunião'?'reuniao':(n==='Entrega'?'entrega':'construcao'); };
+const corTipo=(db,n)=>{ const t=tipoDe(db,n); return (t&&t.cor)||ACT_TYPE_C[n]||'#7f8c8d'; };
+/* Tipos agrupados pelo balde — é assim que a lista suspensa se apresenta */
+const tipoGrupos=(db)=>BALDES.map(([b,rot])=>[rot,b,tiposTarefa(db).filter(x=>x.balde===b).map(x=>x.nome)])
+  .filter(g=>g[2].length);
+/* O tipo de reserva: o que uma tarefa nova recebe enquanto ninguém escolheu */
+const tipoPadrao=(db)=>{ const L=tiposTarefa(db);
+  return (L.find(x=>x.nome==='Outro')||L[L.length-1]||{nome:'Outro'}).nome; };
+/* Onde quer que um tipo apareça guardado, para contar usos e renomear */
+function cadaTipoNoBanco(d,fn){
+  (d.projects||[]).forEach(p=>(p.activities||[]).forEach(a=>fn(a,'type')));
+  (d.tasks||[]).forEach(t=>fn(t,'type'));
+  if(d.base&&d.base.activities) d.base.activities.forEach(a=>fn(a,'type'));
+  (d.sprints||[]).forEach(sp=>{ if(sp.registro&&sp.registro.itens) sp.registro.itens.forEach(x=>fn(x,'tipo')); });
+}
+const usosDoTipo=(db,nome)=>{ let n=0; cadaTipoNoBanco(db,(o,k)=>{ if(o[k]===nome) n++; }); return n; };
+/* Lista suspensa de tipo usada direto na linha da tarefa */
+function SelTipo({valor,onChange,title,className}){
+  const {db}=useDB();
+  const nomes=tipoNomes(db);
+  const v=valor||'';
+  const fora=nomes.indexOf(v)<0;   // tipo que saiu da lista: fica à mostra, não some sozinho
+  return (<select className={(className||'cel-sel')+' tipo'} value={v}
+    title={title||'Tipo de trabalho desta tarefa — é o que alimenta a análise por tipo'}
+    style={{color:fora?'#7f8c8d':corTipo(db,v),fontWeight:700}}
+    onChange={e=>onChange(e.target.value)}>
+    {fora&&<option value={v}>{v||'— sem tipo —'}</option>}
+    {tipoGrupos(db).map(([rot,b,ks])=><optgroup key={b} label={rot}>
+      {ks.map(k=><option key={k} value={k}>{k}</option>)}</optgroup>)}
+  </select>);
+}
 
 // Template de ENTREGÁVEIS (só o que é entregue ao cliente) — [fase, subgrupo, nome, marco?]
 // Organizado nas 5 fases do projeto. É o "Projeto Base": estrutura padrão dos novos projetos.
@@ -3772,6 +3844,7 @@ function buildInitial(){
     meta:{version:4},
     team:[],                                      // a equipe é cadastrada em Equipe
     tiers:TIERS0.slice(),tipos:TIPOS0.slice(),setores:SETORES0.slice(),perfis:PERFIS0.slice(),origens:ORIGENS0.slice(),
+    tiposTarefa:TIPOS_TAREFA0.map(x=>({...x})),
     base,
     dlvTemplate:base.deliverables.map(d=>({...d})), // compat: espelha entregáveis do Projeto Base
     projects,sprints,currentSprint:curSprintId,sprintCfg,
@@ -3801,6 +3874,15 @@ function normalizeDb(s){
     'sprintQuinzenal'].forEach(k=>{ if(!s.meta[k]) s.meta[k]=true; });
   /* o período do sprint é escolhido pela gestora; vale antes de tudo */
   if(!Array.isArray(s.origens)||!s.origens.length) s.origens=ORIGENS0.slice();
+  /* tipos de tarefa: base que vem de antes da lista ser editável começa com
+     os nove de fábrica, que são exatamente os que ela já usava */
+  if(!Array.isArray(s.tiposTarefa)||!s.tiposTarefa.length) s.tiposTarefa=TIPOS_TAREFA0.map(x=>({...x}));
+  s.tiposTarefa=s.tiposTarefa.filter(x=>x&&String(x.nome||'').trim()).map((x,i)=>({
+    id:x.id||('tt_'+i+'_'+Math.random().toString(36).slice(2,7)),
+    nome:String(x.nome).trim(),
+    balde:BALDES.some(b=>b[0]===x.balde)? x.balde : 'construcao',
+    cor:/^#[0-9a-f]{6}$/i.test(x.cor||'')? x.cor : (ACT_TYPE_C[String(x.nome).trim()]||'#7f8c8d')}));
+  if(!s.tiposTarefa.length) s.tiposTarefa=TIPOS_TAREFA0.map(x=>({...x}));
   if(!s.sprintCfg) s.sprintCfg={dias:14,ancora:(s.sprints&&s.sprints[0]&&s.sprints[0].start)||'2026-10-05'};
   aplicarCfgSprint(s);
   if(!s.base) s.base={deliverables:(s.dlvTemplate||[]).map(d=>({...d})),activities:defaultBaseActivities()};
@@ -3939,7 +4021,7 @@ function normalizeDb(s){
           const quem=(s.team||[]).find(m=>chaveImp(m.name)===chaveImp(a.dono||''));
           pr.activities=pr.activities||[];
           pr.activities.unshift({id:uid(),projectId:pr.id,prjId:prj.id,name:a.texto.trim(),
-            type:'Outro',assignees:quem?[quem.id]:[],assignee:quem?quem.id:'',
+            type:tipoPadrao(s),assignees:quem?[quem.id]:[],assignee:quem?quem.id:'',
             date:a.prazo||'',buildStart:'',buildEnd:'',hora:'',durMin:0,sessoes:{},
             column:a.feito?'concluido':'backlog',sprintId:null,prio:'Média',estHoras:0,
             obs:'',notes:'',subs:[],criadaEm:a.prazo||hojeISO(),
@@ -5046,7 +5128,7 @@ function descreverMudancas(a, b) {
   });
 
   /* ---------- configurações ---------- */
-  const CFG = { tiers: 'lista de tiers', tipos: 'tipos de cliente', setores: 'setores', perfis: 'perfis de cliente', base: 'cliente base (entregáveis e atividades)', dlvTemplate: null,
+  const CFG = { tiers: 'lista de tiers', tipos: 'tipos de cliente', setores: 'setores', perfis: 'perfis de cliente', tiposTarefa: 'tipos de tarefa', base: 'cliente base (entregáveis e atividades)', dlvTemplate: null,
     kpi: 'indicadores', nps: 'NPS', monthly: 'série mensal', customViz: 'visualizações', messages: 'mensagens', notes: 'notas' };
   Object.keys(CFG).forEach(k => { if (CFG[k] && J(a[k]) !== J(b[k])) add('Configurações', 'alterou ' + CFG[k], '', '', 'cfg:' + k); });
 
@@ -5798,7 +5880,7 @@ function AddRapido({padrao,rotulo,compacto}){
     const fl=faltaNaTarefa(f); if(temFalta(fl)){ setTentou(true); flash(textoFalta(fl)); return; }
     setTentou(false);
     const bs=pd.buildStart||'', be=pd.buildEnd||bs;
-    const nova={id:uid(),name:nome,type:tipoPeloNome(nome),prio:f.prio,
+    const nova={id:uid(),name:nome,type:tipoPeloNome(nome,d),prio:f.prio,
       assignees:f.assignees||[],assignee:(f.assignees||[])[0]||'',
       projectId:f.projectId||null,deliverableId:'',notes:'',obs:'',
       date:f.date||be||'',buildStart:bs,buildEnd:be,hora:'',durMin:0,sessoes:{},
@@ -6440,7 +6522,7 @@ function addTaskTo(d,nova){
 function QuickAddTask({titulo,dica,date,buildStart,buildEnd,compacto}){
   const {db,update,flash}=useDB();
   const [aberto,setAberto]=useState(false);
-  const vazio=()=>({name:'',assignees:[(db.team[0]||{}).id||''],projectId:'',type:'Outro',prio:'Média',hora:'',durMin:60,estHoras:''});
+  const vazio=()=>({name:'',assignees:[(db.team[0]||{}).id||''],projectId:'',type:tipoPadrao(db),prio:'Média',hora:'',durMin:60,estHoras:''});
   const [f,setF]=useState(vazio);
   const [tentou,setTentou]=useState(false);
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
@@ -6470,7 +6552,7 @@ function QuickAddTask({titulo,dica,date,buildStart,buildEnd,compacto}){
       <select className="mini-sel" value={f.projectId} onChange={e=>set('projectId',e.target.value)}>
         <option value="">Sem cliente</option>
         {ativos(db).map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
-      <select className="mini-sel" value={f.type} onChange={e=>set('type',e.target.value)}>{ACT_TYPES.map(x=><option key={x}>{x}</option>)}</select>
+      <select className="mini-sel" value={f.type} onChange={e=>set('type',e.target.value)}>{tipoNomes(db).map(x=><option key={x}>{x}</option>)}</select>
       <select className="mini-sel" value={f.prio} onChange={e=>set('prio',e.target.value)}>{PRIOS.map(x=><option key={x}>{x}</option>)}</select>
     </div>
     <div style={{marginTop:8}}>
@@ -6625,6 +6707,8 @@ function chaveOrdem(db,t,k){
     case 'nome': return (t.name||'').toLowerCase();
     case 'cli': return t.proj? t.proj.name.toLowerCase() : null;
     case 'quem': return nomesResp(db,t)? nomesResp(db,t).toLowerCase() : null;
+    /* ordena pelos baldes da análise: reunião, construção, entrega */
+    case 'tipo': return (BALDES.findIndex(x=>x[0]===TIPO_BALDE(db,t.type))+1)+'|'+(t.type||'');
     case 'prio': return ORD_PRIO[t.prio||'Média'];
     case 'status': return ORD_STATUS[t.column||'backlog']==null? 9 : ORD_STATUS[t.column||'backlog'];
     case 'prazo': return t.date||null;
@@ -6763,7 +6847,7 @@ function AtaModal({close,onMudou}){
   const lancar=async()=>{
     if(!marcadas.length){ flash('Marque ao menos uma tarefa para lançar'); return; }
     if(comFalta.length){ setTentou(true); flash(comFalta.length+' tarefa(s) sem responsável, horas ou nome. Complete ou desmarque.'); return; }
-    const novas=marcadas.map(x=>({id:uid(),name:x.name.trim(),type:tipoPeloNome(x.name),prio:'Média',assignees:x.assignees,assignee:x.assignees[0]||'',
+    const novas=marcadas.map(x=>({id:uid(),name:x.name.trim(),type:tipoPeloNome(x.name,db),prio:'Média',assignees:x.assignees,assignee:x.assignees[0]||'',
       projectId:x.projectId||null,deliverableId:'',notes:'',obs:x.trecho? 'Da ata'+(sel&&sel.o&&sel.o.ata&&sel.o.ata.data?' de '+fmtBR(dataISOok(sel.o.ata.data)||hojeISO()):'')+': “'+x.trecho.slice(0,220)+'”' : '',
       date:x.date||'',buildStart:'',buildEnd:'',hora:'',durMin:0,sessoes:{},estHoras:+x.estHoras||0,column:'backlog',sprintId:null,peId:null,faseId:null,iniciativaId:null}));
     update(d=>{ novas.slice().reverse().forEach(n=>addTaskTo(d,n)); return d; });
@@ -6856,7 +6940,7 @@ function TasksPage(){
   /* atas que o Claude deixou na pasta do Drive e ainda não foram lançadas */
   useEffect(()=>{ if(!(NUVEM_ON&&SESSAO&&SESSAO.token)||auth.papel==='viewer') return; let vivo=true;
     nuvemApi('atas',{}).then(r=>{ if(vivo&&r&&r.ok) setNAtas((r.atas||[]).length); }).catch(()=>{}); return ()=>{ vivo=false; }; },[]);
-  const [f,setF]=useState({q:'',resp:'Todos',cli:'Todos',status:'Abertas',per:[],ini:'',fim:''});
+  const [f,setF]=useState({q:'',resp:'Todos',cli:'Todos',tipo:'Todos',status:'Abertas',per:[],ini:'',fim:''});
   const [modal,setModal]=useState(null);
   const [sessoesDe,setSessoesDe]=useState(null);
   const [agrupar,setAgrupar]=useState('cli');     // cli | resp | status | nenhum
@@ -6864,7 +6948,7 @@ function TasksPage(){
   const [obsDe,setObsDe]=useState(null);
   const [ord,setOrd]=useOrdem('tarefas');
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
-  const limpar=()=>setF({q:'',resp:'Todos',cli:'Todos',status:'Abertas',per:[],ini:'',fim:''});
+  const limpar=()=>setF({q:'',resp:'Todos',cli:'Todos',tipo:'Todos',status:'Abertas',per:[],ini:'',fim:''});
 
   const todas=useMemo(()=>allTasks(db),[db]);
   /* todos os filtros menos o de situação — as horas do grupo usam este */
@@ -6873,6 +6957,10 @@ function TasksPage(){
     if(f.resp!=='Todos' && !temResp(t,f.resp)) return false;
     if(f.cli==='Gerais'){ if(t.origem!=='geral') return false; }
     else if(f.cli!=='Todos' && t.projectId!==f.cli) return false;
+    /* por tipo: ou um tipo exato, ou o balde inteiro da análise */
+    if(f.tipo&&f.tipo!=='Todos'){ const v=f.tipo;
+      if(v.slice(0,2)==='b:'){ if(TIPO_BALDE(db,t.type)!==v.slice(2)) return false; }
+      else if((t.type||'Outro')!==v) return false; }
     if(!noPeriodo(t,f.per,db,f)) return false;
     return true;
   };
@@ -6979,7 +7067,7 @@ function TasksPage(){
               <Avatar db={db} id={m.id} size="sm"/>
               <b>{h?fmtHoras(h):'—'}h</b><i>{n}</i></span>))}
           {auth.papel!=='viewer'&&<button className="btn btn-ghost" title="Lançar as tarefas que o Claude extraiu da transcrição de uma reunião" onClick={()=>setAta(true)}>Tarefas da ata{nAtas>0&&<span className="ata-n">{nAtas}</span>}</button>}
-          <button className="btn btn-primary" onClick={()=>setModal({name:'',type:'Outro',assignee:(EU_ATUAL&&db.team.some(m=>m.id===EU_ATUAL))?EU_ATUAL:'',
+          <button className="btn btn-primary" onClick={()=>setModal({name:'',type:tipoPadrao(db),assignee:(EU_ATUAL&&db.team.some(m=>m.id===EU_ATUAL))?EU_ATUAL:'',
             date:'',buildStart:'',buildEnd:'',hora:'',durMin:60,estHoras:'',obs:'',prio:'Média',projectId:'',
             peId:'',faseId:'',column:'backlog',sprintId:null,notes:'',deliverableId:'',sessoes:{}})}>{I.plus} Nova tarefa</button>
         </div>
@@ -6993,6 +7081,12 @@ function TasksPage(){
         <select className="sel" style={{width:170}} value={f.cli} onChange={e=>set('cli',e.target.value)}>
           <option>Todos</option><option value="Gerais">Tarefas gerais</option>
           {ativos(db).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>
+        <select className="sel" style={{width:172}} value={f.tipo||'Todos'} onChange={e=>set('tipo',e.target.value)}
+          title="Filtrar por tipo de trabalho — serve para achar as tarefas ainda marcadas como Outro e classificar de uma vez">
+          <option value="Todos">Tipo · todos</option>
+          <optgroup label="Balde da análise">{tipoGrupos(db).map(([rot,b])=>
+            <option key={b} value={'b:'+b}>{rot}</option>)}</optgroup>
+          <optgroup label="Tipo exato">{tipoNomes(db).map(x=><option key={x} value={x}>{x}</option>)}</optgroup></select>
         <select className="sel" style={{width:150}} value={f.resp} onChange={e=>set('resp',e.target.value)}>
           <option>Todos</option>{db.team.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select>
         <select className="sel" style={{width:150}} value={f.status} onChange={e=>set('status',e.target.value)}>
@@ -7032,6 +7126,7 @@ function TasksPage(){
             <ThOrd k="nome" ord={ord} setOrd={setOrd}>Tarefa</ThOrd>
             <ThOrd k="cli" ord={ord} setOrd={setOrd} style={{width:132}}>Cliente</ThOrd>
             {agrupar!=='resp'&&<ThOrd k="quem" ord={ord} setOrd={setOrd} style={{width:132}}>Quem faz</ThOrd>}
+            <ThOrd k="tipo" ord={ord} setOrd={setOrd} style={{width:122}}>Tipo</ThOrd>
             <ThOrd k="prio" ord={ord} setOrd={setOrd} style={{width:64}}>Prior.</ThOrd>
             {agrupar!=='status'&&<ThOrd k="status" ord={ord} setOrd={setOrd} style={{width:132}}>Status</ThOrd>}
             <ThOrd k="prazo" ord={ord} setOrd={setOrd} style={{width:112}}>Prazo</ThOrd>
@@ -7045,7 +7140,7 @@ function TasksPage(){
           <tbody>{g.itens.map(t=>{
             const atras=taskAtrasada(t), feito=t.column==='concluido', cancel=t.column==='cancelado';
             const ini=iniciativaDaTarefa(db,t);
-            const nCols=8+(agrupar!=='resp'?1:0)+(agrupar!=='status'?1:0)+(colsExtra?3:0);
+            const nCols=9+(agrupar!=='resp'?1:0)+(agrupar!=='status'?1:0)+(colsExtra?3:0);
             return (<React.Fragment key={t.id}><tr className={"tr-tarefa"+(subsAb[t.id]?' subs-on':'')} style={feito||cancel?{opacity:.5}:null}>
               <td><button className={"chk sm "+(feito?'on':'')} onClick={()=>campo(t.id,'column',feito?'andamento':'concluido')} title="Finalizar">{feito&&I.check}</button></td>
               <td>
@@ -7065,6 +7160,7 @@ function TasksPage(){
                 flash(pid? 'Movida para '+((db.projects.find(x=>x.id===pid)||{}).name||'cliente') : 'Agora é tarefa geral');
               }}/></td>
               {agrupar!=='resp'&&<td><CelResps db={db} t={t} onChange={(l)=>campoResps(t.id,l)}/></td>}
+              <td><SelTipo valor={t.type} onChange={v=>campo(t.id,'type',v)}/></td>
               <td><select className="cel-sel prio" style={{color:PRIO_C[t.prio||'Média'].fg,fontWeight:800}}
                 value={t.prio||'Média'} onChange={e=>campo(t.id,'prio',e.target.value)}>
                 {PRIOS.map(x=><option key={x} value={x}>{PRIO_SIGLA[x]}</option>)}</select></td>
@@ -7255,7 +7351,7 @@ function horasDoSprint(db,ini,fim){
     if(!iso||iso<ini||iso>fim) return;
     const min=horasDaTarefa(t);
     if(!min) return;
-    const tipo=t.type==='Reunião'?'reuniao':(t.type==='Entrega'?'entrega':'construcao');
+    const tipo=TIPO_BALDE(db,t.type);
     const quem=respsDe(t);
     (quem.length? quem : [null]).forEach(w=>out.push({iso,pid:t.projectId||null,who:w,min,tipo,
       nome:t.name,tid:t.id,feito:t.column==='concluido'}));
@@ -7274,7 +7370,7 @@ function linhasDoSprint(db,sp){
       if(x.status==='cancelado') return;
       const min=Math.round((+x.horas||0)*60); if(!min) return;
       const quem=(x.quem||[]).length? x.quem : [null];
-      quem.forEach(w=>out.push({iso:sp.end,pid:x.pid||null,who:w,min,tipo:x.tipo==='Reunião'?'reuniao':'construcao',
+      quem.forEach(w=>out.push({iso:sp.end,pid:x.pid||null,who:w,min,tipo:TIPO_BALDE(db,x.tipo),
         nome:x.name,tid:x.id,feito:x.status==='concluido',sprint:sp.id,registro:true}));
     });
     return out;
@@ -7286,7 +7382,7 @@ function linhasDoSprint(db,sp){
     const min=horasDaTarefa(t); if(!min) return;
     const quem=respsDe(t);
     (quem.length? quem : [null]).forEach(w=>out.push({iso:dataDeReferencia(t)||sp.end,pid:t.projectId||null,who:w,min,
-      tipo:t.type==='Reunião'?'reuniao':(t.type==='Entrega'?'entrega':'construcao'),
+      tipo:TIPO_BALDE(db,t.type),
       nome:t.name,tid:t.id,feito:t.column==='concluido',sprint:sp.id}));
   });
   return out;
@@ -7751,7 +7847,9 @@ function TaskModal({db,init,close,onSave,fixo}){
         <div className="fld"><label>Prazo de entrega</label>
           <input type="date" className="inp" value={t.date} onChange={e=>set('date',e.target.value)}/></div>
         <div className="fld"><label>Tipo</label>
-          <select className="sel" value={t.type} onChange={e=>set('type',e.target.value)}>{ACT_TYPES.map(x=><option key={x}>{x}</option>)}</select></div>
+          <select className="sel" value={t.type} onChange={e=>set('type',e.target.value)}>
+            {tipoNomes(db).indexOf(t.type)<0&&<option value={t.type||''}>{t.type||'— sem tipo —'}</option>}
+            {tipoNomes(db).map(x=><option key={x}>{x}</option>)}</select></div>
         <div className="fld"><label>Prioridade</label>
           <select className="sel" value={t.prio} onChange={e=>set('prio',e.target.value)}>{PRIOS.map(x=><option key={x}>{x}</option>)}</select></div>
         <div className="fld"><label>Repetir</label>
@@ -9217,7 +9315,7 @@ function TabCronograma({p,mutate}){
     return null;
   };
 
-  const novaTarefa=(sem)=>setModal({name:'',type:'Outro',assignee:p.consultants[0]||(db.team[0]||{}).id,
+  const novaTarefa=(sem)=>setModal({name:'',type:tipoPadrao(db),assignee:p.consultants[0]||(db.team[0]||{}).id,
     projectId:p.id,peId:'',faseId:'',deliverableId:'',
     date:sem.sex,buildStart:sem.ini,buildEnd:sem.sex,hora:'',durMin:60,estHoras:2,obs:'',
     prio:'Média',notes:'',column:'backlog',sprintId:null,sessoes:{}});
@@ -9630,7 +9728,7 @@ function TabProjetos({p,mutate}){
   const addTarefa=(prjId,objId,nome,quem,prazo,horas)=>mutate(pr=>{
     pr.activities=pr.activities||[];
     pr.activities.unshift(nasceTarefa({id:uid(),projectId:pr.id,prjId,objId:objId||null,name:(nome||'').trim()||'Nova tarefa',
-      type:'Outro',assignees:quem?[quem]:[],assignee:quem||'',date:prazo||'',buildStart:'',buildEnd:'',
+      type:tipoPadrao(db),assignees:quem?[quem]:[],assignee:quem||'',date:prazo||'',buildStart:'',buildEnd:'',
       hora:'',durMin:0,sessoes:{},column:'backlog',sprintId:null,prio:'Média',estHoras:+horas||0,
       obs:'',notes:'',subs:[],peId:null,faseId:null,iniciativaId:null,deliverableId:''}));
     const x=(pr.projetos||[]).find(y=>y.id===prjId); if(x&&x.col==='backlog') x.col='priorizado'; });
@@ -10531,7 +10629,7 @@ function TabTarefas({p,mutate}){
       else pr.activities.unshift(nasceTarefa({...nova,projectId:pr.id})); });
     flash(existe?'Atualizada':'Tarefa criada'); setModal(null);
   };
-  const nova=()=>setModal({id:'',name:'',type:'Outro',assignee:p.consultants[0]||'',
+  const nova=()=>setModal({id:'',name:'',type:tipoPadrao(db),assignee:p.consultants[0]||'',
     date:'',buildStart:'',buildEnd:'',hora:'',durMin:60,estHoras:1,obs:'',prio:'Média',
     projectId:p.id,peId:'',faseId:'',deliverableId:'',column:'backlog',sprintId:null,sessoes:{}});
 
@@ -10600,6 +10698,7 @@ function TabTarefas({p,mutate}){
           <thead><tr>
             <th style={{width:30}}></th><ThOrd k="nome" ord={ord} setOrd={setOrd}>Tarefa</ThOrd>
             {agrupar!=='resp'&&<ThOrd k="quem" ord={ord} setOrd={setOrd} style={{width:132}}>Quem faz</ThOrd>}
+            <ThOrd k="tipo" ord={ord} setOrd={setOrd} style={{width:122}}>Tipo</ThOrd>
             <ThOrd k="prio" ord={ord} setOrd={setOrd} style={{width:60}}>Prior.</ThOrd>
             {agrupar!=='status'&&<ThOrd k="status" ord={ord} setOrd={setOrd} style={{width:130}}>Status</ThOrd>}
             <ThOrd k="prazo" ord={ord} setOrd={setOrd} style={{width:110}}>Prazo</ThOrd>
@@ -10612,7 +10711,7 @@ function TabTarefas({p,mutate}){
           <tbody>{g.itens.map(t=>{
             const atras=taskAtrasada(t), feito=t.column==='concluido';
             const ini=iniciativaDaTarefa(db,{...t,proj:p});
-            const nCols=7+(agrupar!=='resp'?1:0)+(agrupar!=='status'?1:0)+(colsExtra?2:0)+(agrupar!=='fase'?1:0);
+            const nCols=8+(agrupar!=='resp'?1:0)+(agrupar!=='status'?1:0)+(colsExtra?2:0)+(agrupar!=='fase'?1:0);
             return (<React.Fragment key={t.id}><tr className={"tr-tarefa"+(subsAb[t.id]?' subs-on':'')} style={feito?{opacity:.55}:null}>
               <td><button className={"chk sm "+(feito?'on':'')} onClick={()=>campo(t.id,'column',feito?'andamento':'concluido')}>{feito&&I.check}</button></td>
               <td><LiveInput className="cel-nome" value={t.name} disabled={!!t.cronoId}
@@ -10626,6 +10725,7 @@ function TabTarefas({p,mutate}){
                 {repDe(t)&&<span style={{marginLeft:6}}><TagRec t={t}/></span>}
                 <span style={{marginLeft:6}}><TagSubs t={t} atalho aberto={!!subsAb[t.id]} onClick={()=>abreSubs(t.id)}/></span></td>
               {agrupar!=='resp'&&<td><CelResps db={db} t={t} onChange={(l)=>campoResps(t.id,l)}/></td>}
+              <td><SelTipo valor={t.type} onChange={v=>campo(t.id,'type',v)}/></td>
               <td><select className="cel-sel prio" style={{color:PRIO_C[t.prio||'Média'].fg,fontWeight:800}}
                 value={t.prio||'Média'} onChange={e=>campo(t.id,'prio',e.target.value)}>
                 {PRIOS.map(x=><option key={x} value={x}>{PRIO_SIGLA[x]}</option>)}</select></td>
@@ -11629,7 +11729,7 @@ function AddNoSprint({sprint,quem,cliente,compacto,rotulo,prio}){
     if(!f.name.trim()){ flash('Dê um nome à tarefa'); return; }
     const fl=faltaNaTarefa(f); if(temFalta(fl)){ setTentou(true); flash(textoFalta(fl)); return; }
     setTentou(false);
-    const nova={id:uid(),name:f.name.trim(),type:tipoPeloNome(f.name),prio:f.prio,
+    const nova={id:uid(),name:f.name.trim(),type:tipoPeloNome(f.name,db),prio:f.prio,
       assignees:f.assignees||[],assignee:(f.assignees||[])[0]||'',
       projectId:f.projectId||null,deliverableId:'',notes:'',obs:'',
       date:sprint.end, buildStart:sprint.start, buildEnd:sprint.end,
@@ -12424,7 +12524,11 @@ function planoDeImportacao(abas,db){
 }
 
 /* O tipo não vem na planilha — dá para ler no nome, que é como o time escreve. */
-function tipoPeloNome(nome){
+function tipoPeloNome(nome,db){
+  const n=tipoPeloNome_(nome);
+  return (db&&tipoNomes(db).indexOf(n)<0)? tipoPadrao(db) : n;
+}
+function tipoPeloNome_(nome){
   const s=chaveImp(nome);
   if(/reuniao|reuniões|call|alinhamento|apresentacao/.test(s)) return 'Reunião';
   if(/fechamento/.test(s)) return 'Fechamento';
@@ -12550,7 +12654,7 @@ function aplicarImportacao(d,plano,cfg){
         ids.forEach(id=>{ if(quem.indexOf(id)<0) quem.push(id); }); });
       if(!prazo) r.semPrazo++;
       const t={id:uid(),projectId:pid||null,name:it.nome,
-        type:tipoPeloNome(it.nome),
+        type:tipoPeloNome(it.nome,d),
         assignees:quem,assignee:quem[0]||'',
         prio:IMP_PRIO[chaveImp(it.prio)]||'Média',
         column:col,sprintId:null,
@@ -13299,6 +13403,7 @@ function SprintPage(){
     .reduce((a,m)=>a+capSemanalDe(m)*semanasDoSprint(sprint),0);
 
   const moveAct=(id,col)=>update(d=>{mutateTask(d,id,a=>{a.column=col;});return d;});
+  const setTipo=(id,v)=>update(d=>{mutateTask(d,id,a=>{a.type=v;});return d;});
 
   /* ------------------------------------------------------------
      ARRASTAR CARTÕES ENTRE AS COLUNAS
@@ -13446,7 +13551,7 @@ function SprintPage(){
           {backlog.map(a=>(<div key={a.id} {...cardArraste(a,true)} className="kb-card"
             title={frozen?undefined:'Arraste para uma coluna do sprint para programar nesta semana'}>
             {!frozen&&<span className="kb-grip" aria-hidden="true">⠿</span>}
-            <div className="row" style={{justifyContent:'space-between'}}><span className="act-type" style={{background:ACT_TYPE_C[a.type]+'22',color:ACT_TYPE_C[a.type]}}>{a.type}</span><Avatares db={db} t={a}/></div>
+            <div className="row" style={{justifyContent:'space-between'}}><span className="act-type" style={{background:corTipo(db,a.type)+'22',color:corTipo(db,a.type)}}>{a.type}</span><Avatares db={db} t={a}/></div>
             <div className="kb-nome mt-abre" title="Abrir a tarefa" onClick={()=>abrirT(a)}>{a.name}</div>
             {(contaSubs(a).n>0||repDe(a))&&<div className="row" style={{gap:4,flexWrap:'wrap',marginBottom:4}}><TagSubs t={a} onClick={()=>abrirT(a)}/><TagRec t={a}/></div>}
             <div className="between">{a.proj? <a onClick={()=>go('projects',a.proj.id)} style={{fontSize:'.72rem',color:'var(--brand)',fontWeight:600,cursor:'pointer'}}>{a.proj.name}</a> : <span className="tag-soft" style={{fontSize:'.66rem'}}>tarefa geral</span>}
@@ -13461,7 +13566,7 @@ function SprintPage(){
               <div key={a.id} {...cardArraste(a,false)} className="kb-card"
                 title={frozen?undefined:'Arraste para outra coluna para mudar a situação'}>
                 {!frozen&&<span className="kb-grip" aria-hidden="true">⠿</span>}
-                <div className="row" style={{justifyContent:'space-between'}}><span className="act-type" style={{background:ACT_TYPE_C[a.type]+'22',color:ACT_TYPE_C[a.type]}}>{a.type}</span><Avatares db={db} t={a}/></div>
+                <div className="row" style={{justifyContent:'space-between'}}><span className="act-type" style={{background:corTipo(db,a.type)+'22',color:corTipo(db,a.type)}}>{a.type}</span><Avatares db={db} t={a}/></div>
                 <div className="kb-nome mt-abre" title="Abrir a tarefa" onClick={()=>abrirT(a)}>{a.name}</div>
                 {(contaSubs(a).n>0||repDe(a)||a.carriedFrom)&&<div className="row" style={{gap:4,flexWrap:'wrap'}}><TagSubs t={a} onClick={()=>abrirT(a)}/><TagRepassada t={a}/><TagRec t={a}/></div>}
                 <div className="between" style={{marginTop:6}}>{a.proj? <a onClick={()=>go('projects',a.proj.id)} style={{fontSize:'.72rem',color:'var(--brand)',fontWeight:600,cursor:'pointer'}}>{a.proj.name}</a> : <span className="tag-soft" style={{fontSize:'.66rem'}}>tarefa geral</span>}
@@ -13482,7 +13587,9 @@ function SprintPage(){
         <tbody>{acts.map(a=>(<tr key={a.id}>
           <td><b className="mt-abre" title="Abrir a tarefa" onClick={()=>abrirT(a)}>{a.name}</b> <TagRepassada t={a} mini/>
             {(contaSubs(a).n>0||repDe(a))&&<span className="row" style={{gap:4,display:'inline-flex',marginLeft:4}}><TagSubs t={a} onClick={()=>abrirT(a)}/><TagRec t={a}/></span>}</td>
-          <td><span className="act-type" style={{background:ACT_TYPE_C[a.type]+'22',color:ACT_TYPE_C[a.type]}}>{a.type}</span></td>
+          <td>{frozen
+            ? <span className="act-type" style={{background:corTipo(db,a.type)+'22',color:corTipo(db,a.type)}}>{a.type}</span>
+            : <SelTipo valor={a.type} onChange={v=>setTipo(a.id,v)}/>}</td>
           <td>{a.proj? <span className="click" onClick={()=>go('projects',a.proj.id)} style={{color:'var(--brand)',fontWeight:600}}>{a.proj.name}</span> : <span className="muted">— geral —</span>}</td>
           <td><div className="row" style={{gap:6}}><Avatares db={db} t={a}/>{nomesResp(db,a)}</div></td>
           <td className="mono muted" style={{fontSize:'.74rem'}}>{a.criadaEm?fmtBR(a.criadaEm):'—'}</td>
@@ -14527,7 +14634,7 @@ function TabEstrategia({p,mutate}){
   const novaTarefaIni=(ini,nome,resp,ini_,fim)=>{
     if(!nome.trim()){flash('Dê um nome à tarefa');return;}
     mutate(pr=>{ pr.activities.unshift({id:uid(),projectId:pr.id,iniciativaId:ini.id,name:nome.trim(),
-      type:'Outro',deliverableId:'',assignee:resp,date:fim||ini.fim||'',buildStart:ini_||'',buildEnd:fim||'',
+      type:tipoPadrao(db),deliverableId:'',assignee:resp,date:fim||ini.fim||'',buildStart:ini_||'',buildEnd:fim||'',
       hora:'',durMin:0,sessoes:{},column:'backlog',sprintId:null,prio:'Média',notes:'',
       criadaEm:hojeISO()}); });
     flash('Tarefa criada na iniciativa'); };
@@ -15288,7 +15395,7 @@ function TabProjetosEst({p,mutate}){
      construção como em qualquer outra tarefa. */
   const [modalAcao,setModalAcao]=useState(null);
   const abrirNovaAcao=(pe,f)=>setModalAcao({pe,f,init:{
-    name:'',type:'Outro',assignee:(db.team[0]||{}).id||'',
+    name:'',type:tipoPadrao(db),assignee:(db.team[0]||{}).id||'',
     projectId:p.id, peId:pe.id, faseId:f.id, deliverableId:'',
     date:janelaDaFase(pe,f.id).fim||'', buildStart:janelaDaFase(pe,f.id).ini||'', buildEnd:janelaDaFase(pe,f.id).fim||'',
     hora:'', durMin:60,
@@ -19351,8 +19458,112 @@ function ChipEditor({title,items,onChange,note}){
     <div className="row"><input className="inp" style={{flex:1}} placeholder="Adicionar..." value={v} onChange={e=>setV(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&v.trim()){onChange([...items,v.trim()]);setV('');}}}/><button className="btn btn-ghost btn-sm" onClick={()=>{if(v.trim()){onChange([...items,v.trim()]);setV('');}}}>{I.plus}</button></div>
   </div>);
 }
+/* Editor da lista de tipos de tarefa. O nome é o que aparece na linha da
+   tarefa; o balde é como aquele tipo entra no gráfico "Tipo de trabalho".
+   Renomear tem de alcançar as tarefas que já usam o nome antigo, senão a
+   tarefa fica com um tipo que não existe mais. */
+function TiposTarefaEditor({db,update}){
+  const lista=tiposTarefa(db);
+  const [novo,setNovo]=useState({nome:'',balde:'construcao',cor:'#3F598C'});
+  const [apagar,setApagar]=useState(null);   // {id,nome,usos,destino}
+  const [erro,setErro]=useState('');
+
+  const gravar=(fn)=>update(d=>{ d.tiposTarefa=(d.tiposTarefa||TIPOS_TAREFA0.map(x=>({...x}))).map(x=>({...x})); fn(d.tiposTarefa,d); return d; });
+  const campo=(id,k,v)=>gravar(L=>{ const t=L.find(x=>x.id===id); if(t) t[k]=v; });
+
+  /* renomear: troca o nome na lista e em toda tarefa que já usava o antigo */
+  const renomear=(id,bruto)=>{
+    const nome=String(bruto||'').trim();
+    const t=lista.find(x=>x.id===id); if(!t) return;
+    if(!nome||nome===t.nome) return;
+    if(lista.some(x=>x.id!==id&&x.nome.toLowerCase()===nome.toLowerCase())){ setErro('Já existe um tipo chamado "'+nome+'".'); return; }
+    setErro('');
+    const de=t.nome;
+    gravar((L,d)=>{ const y=L.find(x=>x.id===id); if(y) y.nome=nome;
+      cadaTipoNoBanco(d,(o,k)=>{ if(o[k]===de) o[k]=nome; }); });
+  };
+
+  const mover=(i,dir)=>{ const j=i+dir; if(j<0||j>=lista.length) return;
+    gravar(L=>{ const [x]=L.splice(i,1); L.splice(j,0,x); }); };
+
+  const adicionar=()=>{
+    const nome=novo.nome.trim(); if(!nome) return;
+    if(lista.some(x=>x.nome.toLowerCase()===nome.toLowerCase())){ setErro('Já existe um tipo chamado "'+nome+'".'); return; }
+    setErro('');
+    gravar(L=>L.push({id:uid(),nome,balde:novo.balde,cor:novo.cor}));
+    setNovo({nome:'',balde:'construcao',cor:'#3F598C'});
+  };
+
+  const pedirExclusao=(t)=>{
+    if(lista.length<=1){ setErro('A lista precisa ter pelo menos um tipo.'); return; }
+    setErro('');
+    const usos=usosDoTipo(db,t.nome);
+    const outro=lista.find(x=>x.id!==t.id);
+    setApagar({id:t.id,nome:t.nome,usos,destino:(outro||{}).nome||''});
+  };
+  const confirmarExclusao=()=>{
+    const a=apagar; if(!a) return;
+    gravar((L,d)=>{ const i=L.findIndex(x=>x.id===a.id); if(i>=0) L.splice(i,1);
+      if(a.usos&&a.destino) cadaTipoNoBanco(d,(o,k)=>{ if(o[k]===a.nome) o[k]=a.destino; }); });
+    setApagar(null);
+  };
+
+  return (<div className="card card-pad">
+    <div className="card-h"><h3>Tipos de tarefa</h3>
+      <span className="sub">a lista suspensa que aparece na linha da tarefa</span></div>
+    <div className="muted" style={{fontSize:'.76rem',marginBottom:12}}>
+      O <b>balde</b> é o que manda na análise “Tipo de trabalho por cliente”: cada tipo soma as horas
+      dele na coluna do balde escolhido. Renomear um tipo arruma sozinho as tarefas que já usavam o nome antigo.
+    </div>
+    {erro&&<div className="aviso-erro" style={{marginBottom:10}}>{erro}</div>}
+
+    <div className="tt-lista">
+      {lista.map((t,i)=>{ const usos=usosDoTipo(db,t.nome); return (
+        <div key={t.id} className="tt-linha">
+          <input type="color" className="tt-cor" value={/^#[0-9a-f]{6}$/i.test(t.cor||'')?t.cor:'#7f8c8d'}
+            title="Cor do tipo" onChange={e=>campo(t.id,'cor',e.target.value)}/>
+          <input className="inp inp-sm tt-nome" defaultValue={t.nome} key={t.id+':'+t.nome}
+            style={{color:t.cor,fontWeight:700}}
+            onBlur={e=>renomear(t.id,e.target.value)}
+            onKeyDown={e=>{ if(e.key==='Enter') e.target.blur(); if(e.key==='Escape'){ e.target.value=t.nome; e.target.blur(); } }}/>
+          <select className="sel sel-sm tt-balde" value={t.balde} onChange={e=>campo(t.id,'balde',e.target.value)}
+            title="Em qual coluna do gráfico este tipo entra">
+            {BALDES.map(([b,rot])=><option key={b} value={b}>{rot}</option>)}</select>
+          <span className="muted tt-usos">{usos? usos+(usos>1?' tarefas':' tarefa') : 'sem uso'}</span>
+          <button className="btn btn-ghost btn-sm tt-ico" disabled={i===0} title="Subir" onClick={()=>mover(i,-1)}>↑</button>
+          <button className="btn btn-ghost btn-sm tt-ico" disabled={i===lista.length-1} title="Descer" onClick={()=>mover(i,1)}>↓</button>
+          <button className="btn btn-ghost btn-sm tt-ico tt-del" title="Excluir" onClick={()=>pedirExclusao(t)}>{I.trash}</button>
+        </div>);})}
+    </div>
+
+    {apagar&&<div className="tt-apagar">
+      {apagar.usos
+        ? <><b>{apagar.usos}</b> {apagar.usos>1?'tarefas usam':'tarefa usa'} “{apagar.nome}”. Para onde elas vão?
+            <select className="sel sel-sm" style={{marginLeft:8,width:'auto'}} value={apagar.destino}
+              onChange={e=>setApagar(x=>({...x,destino:e.target.value}))}>
+              {lista.filter(x=>x.id!==apagar.id).map(x=><option key={x.id} value={x.nome}>{x.nome}</option>)}</select></>
+        : <>Excluir o tipo “{apagar.nome}”? Nenhuma tarefa usa ele.</>}
+      <div className="row" style={{gap:8,marginLeft:'auto'}}>
+        <button className="btn btn-ghost btn-sm" onClick={()=>setApagar(null)}>Cancelar</button>
+        <button className="btn btn-primary btn-sm" onClick={confirmarExclusao}>
+          {apagar.usos? 'Mover e excluir' : 'Excluir'}</button>
+      </div>
+    </div>}
+
+    <div className="tt-linha tt-novo">
+      <input type="color" className="tt-cor" value={novo.cor} title="Cor do tipo"
+        onChange={e=>setNovo(x=>({...x,cor:e.target.value}))}/>
+      <input className="inp inp-sm tt-nome" placeholder="Nome do tipo novo" value={novo.nome}
+        onChange={e=>setNovo(x=>({...x,nome:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&adicionar()}/>
+      <select className="sel sel-sm tt-balde" value={novo.balde} onChange={e=>setNovo(x=>({...x,balde:e.target.value}))}>
+        {BALDES.map(([b,rot])=><option key={b} value={b}>{rot}</option>)}</select>
+      <button className="btn btn-primary btn-sm" style={{marginLeft:'auto'}} onClick={adicionar}>{I.plus} Adicionar</button>
+    </div>
+  </div>);
+}
+
 function BaseActivitiesEditor({db,update,acts}){
-  const [f,setF]=useState({fase:PHASES[0],name:'',type:ACT_TYPES[0]});
+  const [f,setF]=useState({fase:PHASES[0],name:'',type:tipoNomes(db)[0]});
   const setBase=(fn)=>update(d=>{d.base=d.base||{deliverables:[],activities:[]};d.base.activities=d.base.activities||[];fn(d.base.activities);return d;});
   const add=()=>{if(!f.name.trim())return;setBase(a=>a.push({fase:f.fase,name:f.name.trim(),type:f.type,deliverable:''}));setF(s=>({...s,name:''}));};
   const del=(i)=>setBase(a=>a.splice(i,1));
@@ -19362,14 +19573,14 @@ function BaseActivitiesEditor({db,update,acts}){
     <div className="row" style={{flexWrap:'wrap',gap:8,marginBottom:12}}>
       <select className="sel" style={{width:'auto'}} value={f.fase} onChange={e=>setF(s=>({...s,fase:e.target.value}))}>{PHASES.map(p=><option key={p}>{p}</option>)}</select>
       <input className="inp" style={{flex:1,minWidth:180}} placeholder="Nome da atividade padrão" value={f.name} onChange={e=>setF(s=>({...s,name:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&add()}/>
-      <select className="sel" style={{width:'auto'}} value={f.type} onChange={e=>setF(s=>({...s,type:e.target.value}))}>{ACT_TYPES.map(t=><option key={t}>{t}</option>)}</select>
+      <select className="sel" style={{width:'auto'}} value={f.type} onChange={e=>setF(s=>({...s,type:e.target.value}))}>{tipoNomes(db).map(t=><option key={t}>{t}</option>)}</select>
       <button className="btn btn-primary btn-sm" onClick={add}>{I.plus} Adicionar</button>
     </div>
     {PHASES.map(ph=>{const items=acts.map((a,i)=>({a,i})).filter(x=>x.a.fase===ph);if(!items.length)return null;return(
       <div key={ph} style={{marginBottom:8}}>
         <div style={{fontSize:'.72rem',fontWeight:700,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'.5px',margin:'6px 0 4px'}}>{ph}</div>
         {items.map(({a,i})=>(<div key={i} className="row" style={{padding:'5px 0',borderBottom:'1px solid #f4f5fa',gap:8}}>
-          <span className="act-type" style={{background:(ACT_TYPE_C[a.type]||'#888')+'22',color:ACT_TYPE_C[a.type]||'#888'}}>{a.type}</span>
+          <span className="act-type" style={{background:corTipo(db,a.type)+'22',color:corTipo(db,a.type)}}>{a.type}</span>
           <span style={{flex:1,fontSize:'.82rem'}}>{a.name}</span>
           <button className="icon-btn" style={{width:24,height:24,color:'var(--text-3)'}} onClick={()=>del(i)}>{I.x}</button>
         </div>))}
@@ -19495,6 +19706,8 @@ function SettingsPage(){
       <div className="divider"></div>
       <BaseActivitiesEditor db={db} update={update} acts={baseActs()}/>
     </div>
+
+    <TiposTarefaEditor db={db} update={update}/>
 
     <div className="grid2">
       <ChipEditor title="Tiers" items={db.tiers} onChange={(v)=>update(d=>{d.tiers=v;return d;})} note="Ex.: Completo, Completo com SCP, Essencial"/>
