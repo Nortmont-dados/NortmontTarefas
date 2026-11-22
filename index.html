@@ -643,20 +643,32 @@ a{color:inherit}
 .sel-sm{padding:5px 8px;font-size:.76rem;height:auto}
 /* ----- radar de notícias ----- */
 .not-lista{display:flex;flex-direction:column}
-.not-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.not-item{display:flex;gap:10px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border)}
+.not-item:first-child{padding-top:6px}
 .not-item:last-child{border-bottom:none}
 .not-item.fix{background:linear-gradient(90deg,rgba(194,116,46,.06),transparent 60%);
-  border-left:3px solid #C2742E;padding-left:10px;margin-left:-10px}
+  border-left:3px solid #C2742E;padding-left:12px;margin-left:-12px}
 .not-corpo{flex:1;min-width:0}
-.not-tit{display:block;font-size:.86rem;font-weight:600;color:var(--text);text-decoration:none;line-height:1.35}
-.not-tit:hover{color:var(--brand);text-decoration:underline}
-.not-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:3px;font-size:.73rem;color:var(--muted)}
+/* cabeçalho: logo + nome do veículo */
+.not-fonte{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.not-logo{width:18px;height:18px;border-radius:50%;flex:none;object-fit:cover;background:#fff;
+  border:1px solid var(--border)}
+.not-logo-letra{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.6rem;
+  font-weight:800;border:none}
+.not-fonte-nome{font-size:.76rem;font-weight:600;color:var(--muted)}
+/* a manchete é o que a pessoa lê primeiro */
+.not-tit{display:block;font-size:1.02rem;font-weight:600;color:#1a2b5c;text-decoration:none;line-height:1.3;
+  letter-spacing:-.01em}
+.not-tit:visited{color:#59389c}
+.not-tit:hover{text-decoration:underline}
+.not-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:6px;font-size:.73rem;color:var(--muted)}
+@media (prefers-color-scheme:dark){.not-tit{color:#9db4ee}.not-tit:visited{color:#c4a6ef}}
 .not-pt{opacity:.5}
 .not-cli{font-weight:600;color:var(--brand)}
 .not-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
   padding:1px 6px;border-radius:999px;background:#C2742E22;color:#8a5115}
 .not-nota{margin-top:6px;width:100%;max-width:520px}
-.not-nota-txt{margin-top:5px;font-size:.78rem;color:var(--muted);font-style:italic;cursor:text}
+.not-nota-txt{margin-top:6px;font-size:.78rem;color:var(--muted);font-style:italic;cursor:text}
 .not-bts{display:flex;gap:2px;flex:none;opacity:.35;transition:opacity .12s}
 .not-item:hover .not-bts{opacity:1}
 .not-bts .btn{padding:3px 7px;min-width:0;font-size:.9rem;line-height:1}
@@ -664,6 +676,36 @@ a{color:inherit}
 .not-x:hover{color:#B33A3A}
 .lab-agenda{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
   margin-left:6px;padding:1px 6px;border-radius:999px;background:#2F8F6E22;color:#1d6b52}
+.not-escolher{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 10px;margin:0 0 8px;
+  background:#fff8e7;border:1px solid #f0dca8;border-radius:10px;font-size:.78rem}
+.not-escolhe .not-item{border-bottom:none;padding-bottom:4px}
+.not-menos{margin-top:10px;font-size:.78rem;color:var(--muted)}
+.not-fracas{opacity:.72;margin-top:4px;padding-top:4px;border-top:1px dashed var(--border)}
+.not-fracas .not-tit{font-size:.9rem}
+.fnt-lista{display:flex;flex-direction:column;gap:8px}
+.fnt-setor{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.fnt-cab{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;cursor:pointer;font-size:.84rem}
+.fnt-cab:hover{background:rgba(0,0,0,.02)}
+.fnt-seta{width:12px;color:var(--muted)}
+.fnt-aviso{font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:999px;background:#fff3d6;color:#8a5115}
+.fnt-erro{font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:999px;background:#fdecea;color:#B33A3A}
+.fnt-corpo{padding:12px;border-top:1px solid var(--border);background:rgba(0,0,0,.015)}
+.fnt-linha{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 0}
+.fnt-linha.off{opacity:.5}
+.fnt-tipo{width:140px;flex:none}
+.fnt-nome{width:150px;flex:none}
+.fnt-url{flex:1;min-width:220px}
+.fnt-on{flex:none;padding:0 4px}
+.fnt-res{flex-basis:100%;font-size:.75rem;padding:6px 8px;border-radius:8px;margin-top:2px}
+.fnt-res.bom{background:#eef6f4;color:#17514c}
+.fnt-res.ruim{background:#fdecea;color:#B33A3A}
+.sug-cx{margin-top:10px;padding:10px 12px;background:#f3f7f6;border:1px solid #d8e5e2;border-radius:10px}
+.sug-linha{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.sug-linha:last-child{border-bottom:none}
+.sug-info{flex:1;min-width:0;font-size:.8rem}
+.sug-ex{font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug-sem{font-size:.72rem;flex:none}
+@media (max-width:760px){.fnt-tipo,.fnt-nome,.fnt-url{width:100%;flex:1 1 100%}}
 .aviso-email{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px;padding:12px 14px;
   background:#fff8e7;border:1px solid #f0dca8;border-left:4px solid #C2742E;border-radius:10px;font-size:.82rem;line-height:1.45}
 .not-aviso{margin-top:10px;padding:8px 12px;border-radius:10px;font-size:.78rem;
@@ -3712,9 +3754,61 @@ function slug(t){return String(t||'Projeto').normalize('NFD').replace(/[\u0300-\
        (No banco esse campo se chama radar.fix, de quando a ideia era
        "fixar"; o nome ficou para não migrar base à toa.)
    ====================================================================== */
+/* Termos que valorizam uma matéria para uma consultoria, e os que a
+   desvalorizam. Servem em dois momentos: entram na busca do Google News
+   (os de ruído como exclusão) e ordenam o que chegou. */
+const NEG0=['tributação','reforma tributária','imposto','gestão','mercado','tendência','regulamentação',
+  'investimento','faturamento','crescimento','margem','franquia','aquisição','fusão','consolidação',
+  'tecnologia','inovação','pesquisa','relatório','balanço','setor','indústria','negócio','empresa',
+  'consumidor','concorrência','preço','custo','produtividade','capacitação','evento','congresso','feira'];
+const RUIDO0=['obituário','obituario','faleceu','falecimento','nota de pesar','velório','enterro',
+  'acidente','morreu','morte','tragédia','crime','polícia','preso','roubo','furto','sorteio','horóscopo',
+  'novela','celebridade','fofoca','escalação','jogo de'];
+const radarCfg=(db)=>Object.assign({negocio:NEG0.join(', '),ruido:RUIDO0.join(', ')},(db&&db.radarCfg)||{});
+const listaTermos=(t)=>String(t||'').split(/[,;\n]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);
+/* Config de um setor: termos da busca e fontes próprias */
+const setorCfg=(db,setor)=>Object.assign({termos:'',fontes:[],ocultos:[]},((db&&db.setoresRadar)||{})[setor]||{});
+/* Notícia do setor que não interessa é marcada UMA vez, no setor — não
+   uma vez em cada cliente daquele setor. */
+const ocultosDoSetor=(db,setor)=>setorCfg(db,setor).ocultos||[];
+function ocultarNoSetor(d,setor,link){
+  d.setoresRadar=Object.assign({},d.setoresRadar||{});
+  const c=Object.assign({termos:'',fontes:[],ocultos:[]},d.setoresRadar[setor]||{});
+  c.ocultos=(c.ocultos||[]).slice();
+  if(c.ocultos.indexOf(link)<0) c.ocultos.unshift(link);
+  c.ocultos=c.ocultos.slice(0,400);
+  d.setoresRadar[setor]=c; return d;
+}
+/* Monta uma busca do Google News a partir do setor e dos termos de negócio */
+function montarTermos(db,setor){
+  const neg=listaTermos(radarCfg(db).negocio).slice(0,10);
+  const ru=listaTermos(radarCfg(db).ruido).slice(0,12);
+  const base='"'+String(setor||'').trim()+'"';
+  const mais=neg.length? ' ('+neg.map(x=>/\s/.test(x)?'"'+x+'"':x).join(' OR ')+')' : '';
+  const menos=ru.length? ' '+ru.map(x=>'-'+(/\s/.test(x)?'"'+x+'"':x)).join(' ') : '';
+  return base+mais+menos;
+}
+/* Nota de relevância: quanto a matéria parece ser sobre o negócio do setor */
+function notaNoticia(db,n){
+  const t=String(n.titulo||'').toLowerCase();
+  let nota=0;
+  listaTermos(radarCfg(db).negocio).forEach(x=>{ if(t.indexOf(x)>=0) nota+=2; });
+  listaTermos(radarCfg(db).ruido).forEach(x=>{ if(t.indexOf(x)>=0) nota-=3; });
+  if(n.de&&n.de!=='Google News') nota+=2;   // fonte escolhida a dedo vale mais que achado de busca
+  return nota;
+}
+
 const radarDe=(p)=>(p&&p.radar)||{};
 const radarTermos=(p)=>String(radarDe(p).termos||(p&&p.setor)||'').trim();
 const radarLigado=(p)=>!radarDe(p).off&&!!radarTermos(p);
+/* Em qual trilha de busca este cliente cai. Tem de bater com o que o
+   Apps Script grava na aba Notícias. */
+const trilhaDe=(p)=>{
+  if(!p||radarDe(p).off) return '';
+  if(String(radarDe(p).termos||'').trim()) return 'cliente:'+p.id;
+  const st=String(p.setor||'').trim();
+  return st? 'setor:'+st : '';
+};
 const radarFix=(p)=>radarDe(p).fix||[];
 const radarOcultos=(p)=>radarDe(p).ocultos||[];
 /* mexe no radar de um cliente garantindo que a estrutura exista */
@@ -3748,7 +3842,32 @@ function dataNoticia(iso){
 /* o domínio, para quando o Google não mandar o nome do veículo */
 function veiculoDe(n){
   if(n.fonte) return n.fonte;
-  try{ return new URL(n.link).hostname.replace(/^www\./,''); }catch(e){ return 'link'; }
+  const d=dominioNoticia(n); return d||'link';
+}
+/* O link da notícia passa pelo Google, então o domínio do veículo vem do
+   campo <source url> do feed. Em link colado à mão, do próprio endereço.
+   (nome com sufixo porque Ferramentas já tem um dominioDe próprio) */
+function dominioNoticia(n){
+  const tenta=(u)=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return ''; } };
+  const d=tenta(n.site||'');
+  if(d) return d;
+  const l=tenta(n.link||'');
+  return /(^|\.)news\.google\.com$/.test(l)? '' : l;
+}
+/* Logo do veículo. Sem domínio conhecido, cai no círculo com a inicial. */
+function LogoVeiculo({n}){
+  const [ruim,setRuim]=useState(false);
+  const d=dominioNoticia(n);
+  const nome=veiculoDe(n);
+  useEffect(()=>{ setRuim(false); },[d]);
+  if(!d||ruim){
+    const letra=(nome||'?').trim().charAt(0).toUpperCase();
+    const cores=['#0F4245','#3F598C','#C2742E','#2F8F6E','#173164','#8257C2'];
+    let h=0; for(let i=0;i<nome.length;i++) h=(h*31+nome.charCodeAt(i))%cores.length;
+    return <span className="not-logo not-logo-letra" style={{background:cores[h]}}>{letra}</span>;
+  }
+  return <img className="not-logo" alt="" loading="lazy" onError={()=>setRuim(true)}
+    src={'https://www.google.com/s2/favicons?sz=64&domain='+encodeURIComponent(d)}/>;
 }
 
 /* No espelho não existe Apps Script: inventa notícias para a tela ter o
@@ -3756,30 +3875,32 @@ function veiculoDe(n){
 function radarSimulado(db){
   if(!window.FOCUS_ESPELHO_SIM) return [];
   const MODELOS=[
-    ['Mercado de {s} cresce e deve fechar o ano em alta','Valor Econômico',1],
-    ['O que muda na regulamentação do setor de {s} em 2027','Estadão',2],
-    ['Três tendências de {s} para ficar de olho','Exame',4],
-    ['Consumidor de {s} muda hábito e pressiona margens','Folha de S.Paulo',6],
-    ['Investimento em tecnologia avança em {s}','InfoMoney',9],
-    ['Pequenas empresas de {s} lideram contratações','G1',12]];
-  const out=[];
+    ['Mercado de {s} cresce e deve fechar o ano em alta','Valor Econômico',1,'https://valor.globo.com'],
+    ['O que muda na regulamentação do setor de {s} em 2027','Estadão',2,'https://estadao.com.br'],
+    ['Três tendências de {s} para ficar de olho','Exame',4,'https://exame.com'],
+    ['Consumidor de {s} muda hábito e pressiona margens','Folha de S.Paulo',6,'https://folha.uol.com.br'],
+    ['Investimento em tecnologia avança em {s}','InfoMoney',9,'https://infomoney.com.br'],
+    /* duas de ruído, para dar o que ordenar na simulação */
+    ['Acidente com caminhão de {s} interdita rodovia','Correio do Povo',3,'https://correiodopovo.com.br'],
+    ['Obituário da semana na região','Diário Local',5,'https://diariolocal.com.br']];
+  const out=[], feito={};
   (ativos(db)||[]).forEach(p=>{
-    if(!radarLigado(p)) return;
-    const alvo=(p.setor||radarTermos(p)).toLowerCase();
+    const tr=trilhaDe(p); if(!tr||feito[tr]) return; feito[tr]=1;
+    const alvo=(tr.slice(0,6)==='setor:'?tr.slice(6):radarTermos(p)).toLowerCase();
     MODELOS.forEach((m,i)=>{
       const d=new Date(Date.now()-m[2]*864e5);
-      out.push({pid:p.id,cliente:p.name,titulo:m[0].replace('{s}',alvo),fonte:m[1],
-        data:d.toISOString(),link:'https://exemplo.com.br/'+p.id+'/'+i});
+      out.push({chave:tr,cliente:p.name,titulo:m[0].replace('{s}',alvo),fonte:m[1],de:'Google News',
+        site:m[3],data:d.toISOString(),link:'https://exemplo.com.br/'+encodeURIComponent(tr)+'/'+i});
     });
   });
   return out;
 }
 
 /* Uma leitura só, compartilhada pela aba do cliente e pela página Notícias */
-let RADAR_CACHE=null, RADAR_PROM=null, RADAR_QUANDO='';
+let RADAR_CACHE=null, RADAR_PROM=null, RADAR_QUANDO='', RADAR_PROBL=[];
 function carregarRadar(db,forcar){
-  if(!NUVEM_ON){ RADAR_CACHE=radarSimulado(db); return Promise.resolve({itens:RADAR_CACHE,quando:''}); }
-  if(!forcar&&RADAR_CACHE) return Promise.resolve({itens:RADAR_CACHE,quando:RADAR_QUANDO});
+  if(!NUVEM_ON){ RADAR_CACHE=radarSimulado(db); return Promise.resolve({itens:RADAR_CACHE,quando:'',problemas:[]}); }
+  if(!forcar&&RADAR_CACHE) return Promise.resolve({itens:RADAR_CACHE,quando:RADAR_QUANDO,problemas:RADAR_PROBL});
   if(!forcar&&RADAR_PROM) return RADAR_PROM;
   RADAR_PROM=nuvemApi('noticias',{}).then(r=>{
     RADAR_PROM=null;
@@ -3788,18 +3909,18 @@ function carregarRadar(db,forcar){
       throw new Error(velho? 'O Apps Script ainda está na versão antiga. Republique o Codigo.gs para ligar o radar.'
                            : ((r&&r.erro)||'Não consegui ler as notícias.'));
     }
-    RADAR_CACHE=r.itens||[]; RADAR_QUANDO=r.quando||'';
-    return {itens:RADAR_CACHE,quando:RADAR_QUANDO};
+    RADAR_CACHE=r.itens||[]; RADAR_QUANDO=r.quando||''; RADAR_PROBL=r.problemas||[];
+    return {itens:RADAR_CACHE,quando:RADAR_QUANDO,problemas:RADAR_PROBL};
   }).catch(e=>{ RADAR_PROM=null; throw e; });
   return RADAR_PROM;
 }
 function useRadar(){
   const {db}=useDB();
-  const vazio={itens:[],quando:'',carregando:true,buscando:false,erro:'',aviso:''};
+  const vazio={itens:[],quando:'',carregando:true,buscando:false,erro:'',aviso:'',problemas:[]};
   const [est,setEst]=useState(()=>RADAR_CACHE?{...vazio,itens:RADAR_CACHE,quando:RADAR_QUANDO,carregando:false}:vazio);
   /* relê a lista que o servidor já tem */
   const reler=(aviso)=>carregarRadar(db,true)
-    .then(r=>setEst({itens:r.itens,quando:r.quando,carregando:false,buscando:false,erro:'',aviso:aviso||''}))
+    .then(r=>setEst({itens:r.itens,quando:r.quando,problemas:r.problemas||[],carregando:false,buscando:false,erro:'',aviso:aviso||''}))
     .catch(e=>setEst(x=>({...x,carregando:false,buscando:false,erro:e.message||String(e)})));
   /* manda o Apps Script sair buscando notícia nova agora, e depois relê.
      Leva alguns segundos: é uma consulta ao Google por cliente. */
@@ -3816,23 +3937,47 @@ function useRadar(){
   };
   useEffect(()=>{ let vivo=true;
     carregarRadar(db,false)
-      .then(r=>{ if(vivo) setEst({...vazio,itens:r.itens,quando:r.quando,carregando:false}); })
+      .then(r=>{ if(vivo) setEst({...vazio,itens:r.itens,quando:r.quando,problemas:r.problemas||[],carregando:false}); })
       .catch(e=>{ if(vivo) setEst({...vazio,carregando:false,erro:e.message||String(e)}); });
     return ()=>{ vivo=false; }; },[]);
   return {...est,recarregar:()=>{ setEst(x=>({...x,carregando:true,erro:'',aviso:''})); reler(''); },buscarAgora};
 }
 /* As notícias de um cliente, já sem as ocultas e sem as que estão fixadas */
-function noticiasDoCliente(itens,p){
+/* Duas notícias são a mesma quando a manchete é a mesma — o endereço
+   muda conforme o caminho por onde ela chegou. */
+function assinaturaNot(n){
+  const t=semAcento(n&&n.titulo).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  return t || ('link:'+((n&&n.link)||Math.random()));
+}
+/* Tira as repetidas mantendo a primeira — a lista já vem ordenada, então
+   a que fica é a melhor colocada. */
+function semRepetidas(lista,juntar){
+  const onde={}, fora=[];
+  (lista||[]).forEach(n=>{
+    const k=assinaturaNot(n), j=onde[k];
+    if(j===undefined){ onde[k]=fora.length; fora.push(n); return; }
+    if(juntar) juntar(fora[j],n);
+  });
+  return fora;
+}
+
+function noticiasDoCliente(itens,p,db){
   const oc={}, fx={};
   radarOcultos(p).forEach(l=>oc[l]=1);
+  if(db&&p&&p.setor) ocultosDoSetor(db,String(p.setor).trim()).forEach(l=>oc[l]=1);
   radarFix(p).forEach(x=>fx[x.link]=1);
-  return (itens||[]).filter(n=>n.pid===p.id&&!oc[n.link]&&!fx[n.link])
-    .sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+  const tr=trilhaDe(p);
+  if(!tr) return [];
+  const lista=(itens||[]).filter(n=>n.chave===tr&&!oc[n.link]&&!fx[n.link]);
+  if(!db) return semRepetidas(lista.sort((a,b)=>String(b.data||'').localeCompare(String(a.data||''))));
+  /* melhor primeiro; empate desempata pela data */
+  return semRepetidas(lista.map(n=>({...n,nota:notaNoticia(db,n)}))
+    .sort((a,b)=> b.nota-a.nota || String(b.data||'').localeCompare(String(a.data||''))));
 }
 /* Quantas chegaram depois da última vez que a pessoa abriu o radar */
-function radarNaoVistas(itens,p){
+function radarNaoVistas(itens,p,db){
   const visto=radarDe(p).visto||'';
-  return noticiasDoCliente(itens,p).filter(n=>!visto||String(n.data||'')>visto).length;
+  return noticiasDoCliente(itens,p,db).filter(n=>!visto||String(n.data||'')>visto).length;
 }
 
 /* ===== ABAS DO SISTEMA (base do controle de permissão por usuário) ===== */
@@ -4018,6 +4163,7 @@ function buildInitial(){
     team:[],                                      // a equipe é cadastrada em Equipe
     tiers:TIERS0.slice(),tipos:TIPOS0.slice(),setores:SETORES0.slice(),perfis:PERFIS0.slice(),origens:ORIGENS0.slice(),
     tiposTarefa:TIPOS_TAREFA0.map(x=>({...x})),
+    radarCfg:{negocio:NEG0.join(', '),ruido:RUIDO0.join(', ')}, setoresRadar:{},
     base,
     dlvTemplate:base.deliverables.map(d=>({...d})), // compat: espelha entregáveis do Projeto Base
     projects,sprints,currentSprint:curSprintId,sprintCfg,
@@ -4049,6 +4195,11 @@ function normalizeDb(s){
   if(!Array.isArray(s.origens)||!s.origens.length) s.origens=ORIGENS0.slice();
   /* tipos de tarefa: base que vem de antes da lista ser editável começa com
      os nove de fábrica, que são exatamente os que ela já usava */
+  if(!s.radarCfg||typeof s.radarCfg!=='object') s.radarCfg={negocio:NEG0.join(', '),ruido:RUIDO0.join(', ')};
+  if(!s.setoresRadar||typeof s.setoresRadar!=='object') s.setoresRadar={};
+  Object.keys(s.setoresRadar).forEach(k=>{ const c=s.setoresRadar[k]||{};
+    s.setoresRadar[k]={termos:String(c.termos||''),fontes:Array.isArray(c.fontes)?c.fontes.filter(f=>f&&f.url):[],
+      ocultos:Array.isArray(c.ocultos)?c.ocultos.slice(0,400):[]}; });
   if(!Array.isArray(s.tiposTarefa)||!s.tiposTarefa.length) s.tiposTarefa=TIPOS_TAREFA0.map(x=>({...x}));
   s.tiposTarefa=s.tiposTarefa.filter(x=>x&&String(x.nome||'').trim()).map((x,i)=>({
     id:x.id||('tt_'+i+'_'+Math.random().toString(36).slice(2,7)),
@@ -5301,7 +5452,7 @@ function descreverMudancas(a, b) {
   });
 
   /* ---------- configurações ---------- */
-  const CFG = { tiers: 'lista de tiers', tipos: 'tipos de cliente', setores: 'setores', perfis: 'perfis de cliente', tiposTarefa: 'tipos de tarefa', base: 'cliente base (entregáveis e atividades)', dlvTemplate: null,
+  const CFG = { tiers: 'lista de tiers', tipos: 'tipos de cliente', setores: 'setores', perfis: 'perfis de cliente', tiposTarefa: 'tipos de tarefa', setoresRadar: 'fontes do radar por setor', radarCfg: 'termos do radar', base: 'cliente base (entregáveis e atividades)', dlvTemplate: null,
     kpi: 'indicadores', nps: 'NPS', monthly: 'série mensal', customViz: 'visualizações', messages: 'mensagens', notes: 'notas' };
   Object.keys(CFG).forEach(k => { if (CFG[k] && J(a[k]) !== J(b[k])) add('Configurações', 'alterou ' + CFG[k], '', '', 'cfg:' + k); });
 
@@ -5593,11 +5744,14 @@ function ItemNoticia({n,fixado,pode,onFixar,onSoltar,onOcultar,onNota,mostrarCli
   const salvarNota=()=>{ setAbrindoNota(false); if((n.nota||'')!==nota) onNota&&onNota(nota); };
   return (<div className={'not-item'+(fixado?' fix':'')}>
     <div className="not-corpo">
+      <div className="not-fonte">
+        <LogoVeiculo n={n}/>
+        <span className="not-fonte-nome">{veiculoDe(n)}</span>
+        {fixado&&n.origem==='meu'&&<span className="not-tag meu">seu link</span>}
+      </div>
       <a className="not-tit" href={n.link} target="_blank" rel="noopener noreferrer">{n.titulo||n.link}</a>
       <div className="not-meta">
-        {fixado&&n.origem==='meu'&&<span className="not-tag meu">seu link</span>}
-        <span>{veiculoDe(n)}</span>
-        {dataNoticia(n.data)&&<><span className="not-pt">·</span><span>{dataNoticia(n.data)}</span></>}
+        {dataNoticia(n.data)&&<span>{dataNoticia(n.data)}</span>}
         {mostrarCliente&&n.cliente&&<><span className="not-pt">·</span><span className="not-cli">{n.cliente}</span></>}
       </div>
       {fixado&&(n.nota||abrindoNota)&&(abrindoNota
@@ -5660,7 +5814,8 @@ function TabRadar({p,mutate}){
   useEffect(()=>{ if(!pode) return; const t=setTimeout(()=>mutate(pr=>mexeRadar(pr,r=>{ r.visto=new Date().toISOString(); })),1200);
     return ()=>clearTimeout(t); },[p.id]);
 
-  const fix=radarFix(p), feed=noticiasDoCliente(itens,p), oc=radarOcultos(p);
+  const fix=radarFix(p), feed=noticiasDoCliente(itens,p,db), oc=radarOcultos(p);
+  const ocSetor=p.setor? ocultosDoSetor(db,String(p.setor).trim()) : [];
   const salvarTermos=()=>mutate(pr=>mexeRadar(pr,r=>{ r.termos=String(termos||'').trim(); }));
 
   return (<div style={{display:'flex',flexDirection:'column',gap:16}}>
@@ -5698,10 +5853,12 @@ function TabRadar({p,mutate}){
         <label className="row" style={{gap:8,marginTop:10,fontSize:'.82rem',cursor:'pointer'}}>
           <input type="checkbox" checked={!radarDe(p).off} onChange={e=>mutate(pr=>mexeRadar(pr,r=>{ r.off=!e.target.checked; }))}/>
           Buscar notícias para este cliente</label>
-        {oc.length>0&&<div className="muted" style={{fontSize:'.74rem',marginTop:10}}>
-          {oc.length} notícia(s) marcada(s) como “não interessa”.
-          <button className="btn btn-ghost btn-sm" style={{marginLeft:6}}
-            onClick={()=>mutate(pr=>mexeRadar(pr,r=>{ r.ocultos=[]; }))}>mostrar de novo</button></div>}
+        {(oc.length>0||ocSetor.length>0)&&<div className="muted" style={{fontSize:'.74rem',marginTop:10}}>
+          {oc.length>0&&<>{oc.length} escondida(s) só neste cliente.
+            <button className="btn btn-ghost btn-sm" style={{marginLeft:6}}
+              onClick={()=>mutate(pr=>mexeRadar(pr,r=>{ r.ocultos=[]; }))}>mostrar de novo</button></>}
+          {ocSetor.length>0&&<div style={{marginTop:4}}>{ocSetor.length} escondida(s) para todo o setor {p.setor},
+            na página Notícias → Fontes.</div>}</div>}
       </div>}
 
       {erro
@@ -5714,12 +5871,229 @@ function TabRadar({p,mutate}){
             : !feed.length
               ? <div className="muted" style={{fontSize:'.8rem',padding:'10px 0'}}>
                   Nada novo nos últimos dias.{quando&&<> Última busca: {dataNoticia(quando)}.</>}</div>
-              : <div className="not-lista">{feed.map(n=><ItemNoticia key={n.link} n={n} pode={pode}
+              : <ListaComFracas itens={feed} render={n=><ItemNoticia key={n.link} n={n} pode={pode}
                   onFixar={()=>mutate(pr=>radarFixar(pr,n))}
-                  onOcultar={()=>mutate(pr=>radarOcultar(pr,n.link))}/>)}</div>}
+                  onOcultar={()=>mutate(pr=>radarOcultar(pr,n.link))}/>}/>}
       {quando&&!carregando&&!erro&&<div className="muted" style={{fontSize:'.7rem',marginTop:10}}>
         Última busca do radar: {new Date(quando).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>}
     </div>
+  </div>);
+}
+
+
+/* ======================================================================
+   RADAR — fontes e termos por setor
+   O Google News sozinho traz muito acontecimento e pouca informação de
+   setor. Aqui a pessoa diz de onde o conteúdo deve vir: os termos que
+   importam e as fontes em que confia (portais do setor e canais do
+   YouTube). A configuração é por SETOR, então vale para todos os
+   clientes daquele setor de uma vez.
+   ====================================================================== */
+function FonteRadar({f,onMudar,onApagar}){
+  const [testando,setTestando]=useState(false);
+  const [res,setRes]=useState(null);
+  const testar=async()=>{
+    setTestando(true); setRes(null);
+    if(!NUVEM_ON){ setTestando(false); setRes({ok:false,erro:'No espelho não dá para testar: o teste roda no Apps Script.'}); return; }
+    try{ const r=await nuvemApi('testarFonte',{tipo:f.tipo,url:f.url});
+      setRes(r&&r.ok? r : {ok:false,erro:(r&&r.erro)||'Não deu para testar agora.'}); }
+    catch(e){ setRes({ok:false,erro:'Sem conexão com a base.'}); }
+    setTestando(false);
+  };
+  return (<div className={'fnt-linha'+(f.off?' off':'')}>
+    <select className="sel sel-sm fnt-tipo" value={f.tipo||'rss'} onChange={e=>onMudar({...f,tipo:e.target.value})}>
+      <option value="rss">Portal (RSS)</option>
+      <option value="youtube">Canal do YouTube</option></select>
+    <input className="inp inp-sm fnt-nome" placeholder="Nome" defaultValue={f.nome||''} key={f.id+':n'}
+      onBlur={e=>onMudar({...f,nome:e.target.value.trim()})}/>
+    <input className="inp inp-sm fnt-url" placeholder={f.tipo==='youtube'?'youtube.com/@canal':'endereço do RSS (.../feed)'}
+      defaultValue={f.url||''} key={f.id+':u'} onBlur={e=>onMudar({...f,url:e.target.value.trim()})}/>
+    <button className="btn btn-ghost btn-sm" onClick={testar} disabled={testando||!f.url}>
+      {testando?'…':'Testar'}</button>
+    <label className="row fnt-on" title={f.off?'Desligada':'Ligada'}>
+      <input type="checkbox" checked={!f.off} onChange={e=>onMudar({...f,off:!e.target.checked})}/></label>
+    <button className="btn btn-ghost btn-sm tt-del" title="Excluir" onClick={onApagar}>{I.trash}</button>
+    {res&&<div className={'fnt-res '+(res.ok?'bom':'ruim')}>
+      {res.ok? <>Respondeu: {res.n} item(ns){res.nome?' · '+res.nome:''}.
+        {res.exemplos&&res.exemplos.length? <div className="muted" style={{fontSize:'.72rem',marginTop:3}}>
+          Ex.: {res.exemplos.slice(0,2).join(' · ')}</div> : null}</>
+        : res.erro}
+    </div>}
+  </div>);
+}
+
+function SetorRadar({setor,clientes,cfg,onMudar,db,problemas}){
+  const [aberto,setAberto]=useState(false);
+  const [termos,setTermos]=useState(cfg.termos||'');
+  const [sug,setSug]=useState(null);       // null = nunca procurou
+  const [procurando,setProcurando]=useState(false);
+  useEffect(()=>{ setTermos(cfg.termos||''); },[setor]);
+  const fontes=cfg.fontes||[];
+  /* o servidor descobre quais veículos publicam sobre este setor e acha
+     o RSS de cada um; aqui é só escolher */
+  const procurar=async()=>{
+    setProcurando(true); setSug(null);
+    if(!NUVEM_ON){ setProcurando(false); setSug({erro:'No espelho não dá: a procura roda no Apps Script.'}); return; }
+    try{ const r=await nuvemApi('sugerirFontes',{setor,termos:cfg.termos||''});
+      setSug(r&&r.ok? r : {erro:(r&&r.erro)||'Não deu para procurar agora.'}); }
+    catch(e){ setSug({erro:'Sem conexão com a base.'}); }
+    setProcurando(false);
+  };
+  const adotar=(x)=>{ onMudar({...cfg,fontes:[...fontes,{id:uid(),tipo:'rss',nome:x.nome,url:x.url}]});
+    setSug(s=>s&&s.fontes?{...s,fontes:s.fontes.filter(y=>y.site!==x.site)}:s); };
+  const probl=(problemas||[]).filter(x=>x.trilha==='setor:'+setor);
+  const mudarFonte=(i,f)=>onMudar({...cfg,fontes:fontes.map((x,j)=>j===i?f:x)});
+  const addFonte=()=>onMudar({...cfg,fontes:[...fontes,{id:uid(),tipo:'rss',nome:'',url:''}]});
+  const sugerir=()=>{ const t=montarTermos(db,setor); setTermos(t); onMudar({...cfg,termos:t}); };
+  return (<div className="fnt-setor">
+    <div className="fnt-cab" onClick={()=>setAberto(x=>!x)}>
+      <span className="fnt-seta">{aberto?'▾':'▸'}</span>
+      <b>{setor}</b>
+      <span className="muted">{clientes.length} cliente(s)</span>
+      <span className="muted">· {fontes.filter(f=>!f.off).length} fonte(s) própria(s)</span>
+      {!cfg.termos&&<span className="fnt-aviso">busca genérica</span>}
+      {probl.length>0&&<span className="fnt-erro">{probl.length} fonte(s) com problema</span>}
+    </div>
+    {aberto&&<div className="fnt-corpo">
+      <div className="muted" style={{fontSize:'.74rem',marginBottom:8}}>
+        Clientes: {clientes.map(c=>c.name).join(', ')}
+      </div>
+      <div className="fld"><label>Busca no Google News</label>
+        <textarea className="inp" rows={2} value={termos} onChange={e=>setTermos(e.target.value)}
+          onBlur={()=>onMudar({...cfg,termos:termos.trim()})}
+          placeholder={'vazio = busca só por "'+setor+'", que costuma trazer muito ruído'}/>
+        <div className="row" style={{gap:8,marginTop:6,alignItems:'center'}}>
+          <button className="btn btn-ghost btn-sm" onClick={sugerir}>Montar com os termos de negócio</button>
+          <span className="muted" style={{fontSize:'.72rem'}}>
+            Use <b>OR</b> para alternativas, aspas para expressões e <b>-palavra</b> para excluir.</span>
+        </div>
+      </div>
+      <div className="fld" style={{marginBottom:0}}>
+        <label>Fontes próprias deste setor</label>
+        {!fontes.length&&<div className="muted" style={{fontSize:'.78rem',padding:'6px 0'}}>
+          Nenhuma ainda. É aqui que a qualidade muda: portal do setor, associação, blog de fornecedor,
+          canal do YouTube de especialista.</div>}
+        {fontes.map((f,i)=><FonteRadar key={f.id} f={f}
+          onMudar={(x)=>mudarFonte(i,x)}
+          onApagar={()=>onMudar({...cfg,fontes:fontes.filter((_,j)=>j!==i)})}/>)}
+        <div className="row" style={{gap:8,marginTop:8,flexWrap:'wrap'}}>
+          <button className="btn btn-primary btn-sm" onClick={procurar} disabled={procurando}>
+            {procurando?'Procurando…':'Procurar fontes deste setor'}</button>
+          <button className="btn btn-ghost btn-sm" onClick={addFonte}>{I.plus} Adicionar na mão</button>
+        </div>
+        {procurando&&<div className="muted" style={{fontSize:'.76rem',marginTop:8}}>
+          Vendo quais veículos publicam sobre {setor} e procurando o RSS de cada um. Leva uns 20 segundos.</div>}
+        {sug&&sug.erro&&<div className="aviso-erro" style={{marginTop:8}}>{sug.erro}</div>}
+        {sug&&sug.fontes&&<div className="sug-cx">
+          {!sug.fontes.length
+            ? <div className="muted" style={{fontSize:'.78rem'}}>Não achei veículo novo para sugerir aqui.</div>
+            : <>
+              <div className="muted" style={{fontSize:'.76rem',marginBottom:8}}>
+                Veículos que mais publicam sobre {setor}. {sug.comFeed} com RSS, dá para adicionar com um clique.</div>
+              {sug.fontes.map(x=><div key={x.site} className="sug-linha">
+                <div className="sug-info">
+                  <b>{x.nome}</b> <span className="muted">· {x.n} matéria(s)</span>
+                  <div className="muted sug-ex">{x.exemplo}</div>
+                </div>
+                {x.temFeed
+                  ? <button className="btn btn-ghost btn-sm" onClick={()=>adotar(x)}>{I.plus} Adicionar</button>
+                  : <span className="muted sug-sem">sem RSS</span>}
+              </div>)}
+            </>}
+        </div>}
+      </div>
+      {probl.length>0&&<div className="aviso-erro" style={{marginTop:10}}>
+        Na última busca: {probl.map(x=>x.fonte+' ('+x.erro+')').join(' · ')}</div>}
+    </div>}
+  </div>);
+}
+
+function FontesRadar({problemas}){
+  const {db,update,auth}=useDB();
+  const admin=auth&&auth.papel==='admin';
+  const cfg=radarCfg(db);
+  const [neg,setNeg]=useState(cfg.negocio);
+  const [ruido,setRuido]=useState(cfg.ruido);
+  useEffect(()=>{ setNeg(cfg.negocio); setRuido(cfg.ruido); },[db.radarCfg]);
+  const salvarCfg=(k,v)=>update(d=>{ d.radarCfg=Object.assign({negocio:NEG0.join(', '),ruido:RUIDO0.join(', ')},d.radarCfg||{}); d.radarCfg[k]=v; return d; });
+  const salvarSetor=(setor,c)=>update(d=>{ d.setoresRadar=Object.assign({},d.setoresRadar||{}); d.setoresRadar[setor]=c; return d; });
+
+  const porSetor={};
+  ativos(db).forEach(p=>{ const st=String(p.setor||'').trim(); if(!st) return;
+    (porSetor[st]=porSetor[st]||[]).push(p); });
+  const setores=Object.keys(porSetor).sort();
+  const semSetor=ativos(db).filter(p=>!String(p.setor||'').trim()&&!String(radarDe(p).termos||'').trim());
+
+  if(!admin) return (<div className="card card-pad">
+    <div className="muted" style={{fontSize:'.84rem'}}>Só administradores configuram as fontes do radar.</div></div>);
+
+  return (<div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="card card-pad">
+      <div className="card-h"><h3>De onde vem o conteúdo</h3>
+        <span className="sub">por setor — vale para todos os clientes daquele setor</span></div>
+      <div className="muted" style={{fontSize:'.78rem',marginBottom:12}}>
+        O Google News cobre veículos de notícia, que falam de acontecimentos. O que interessa para
+        consultoria — tributação, gestão, tendência, evento do setor — costuma estar em portal
+        especializado, associação e canal do YouTube, que muitas vezes nem entram no Google News.
+        Cadastrar essas fontes é o que muda a qualidade do radar.
+      </div>
+      {!setores.length
+        ? <div className="muted" style={{fontSize:'.8rem'}}>Nenhum cliente tem setor definido. Defina no Cockpit de cada um.</div>
+        : <div className="fnt-lista">{setores.map(st=>
+            <SetorRadar key={st} setor={st} clientes={porSetor[st]} db={db} problemas={problemas}
+              cfg={setorCfg(db,st)} onMudar={(c)=>salvarSetor(st,c)}/>)}</div>}
+      {semSetor.length>0&&<div className="muted" style={{fontSize:'.74rem',marginTop:12}}>
+        Fora do radar por não terem setor: {semSetor.map(p=>p.name).join(', ')}.</div>}
+    </div>
+
+    <div className="card card-pad">
+      <div className="card-h"><h3>Termos que valem para todos</h3>
+        <span className="sub">usados para montar as buscas e para ordenar o que chega</span></div>
+      <div className="fld"><label>Palavras de negócio <span className="muted">(sobem a matéria)</span></label>
+        <textarea className="inp" rows={3} value={neg} onChange={e=>setNeg(e.target.value)}
+          onBlur={()=>salvarCfg('negocio',neg)}/></div>
+      <div className="fld" style={{marginBottom:0}}><label>Palavras de ruído <span className="muted">(descem, e são excluídas da busca)</span></label>
+        <textarea className="inp" rows={3} value={ruido} onChange={e=>setRuido(e.target.value)}
+          onBlur={()=>salvarCfg('ruido',ruido)}/>
+        <div className="muted" style={{fontSize:'.72rem',marginTop:4}}>
+          Separe por vírgula. Depois de mudar, use “Montar com os termos de negócio” em cada setor
+          para a busca pegar a lista nova.</div></div>
+    </div>
+  </div>);
+}
+
+/* As de nota negativa não somem: ficam recolhidas, porque o que é ruído
+   para um cliente às vezes é a notícia do ano para outro. */
+function ListaComFracas({itens,render,rotulo}){
+  const [verFracas,setVerFracas]=useState(false);
+  const bons=itens.filter(n=>(n.nota===undefined||n.nota>=0));
+  const fracas=itens.filter(n=>n.nota!==undefined&&n.nota<0);
+  return (<>
+    {bons.length>0&&<div className="not-lista">{bons.map(render)}</div>}
+    {!bons.length&&!fracas.length&&null}
+    {fracas.length>0&&<>
+      <button className="btn btn-ghost btn-sm not-menos" onClick={()=>setVerFracas(x=>!x)}>
+        {verFracas?'▾':'▸'} {fracas.length} {rotulo||'com cara de não ser do setor'}</button>
+      {verFracas&&<div className="not-lista not-fracas">{fracas.map(render)}</div>}
+    </>}
+  </>);
+}
+
+/* No feed geral uma matéria pode servir a vários clientes do mesmo setor.
+   Ocultar vale para todos eles; guardar precisa saber em qual biblioteca. */
+function ItemDoSetor({n,pode,mexer,onOcultar}){
+  const [escolhendo,setEscolhendo]=useState(false);
+  const muitos=(n.clientes||[]).length>1;
+  const guardar=(pid)=>{ mexer(pid,pr=>radarFixar(pr,n)); setEscolhendo(false); };
+  return (<div className={escolhendo?'not-escolhe':''}>
+    <ItemNoticia n={{...n,cliente:n.rotulo}} pode={pode} mostrarCliente
+      onFixar={()=>{ if(muitos) setEscolhendo(x=>!x); else guardar((n.clientes[0]||{}).id); }}
+      onOcultar={()=>onOcultar()}/>
+    {escolhendo&&<div className="not-escolher">
+      <span className="muted">Guardar na biblioteca de:</span>
+      {(n.clientes||[]).map(p=><button key={p.id} className="btn btn-ghost btn-sm" onClick={()=>guardar(p.id)}>{p.name}</button>)}
+      <button className="btn btn-ghost btn-sm" onClick={()=>setEscolhendo(false)}>cancelar</button>
+    </div>}
   </div>);
 }
 
@@ -5727,12 +6101,19 @@ function TabRadar({p,mutate}){
 function NoticiasPage(){
   const {db,update,auth}=useDB();
   const pode=auth&&auth.papel!=='viewer';
-  const {itens,quando,carregando,buscando,erro,aviso,recarregar,buscarAgora}=useRadar();
+  const {itens,quando,carregando,buscando,erro,aviso,problemas,recarregar,buscarAgora}=useRadar();
+  const [aba,setAba]=useState('feed');
   const [f,setF]=useState({setor:'Todos',cli:'Todos',so:'tudo'});
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
   const clientes=ativos(db);
   const porId={}; clientes.forEach(p=>porId[p.id]=p);
   const mexer=(pid,fn)=>update(d=>{ const pr=(d.projects||[]).find(x=>x.id===pid); if(pr) fn(pr); return d; });
+  /* trilha de setor: a marca fica no setor, uma vez. Trilha de cliente:
+     fica no cliente, como sempre. */
+  const ocultarTrilha=(n)=>update(d=>{
+    if(String(n.trilha||'').slice(0,6)==='setor:') return ocultarNoSetor(d,n.trilha.slice(6),n.link);
+    (n.clientes||[]).forEach(p=>{ const pr=(d.projects||[]).find(x=>x.id===p.id); if(pr) radarOcultar(pr,n.link); });
+    return d; });
 
   const setores=[...new Set(clientes.map(p=>p.setor).filter(Boolean))].sort();
   const passa=(p)=>{
@@ -5745,14 +6126,47 @@ function NoticiasPage(){
   const fixados=[];
   clientes.filter(passa).forEach(p=>radarFix(p).forEach(n=>fixados.push({...n,pid:p.id,cliente:p.name})));
   fixados.sort((a,b)=>String(b.quando||'').localeCompare(String(a.quando||'')));
-  /* o rodízio, já sem ocultas e sem fixadas */
-  const feed=[];
-  clientes.filter(passa).forEach(p=>noticiasDoCliente(itens,p).forEach(n=>feed.push({...n,cliente:p.name})));
-  feed.sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+
+  /* O rodízio é agrupado por trilha: clientes do mesmo setor compartilham
+     a busca, então a matéria é uma só, com os clientes que ela atende. */
+  const visiveis=clientes.filter(passa);
+  const porTrilha={};
+  visiveis.forEach(p=>{ const t=trilhaDe(p); if(!t) return;
+    (porTrilha[t]=porTrilha[t]||{chave:t,clientes:[],rotulo:''}).clientes.push(p); });
+  Object.values(porTrilha).forEach(t=>{
+    t.rotulo = t.chave.slice(0,6)==='setor:' ? t.chave.slice(6) : (t.clientes[0]||{}).name||'';
+  });
+  const cru=[];
+  Object.values(porTrilha).forEach(t=>{
+    /* esconde o que TODOS os clientes da trilha mandaram ocultar, e o que
+       algum deles já guardou na biblioteca */
+    const oc={}, fx={};
+    t.clientes.forEach(p=>{ radarFix(p).forEach(x=>fx[x.link]=1); });
+    if(t.chave.slice(0,6)==='setor:') ocultosDoSetor(db,t.chave.slice(6)).forEach(l=>oc[l]=1);
+    else t.clientes.forEach(p=>radarOcultos(p).forEach(l=>oc[l]=1));
+    (itens||[]).filter(n=>n.chave===t.chave).forEach(n=>{
+      if(fx[n.link]||oc[n.link]) return;
+      cru.push({...n,nota:notaNoticia(db,n),trilha:t.chave,rotulo:t.rotulo,clientes:t.clientes});
+    });
+  });
+  cru.sort((a,b)=> (b.nota||0)-(a.nota||0) || String(b.data||'').localeCompare(String(a.data||'')));
+  const feed=semRepetidas(cru,(fica,sai)=>{
+    const tem={}; (fica.clientes||[]).forEach(p=>tem[p.id]=1);
+    const novos=(sai.clientes||[]).filter(p=>!tem[p.id]);
+    if(novos.length) fica.clientes=(fica.clientes||[]).concat(novos);
+  });
 
   const semTermos=clientes.filter(p=>!radarLigado(p));
 
+  const nProb=(problemas||[]).length;
   return (<div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="tabs">
+      <button className={'tab '+(aba==='feed'?'on':'')} onClick={()=>setAba('feed')}>Feed</button>
+      <button className={'tab '+(aba==='fontes'?'on':'')} onClick={()=>setAba('fontes')}>
+        Fontes{nProb?' ('+nProb+')':''}</button>
+    </div>
+    {aba==='fontes'&&<FontesRadar problemas={problemas}/>}
+    {aba==='feed'&&<>
     <div className="card card-pad">
       <div className="row" style={{gap:10,flexWrap:'wrap',alignItems:'center'}}>
         <select className="sel" style={{width:200}} value={f.setor} onChange={e=>set('setor',e.target.value)}>
@@ -5791,15 +6205,16 @@ function NoticiasPage(){
     </div>}
 
     {f.so!=='fix'&&<div className="card card-pad">
-      <div className="card-h"><h3>Do radar</h3><span className="sub">{feed.length} notícia(s) dos últimos dias</span></div>
+      <div className="card-h"><h3>Do radar</h3>
+        <span className="sub">{feed.filter(n=>(n.nota||0)>=0).length} notícia(s) dos últimos dias
+          {Object.keys(porTrilha).length>1&&<> · {Object.keys(porTrilha).length} trilhas de busca</>}</span></div>
       {carregando
         ? <div className="muted" style={{fontSize:'.8rem',padding:'8px 0'}}>Lendo as notícias…</div>
         : !feed.length
           ? <div className="muted" style={{fontSize:'.8rem',padding:'8px 0'}}>
               Nada por aqui.{semTermos.length?' '+semTermos.length+' cliente(s) ainda estão sem setor ou sem termos de busca.':''}</div>
-          : <div className="not-lista">{feed.map(n=><ItemNoticia key={n.pid+n.link} n={n} pode={pode} mostrarCliente
-              onFixar={()=>mexer(n.pid,pr=>radarFixar(pr,n))}
-              onOcultar={()=>mexer(n.pid,pr=>radarOcultar(pr,n.link))}/>)}</div>}
+          : <ListaComFracas itens={feed} render={n=><ItemDoSetor key={n.trilha+n.link} n={n} pode={pode} mexer={mexer}
+              onOcultar={()=>ocultarTrilha(n)}/>}/>}
     </div>}
 
     {!carregando&&semTermos.length>0&&<div className="card card-pad">
@@ -5808,6 +6223,7 @@ function NoticiasPage(){
         {semTermos.map(p=>p.name).join(' · ')}
         <div style={{marginTop:6}}>Defina o <b>setor</b> no Cockpit de cada um, ou escreva os termos na aba Radar do cliente.</div></div>
     </div>}
+    </>}
   </div>);
 }
 
@@ -6084,7 +6500,10 @@ let EU_ATUAL=(()=>{ try{return localStorage.getItem(EU_KEY)||'';}catch(e){return
    O cargo de cada pessoa é definido em Equipe. Quem ainda não disse
    quem é fica com o acesso de Editor até escolher o nome.
    ------------------------------------------------------------ */
-const ABAS_EDITOR=['dashboard','sprint','tasks','projects','calendar','tools','funcionamento','settings'];
+/* Notícias entra aqui porque quem atende o cliente é quem mais usa o
+   radar do setor — e notícia pública não é informação sensível como
+   contrato, acessos ou histórico. */
+const ABAS_EDITOR=['dashboard','sprint','tasks','projects','calendar','tools','noticias','funcionamento','settings'];
 const CARGO_DESC={
   admin:'Acessa e altera todo o sistema',
   editor:'Dashboard, Sprint (só o andamento), Tarefas, Clientes, Calendário, Ferramentas, Funcionamento Geral e Configurações',
@@ -8562,7 +8981,7 @@ function ProjectDetail(){
   const p=db.projects.find(x=>x.id===route.projectId);
   const [tab,setTab]=useState('overview'); const [editName,setEditName]=useState(false);
   /* selinho de notícias não vistas na aba Radar */
-  const nRadar=(()=>{ try{ return radarNaoVistas(RADAR_CACHE||[],p); }catch(e){ return 0; } })();
+  const nRadar=(()=>{ try{ return radarNaoVistas(RADAR_CACHE||[],p,db); }catch(e){ return 0; } })();
   if(!p) return <div className="empty">Cliente não encontrado. <button className="btn btn-ghost btn-sm" onClick={()=>go('projects')}>Voltar</button></div>;
   const pr=projProgress(p); const s=sinaleira(p);
   const mutate=(fn)=>update(d=>{const proj=d.projects.find(x=>x.id===p.id);fn(proj,d);return d;});
