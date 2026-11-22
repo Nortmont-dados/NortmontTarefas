@@ -641,6 +641,36 @@ a{color:inherit}
 .tt-balde{width:200px;flex:none}
 .tt-usos{font-size:.73rem;min-width:92px}
 .sel-sm{padding:5px 8px;font-size:.76rem;height:auto}
+/* ----- radar de notícias ----- */
+.not-lista{display:flex;flex-direction:column}
+.not-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.not-item:last-child{border-bottom:none}
+.not-item.fix{background:linear-gradient(90deg,rgba(194,116,46,.06),transparent 60%);
+  border-left:3px solid #C2742E;padding-left:10px;margin-left:-10px}
+.not-corpo{flex:1;min-width:0}
+.not-tit{display:block;font-size:.86rem;font-weight:600;color:var(--text);text-decoration:none;line-height:1.35}
+.not-tit:hover{color:var(--brand);text-decoration:underline}
+.not-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:3px;font-size:.73rem;color:var(--muted)}
+.not-pt{opacity:.5}
+.not-cli{font-weight:600;color:var(--brand)}
+.not-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  padding:1px 6px;border-radius:999px;background:#C2742E22;color:#8a5115}
+.not-nota{margin-top:6px;width:100%;max-width:520px}
+.not-nota-txt{margin-top:5px;font-size:.78rem;color:var(--muted);font-style:italic;cursor:text}
+.not-bts{display:flex;gap:2px;flex:none;opacity:.35;transition:opacity .12s}
+.not-item:hover .not-bts{opacity:1}
+.not-bts .btn{padding:3px 7px;min-width:0;font-size:.9rem;line-height:1}
+.not-item.fix .not-bts{opacity:.75}
+.not-x:hover{color:#B33A3A}
+.lab-agenda{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  margin-left:6px;padding:1px 6px;border-radius:999px;background:#2F8F6E22;color:#1d6b52}
+.aviso-email{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px;padding:12px 14px;
+  background:#fff8e7;border:1px solid #f0dca8;border-left:4px solid #C2742E;border-radius:10px;font-size:.82rem;line-height:1.45}
+.not-aviso{margin-top:10px;padding:8px 12px;border-radius:10px;font-size:.78rem;
+  background:#eef6f4;border:1px solid #cfe4df;color:#17514c}
+.not-cfg{padding:12px;margin-bottom:12px;background:var(--bg-soft,#f7f8f9);border:1px solid var(--border);border-radius:10px}
+.not-novo{display:flex;flex-direction:column;gap:8px;width:min(420px,100%);margin-left:auto}
+@media (max-width:760px){.not-novo{width:100%;margin-left:0}.not-bts{opacity:1}}
 .tt-ico{padding:4px 7px;min-width:0}
 .tt-del:hover{color:#B33A3A}
 .tt-apagar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;
@@ -3666,6 +3696,145 @@ let _uid=1000; const uid=()=> 'id'+(++_uid)+Math.floor(Math.random()*9999);
 function slug(t){return String(t||'Projeto').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
   .replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'')||'Projeto';}
 
+/* ======================================================================
+   RADAR DE NOTÍCIAS
+   O Apps Script busca no Google News, todo dia, usando os termos de cada
+   cliente, e deixa o resultado numa aba à parte da planilha. Aqui o
+   sistema só lê essa lista.
+
+   Duas coisas moram em lugares diferentes, de propósito:
+     · o que o radar achou  → aba "Notícias" da planilha, descartável:
+       se sumir, a próxima busca traz de volta;
+     · o que é seu          → p.radar, dentro da base, junto com o resto
+       do cliente e dos backups. É a biblioteca do cliente: as matérias
+       que você guardou, os links que você mesmo colou, os termos de
+       busca e o que você mandou ocultar.
+       (No banco esse campo se chama radar.fix, de quando a ideia era
+       "fixar"; o nome ficou para não migrar base à toa.)
+   ====================================================================== */
+const radarDe=(p)=>(p&&p.radar)||{};
+const radarTermos=(p)=>String(radarDe(p).termos||(p&&p.setor)||'').trim();
+const radarLigado=(p)=>!radarDe(p).off&&!!radarTermos(p);
+const radarFix=(p)=>radarDe(p).fix||[];
+const radarOcultos=(p)=>radarDe(p).ocultos||[];
+/* mexe no radar de um cliente garantindo que a estrutura exista */
+function mexeRadar(pr,fn){
+  pr.radar=Object.assign({termos:'',off:false,fix:[],ocultos:[],visto:''},pr.radar||{});
+  pr.radar.fix=pr.radar.fix||[]; pr.radar.ocultos=pr.radar.ocultos||[];
+  fn(pr.radar); return pr.radar;
+}
+const radarFixar=(pr,n)=>mexeRadar(pr,r=>{
+  if(r.fix.some(x=>x.link===n.link)) return;
+  r.fix.unshift({id:uid(),titulo:n.titulo||'',link:n.link,fonte:n.fonte||'',data:n.data||'',
+    origem:n.origem||'radar',nota:n.nota||'',quando:new Date().toISOString()});
+});
+const radarSoltar=(pr,id)=>mexeRadar(pr,r=>{ r.fix=r.fix.filter(x=>x.id!==id); });
+const radarOcultar=(pr,link)=>mexeRadar(pr,r=>{
+  if(r.ocultos.indexOf(link)<0) r.ocultos.unshift(link);
+  r.ocultos=r.ocultos.slice(0,300);   // não deixa a lista crescer sem fim
+});
+const radarMostrar=(pr,link)=>mexeRadar(pr,r=>{ r.ocultos=r.ocultos.filter(x=>x!==link); });
+
+/* data da notícia em formato curto, tolerando o que vier torto */
+function dataNoticia(iso){
+  if(!iso) return '';
+  const d=new Date(iso); if(isNaN(d.getTime())) return '';
+  const dias=Math.floor((Date.now()-d.getTime())/864e5);
+  if(dias<=0) return 'hoje';
+  if(dias===1) return 'ontem';
+  if(dias<7) return 'há '+dias+' dias';
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+}
+/* o domínio, para quando o Google não mandar o nome do veículo */
+function veiculoDe(n){
+  if(n.fonte) return n.fonte;
+  try{ return new URL(n.link).hostname.replace(/^www\./,''); }catch(e){ return 'link'; }
+}
+
+/* No espelho não existe Apps Script: inventa notícias para a tela ter o
+   que mostrar. Nunca roda no sistema de verdade. */
+function radarSimulado(db){
+  if(!window.FOCUS_ESPELHO_SIM) return [];
+  const MODELOS=[
+    ['Mercado de {s} cresce e deve fechar o ano em alta','Valor Econômico',1],
+    ['O que muda na regulamentação do setor de {s} em 2027','Estadão',2],
+    ['Três tendências de {s} para ficar de olho','Exame',4],
+    ['Consumidor de {s} muda hábito e pressiona margens','Folha de S.Paulo',6],
+    ['Investimento em tecnologia avança em {s}','InfoMoney',9],
+    ['Pequenas empresas de {s} lideram contratações','G1',12]];
+  const out=[];
+  (ativos(db)||[]).forEach(p=>{
+    if(!radarLigado(p)) return;
+    const alvo=(p.setor||radarTermos(p)).toLowerCase();
+    MODELOS.forEach((m,i)=>{
+      const d=new Date(Date.now()-m[2]*864e5);
+      out.push({pid:p.id,cliente:p.name,titulo:m[0].replace('{s}',alvo),fonte:m[1],
+        data:d.toISOString(),link:'https://exemplo.com.br/'+p.id+'/'+i});
+    });
+  });
+  return out;
+}
+
+/* Uma leitura só, compartilhada pela aba do cliente e pela página Notícias */
+let RADAR_CACHE=null, RADAR_PROM=null, RADAR_QUANDO='';
+function carregarRadar(db,forcar){
+  if(!NUVEM_ON){ RADAR_CACHE=radarSimulado(db); return Promise.resolve({itens:RADAR_CACHE,quando:''}); }
+  if(!forcar&&RADAR_CACHE) return Promise.resolve({itens:RADAR_CACHE,quando:RADAR_QUANDO});
+  if(!forcar&&RADAR_PROM) return RADAR_PROM;
+  RADAR_PROM=nuvemApi('noticias',{}).then(r=>{
+    RADAR_PROM=null;
+    if(!r||!r.ok){
+      const velho=r&&r.erro==='ação desconhecida';
+      throw new Error(velho? 'O Apps Script ainda está na versão antiga. Republique o Codigo.gs para ligar o radar.'
+                           : ((r&&r.erro)||'Não consegui ler as notícias.'));
+    }
+    RADAR_CACHE=r.itens||[]; RADAR_QUANDO=r.quando||'';
+    return {itens:RADAR_CACHE,quando:RADAR_QUANDO};
+  }).catch(e=>{ RADAR_PROM=null; throw e; });
+  return RADAR_PROM;
+}
+function useRadar(){
+  const {db}=useDB();
+  const vazio={itens:[],quando:'',carregando:true,buscando:false,erro:'',aviso:''};
+  const [est,setEst]=useState(()=>RADAR_CACHE?{...vazio,itens:RADAR_CACHE,quando:RADAR_QUANDO,carregando:false}:vazio);
+  /* relê a lista que o servidor já tem */
+  const reler=(aviso)=>carregarRadar(db,true)
+    .then(r=>setEst({itens:r.itens,quando:r.quando,carregando:false,buscando:false,erro:'',aviso:aviso||''}))
+    .catch(e=>setEst(x=>({...x,carregando:false,buscando:false,erro:e.message||String(e)})));
+  /* manda o Apps Script sair buscando notícia nova agora, e depois relê.
+     Leva alguns segundos: é uma consulta ao Google por cliente. */
+  const buscarAgora=()=>{
+    setEst(x=>({...x,buscando:true,erro:'',aviso:''}));
+    if(!NUVEM_ON){ RADAR_CACHE=null; reler(''); return; }
+    nuvemApi('radarAgora',{}).then(r=>{
+      if(r&&r.ok) return reler(r.novas? r.novas+' notícia(s) nova(s).' : 'Nada novo desde a última busca.');
+      const msg=(r&&r.erro)||'Não deu para buscar agora.';
+      return reler(msg==='ação desconhecida'
+        ? 'O Apps Script ainda está na versão antiga: republique o Codigo.gs para a busca manual funcionar.'
+        : msg);
+    }).catch(e=>setEst(x=>({...x,buscando:false,erro:e.message||String(e)})));
+  };
+  useEffect(()=>{ let vivo=true;
+    carregarRadar(db,false)
+      .then(r=>{ if(vivo) setEst({...vazio,itens:r.itens,quando:r.quando,carregando:false}); })
+      .catch(e=>{ if(vivo) setEst({...vazio,carregando:false,erro:e.message||String(e)}); });
+    return ()=>{ vivo=false; }; },[]);
+  return {...est,recarregar:()=>{ setEst(x=>({...x,carregando:true,erro:'',aviso:''})); reler(''); },buscarAgora};
+}
+/* As notícias de um cliente, já sem as ocultas e sem as que estão fixadas */
+function noticiasDoCliente(itens,p){
+  const oc={}, fx={};
+  radarOcultos(p).forEach(l=>oc[l]=1);
+  radarFix(p).forEach(x=>fx[x.link]=1);
+  return (itens||[]).filter(n=>n.pid===p.id&&!oc[n.link]&&!fx[n.link])
+    .sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+}
+/* Quantas chegaram depois da última vez que a pessoa abriu o radar */
+function radarNaoVistas(itens,p){
+  const visto=radarDe(p).visto||'';
+  return noticiasDoCliente(itens,p).filter(n=>!visto||String(n.data||'')>visto).length;
+}
+
 /* ===== ABAS DO SISTEMA (base do controle de permissão por usuário) ===== */
 const ABAS = [
   {k:'dashboard',label:'Dashboard'},
@@ -3678,12 +3847,13 @@ const ABAS = [
   {k:'tools',    label:'Ferramentas'},
   {k:'contratos',label:'Contratos'},
   {k:'analise',  label:'Análise de Carteira'},
+  {k:'noticias', label:'Notícias'},
   {k:'funcionamento', label:'Funcionamento Geral'},
   {k:'historico', label:'Histórico'},
   {k:'settings', label:'Configurações'},
 ];
 // o que um COLABORADOR novo enxerga por padrão (admin vê tudo, sempre)
-const ABAS_PADRAO_COLAB = ['dashboard','tasks','sprint','projects','calendar','tools','analise','funcionamento'];
+const ABAS_PADRAO_COLAB = ['dashboard','tasks','sprint','projects','calendar','tools','analise','noticias','funcionamento'];
 const PAPEIS = [{k:'admin',label:'Administrador'},{k:'colaborador',label:'Colaborador'}];
 
 // ===== helpers de datas / semáforo / semana =====
@@ -5410,6 +5580,237 @@ function App({nuvem}={}){
     <Festa/>
   </DB.Provider></AUTH.Provider>);
 }
+
+/* ======================================================================
+   RADAR — telas
+   ====================================================================== */
+/* Um item da lista. Serve para o que veio do radar e para o que você
+   fixou ou colou: muda só quais botões aparecem. */
+function ItemNoticia({n,fixado,pode,onFixar,onSoltar,onOcultar,onNota,mostrarCliente}){
+  const [nota,setNota]=useState(n.nota||'');
+  const [abrindoNota,setAbrindoNota]=useState(false);
+  useEffect(()=>{ setNota(n.nota||''); },[n.id,n.nota]);
+  const salvarNota=()=>{ setAbrindoNota(false); if((n.nota||'')!==nota) onNota&&onNota(nota); };
+  return (<div className={'not-item'+(fixado?' fix':'')}>
+    <div className="not-corpo">
+      <a className="not-tit" href={n.link} target="_blank" rel="noopener noreferrer">{n.titulo||n.link}</a>
+      <div className="not-meta">
+        {fixado&&n.origem==='meu'&&<span className="not-tag meu">seu link</span>}
+        <span>{veiculoDe(n)}</span>
+        {dataNoticia(n.data)&&<><span className="not-pt">·</span><span>{dataNoticia(n.data)}</span></>}
+        {mostrarCliente&&n.cliente&&<><span className="not-pt">·</span><span className="not-cli">{n.cliente}</span></>}
+      </div>
+      {fixado&&(n.nota||abrindoNota)&&(abrindoNota
+        ? <input className="inp inp-sm not-nota" autoFocus value={nota} placeholder="Sua nota sobre este link"
+            onChange={e=>setNota(e.target.value)} onBlur={salvarNota}
+            onKeyDown={e=>{ if(e.key==='Enter') e.target.blur(); if(e.key==='Escape'){ setNota(n.nota||''); setAbrindoNota(false); } }}/>
+        : <div className="not-nota-txt" onClick={()=>pode&&setAbrindoNota(true)} title={pode?'Clique para editar':''}>{n.nota}</div>)}
+    </div>
+    {pode&&<div className="not-bts">
+      {fixado
+        ? <>{!n.nota&&!abrindoNota&&<button className="btn btn-ghost btn-sm" title="Escrever uma nota" onClick={()=>setAbrindoNota(true)}>✎</button>}
+            <button className="btn btn-ghost btn-sm" title="Tirar da biblioteca do cliente" onClick={onSoltar}>★</button></>
+        : <><button className="btn btn-ghost btn-sm" onClick={onFixar}
+              title="Guardar na biblioteca do cliente — fica salvo mesmo depois que sair do radar">☆</button>
+            <button className="btn btn-ghost btn-sm not-x" title="Não interessa — não mostrar mais" onClick={onOcultar}>×</button></>}
+    </div>}
+  </div>);
+}
+
+/* Formulário de colar um link seu */
+function NovoLinkRadar({onAdd}){
+  const [aberto,setAberto]=useState(false);
+  const [f,setF]=useState({titulo:'',link:'',nota:''});
+  const [erro,setErro]=useState('');
+  const limpar=()=>{ setF({titulo:'',link:'',nota:''}); setErro(''); setAberto(false); };
+  const criar=()=>{
+    let link=String(f.link||'').trim();
+    if(!link){ setErro('Cole o endereço da página.'); return; }
+    if(!/^https?:\/\//i.test(link)) link='https://'+link;
+    try{ new URL(link); }catch(e){ setErro('Esse endereço não parece válido.'); return; }
+    onAdd({titulo:String(f.titulo||'').trim()||link,link:link,nota:String(f.nota||'').trim(),origem:'meu',
+      fonte:'',data:new Date().toISOString()});
+    limpar();
+  };
+  if(!aberto) return (<button className="btn btn-ghost btn-sm" onClick={()=>setAberto(true)}>{I.plus} Guardar um link meu</button>);
+  return (<div className="not-novo">
+    {erro&&<div className="aviso-erro" style={{marginBottom:8}}>{erro}</div>}
+    <input className="inp inp-sm" placeholder="Endereço (cole aqui)" value={f.link} autoFocus
+      onChange={e=>setF(x=>({...x,link:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&criar()}/>
+    <input className="inp inp-sm" placeholder="Título (opcional)" value={f.titulo}
+      onChange={e=>setF(x=>({...x,titulo:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&criar()}/>
+    <input className="inp inp-sm" placeholder="Nota (opcional)" value={f.nota}
+      onChange={e=>setF(x=>({...x,nota:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&criar()}/>
+    <div className="row" style={{gap:8}}>
+      <button className="btn btn-primary btn-sm" onClick={criar}>Adicionar</button>
+      <button className="btn btn-ghost btn-sm" onClick={limpar}>Cancelar</button>
+    </div>
+  </div>);
+}
+
+/* A aba Radar dentro do cliente */
+function TabRadar({p,mutate}){
+  const {db,auth}=useDB();
+  const pode=auth&&auth.papel!=='viewer';
+  const {itens,quando,carregando,buscando,erro,aviso,recarregar,buscarAgora}=useRadar();
+  const [cfg,setCfg]=useState(false);
+  const [termos,setTermos]=useState(radarDe(p).termos||'');
+  useEffect(()=>{ setTermos(radarDe(p).termos||''); },[p.id]);
+  /* marca como visto ao abrir, para o selinho zerar */
+  useEffect(()=>{ if(!pode) return; const t=setTimeout(()=>mutate(pr=>mexeRadar(pr,r=>{ r.visto=new Date().toISOString(); })),1200);
+    return ()=>clearTimeout(t); },[p.id]);
+
+  const fix=radarFix(p), feed=noticiasDoCliente(itens,p), oc=radarOcultos(p);
+  const salvarTermos=()=>mutate(pr=>mexeRadar(pr,r=>{ r.termos=String(termos||'').trim(); }));
+
+  return (<div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="card card-pad">
+      <div className="card-h"><h3>Biblioteca do cliente</h3>
+        <span className="sub">as matérias que você guardou — ficam aqui, não saem com o rodízio</span>
+        {pode&&<div style={{marginLeft:'auto'}}><NovoLinkRadar onAdd={n=>mutate(pr=>radarFixar(pr,n))}/></div>}</div>
+      {!fix.length
+        ? <div className="muted" style={{fontSize:'.8rem',padding:'10px 0'}}>
+            A biblioteca está vazia. Use a estrelinha nas notícias abaixo para guardar as que valem a pena,
+            ou cole um link seu.</div>
+        : <div className="not-lista">{fix.map(n=><ItemNoticia key={n.id} n={n} fixado pode={pode}
+            onSoltar={()=>mutate(pr=>radarSoltar(pr,n.id))}
+            onNota={(v)=>mutate(pr=>mexeRadar(pr,r=>{ const x=r.fix.find(y=>y.id===n.id); if(x) x.nota=v; }))}/>)}</div>}
+    </div>
+
+    <div className="card card-pad">
+      <div className="card-h"><h3>Do radar</h3>
+        <span className="sub">{radarLigado(p)? 'últimos 7 dias sobre '+radarTermos(p) : 'radar desligado para este cliente'}</span>
+        <div className="row" style={{gap:8,marginLeft:'auto'}}>
+          {pode&&<button className="btn btn-ghost btn-sm" onClick={buscarAgora} disabled={buscando||carregando}
+            title="Procura notícias novas agora. Leva alguns segundos.">
+            {buscando?'Buscando…':'↻ Buscar agora'}</button>}
+          {pode&&<button className="btn btn-ghost btn-sm" onClick={()=>setCfg(x=>!x)}>Ajustes</button>}</div></div>
+      {aviso&&<div className="not-aviso">{aviso}</div>}
+
+      {cfg&&pode&&<div className="not-cfg">
+        <div className="fld"><label>Termos de busca</label>
+          <input className="inp" value={termos} onBlur={salvarTermos} onChange={e=>setTermos(e.target.value)}
+            onKeyDown={e=>e.key==='Enter'&&e.target.blur()}
+            placeholder={p.setor? 'vazio = usa o setor ('+p.setor+')' : 'ex.: funerária OR cremação OR "setor funerário"'}/>
+          <div className="muted" style={{fontSize:'.72rem',marginTop:4}}>
+            Separe alternativas com <b>OR</b> e use aspas para expressões exatas. Vazio, vale o setor do cliente.
+            {!p.setor&&<> Este cliente ainda não tem setor — dá para definir no Cockpit.</>}</div></div>
+        <label className="row" style={{gap:8,marginTop:10,fontSize:'.82rem',cursor:'pointer'}}>
+          <input type="checkbox" checked={!radarDe(p).off} onChange={e=>mutate(pr=>mexeRadar(pr,r=>{ r.off=!e.target.checked; }))}/>
+          Buscar notícias para este cliente</label>
+        {oc.length>0&&<div className="muted" style={{fontSize:'.74rem',marginTop:10}}>
+          {oc.length} notícia(s) marcada(s) como “não interessa”.
+          <button className="btn btn-ghost btn-sm" style={{marginLeft:6}}
+            onClick={()=>mutate(pr=>mexeRadar(pr,r=>{ r.ocultos=[]; }))}>mostrar de novo</button></div>}
+      </div>}
+
+      {erro
+        ? <div className="aviso-erro">{erro}</div>
+        : carregando
+          ? <div className="muted" style={{fontSize:'.8rem',padding:'10px 0'}}>Lendo as notícias…</div>
+          : !radarLigado(p)
+            ? <div className="muted" style={{fontSize:'.8rem',padding:'10px 0'}}>
+                Para este cliente o radar está sem termos de busca. Defina o setor no Cockpit, ou escreva os termos em Ajustes.</div>
+            : !feed.length
+              ? <div className="muted" style={{fontSize:'.8rem',padding:'10px 0'}}>
+                  Nada novo nos últimos dias.{quando&&<> Última busca: {dataNoticia(quando)}.</>}</div>
+              : <div className="not-lista">{feed.map(n=><ItemNoticia key={n.link} n={n} pode={pode}
+                  onFixar={()=>mutate(pr=>radarFixar(pr,n))}
+                  onOcultar={()=>mutate(pr=>radarOcultar(pr,n.link))}/>)}</div>}
+      {quando&&!carregando&&!erro&&<div className="muted" style={{fontSize:'.7rem',marginTop:10}}>
+        Última busca do radar: {new Date(quando).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>}
+    </div>
+  </div>);
+}
+
+/* A página Notícias: tudo de todos os clientes, em ordem de data */
+function NoticiasPage(){
+  const {db,update,auth}=useDB();
+  const pode=auth&&auth.papel!=='viewer';
+  const {itens,quando,carregando,buscando,erro,aviso,recarregar,buscarAgora}=useRadar();
+  const [f,setF]=useState({setor:'Todos',cli:'Todos',so:'tudo'});
+  const set=(k,v)=>setF(x=>({...x,[k]:v}));
+  const clientes=ativos(db);
+  const porId={}; clientes.forEach(p=>porId[p.id]=p);
+  const mexer=(pid,fn)=>update(d=>{ const pr=(d.projects||[]).find(x=>x.id===pid); if(pr) fn(pr); return d; });
+
+  const setores=[...new Set(clientes.map(p=>p.setor).filter(Boolean))].sort();
+  const passa=(p)=>{
+    if(!p) return false;
+    if(f.setor!=='Todos'&&(p.setor||'')!==f.setor) return false;
+    if(f.cli!=='Todos'&&p.id!==f.cli) return false;
+    return true;
+  };
+  /* fixados e links próprios de todos os clientes que passam no filtro */
+  const fixados=[];
+  clientes.filter(passa).forEach(p=>radarFix(p).forEach(n=>fixados.push({...n,pid:p.id,cliente:p.name})));
+  fixados.sort((a,b)=>String(b.quando||'').localeCompare(String(a.quando||'')));
+  /* o rodízio, já sem ocultas e sem fixadas */
+  const feed=[];
+  clientes.filter(passa).forEach(p=>noticiasDoCliente(itens,p).forEach(n=>feed.push({...n,cliente:p.name})));
+  feed.sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+
+  const semTermos=clientes.filter(p=>!radarLigado(p));
+
+  return (<div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="card card-pad">
+      <div className="row" style={{gap:10,flexWrap:'wrap',alignItems:'center'}}>
+        <select className="sel" style={{width:200}} value={f.setor} onChange={e=>set('setor',e.target.value)}>
+          <option value="Todos">Setor · todos</option>
+          {setores.map(x=><option key={x} value={x}>{x}</option>)}</select>
+        <select className="sel" style={{width:210}} value={f.cli} onChange={e=>set('cli',e.target.value)}>
+          <option value="Todos">Cliente · todos</option>
+          {clientes.filter(p=>f.setor==='Todos'||(p.setor||'')===f.setor).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>
+        <select className="sel" style={{width:180}} value={f.so} onChange={e=>set('so',e.target.value)}>
+          <option value="tudo">Biblioteca e radar</option>
+          <option value="fix">Só a biblioteca</option>
+          <option value="feed">Só o radar</option></select>
+        <div className="row" style={{gap:8,marginLeft:'auto'}}>
+          <button className="btn btn-ghost btn-sm" onClick={recarregar} disabled={carregando||buscando}
+            title="Relê a lista que o servidor já tem">{carregando?'Lendo…':'Recarregar'}</button>
+          {pode&&<button className="btn btn-primary btn-sm" onClick={buscarAgora} disabled={buscando||carregando}
+            title="Procura notícias novas agora, cliente por cliente. Leva alguns segundos.">
+            {buscando?'Buscando…':'↻ Buscar agora'}</button>}</div>
+      </div>
+      {aviso&&<div className="not-aviso">{aviso}</div>}
+      {quando&&<div className="muted" style={{fontSize:'.72rem',marginTop:8}}>
+        Última busca do radar: {new Date(quando).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} ·
+        a busca roda sozinha todo dia de madrugada.</div>}
+    </div>
+
+    {erro&&<div className="card card-pad"><div className="aviso-erro">{erro}</div></div>}
+
+    {f.so!=='feed'&&<div className="card card-pad">
+      <div className="card-h"><h3>Biblioteca</h3>
+        <span className="sub">{fixados.length} matéria(s) guardada(s) nos clientes</span></div>
+      {!fixados.length
+        ? <div className="muted" style={{fontSize:'.8rem',padding:'8px 0'}}>Nenhum cliente deste filtro tem matéria guardada.</div>
+        : <div className="not-lista">{fixados.map(n=><ItemNoticia key={n.pid+n.id} n={n} fixado pode={pode} mostrarCliente
+            onSoltar={()=>mexer(n.pid,pr=>radarSoltar(pr,n.id))}
+            onNota={(v)=>mexer(n.pid,pr=>mexeRadar(pr,r=>{ const x=r.fix.find(y=>y.id===n.id); if(x) x.nota=v; }))}/>)}</div>}
+    </div>}
+
+    {f.so!=='fix'&&<div className="card card-pad">
+      <div className="card-h"><h3>Do radar</h3><span className="sub">{feed.length} notícia(s) dos últimos dias</span></div>
+      {carregando
+        ? <div className="muted" style={{fontSize:'.8rem',padding:'8px 0'}}>Lendo as notícias…</div>
+        : !feed.length
+          ? <div className="muted" style={{fontSize:'.8rem',padding:'8px 0'}}>
+              Nada por aqui.{semTermos.length?' '+semTermos.length+' cliente(s) ainda estão sem setor ou sem termos de busca.':''}</div>
+          : <div className="not-lista">{feed.map(n=><ItemNoticia key={n.pid+n.link} n={n} pode={pode} mostrarCliente
+              onFixar={()=>mexer(n.pid,pr=>radarFixar(pr,n))}
+              onOcultar={()=>mexer(n.pid,pr=>radarOcultar(pr,n.link))}/>)}</div>}
+    </div>}
+
+    {!carregando&&semTermos.length>0&&<div className="card card-pad">
+      <div className="card-h"><h3>Sem radar</h3><span className="sub">clientes que o radar não consegue buscar</span></div>
+      <div className="muted" style={{fontSize:'.78rem'}}>
+        {semTermos.map(p=>p.name).join(' · ')}
+        <div style={{marginTop:6}}>Defina o <b>setor</b> no Cockpit de cada um, ou escreva os termos na aba Radar do cliente.</div></div>
+    </div>}
+  </div>);
+}
+
 function PageRouter(){
   const {route,auth}=useDB();
   if(!podeVer(auth,route.page)) return <div className="empty"><div className="ic">🔒</div>Você não tem permissão para ver esta aba.<div className="muted" style={{fontSize:'.8rem',marginTop:6}}>{NUVEM_ON? 'Seu cargo não dá acesso a esta aba. Se precisar, peça a um administrador.' : 'Escolha seu nome em “Quem é você?”, na barra de cima. Se for o caso, peça a um administrador para ajustar seu cargo em Equipe.'}</div></div>;
@@ -5423,6 +5824,7 @@ function PageRouter(){
     case 'internal':return <InternalPage/>;
     case 'tools':return <ToolsPage/>;
     case 'analise':return <AnalisePage/>;
+    case 'noticias':return <NoticiasPage/>;
     case 'contratos':return <ContratosPage/>;
     case 'funcionamento':return <FuncionamentoPage/>;
     case 'historico':return <HistoricoPage/>;
@@ -5491,7 +5893,8 @@ function Sidebar({open,min,setMin}){
         <Item key="i" page="internal" icon={I.star} label="Projetos Internos"/>,
         <Item key="w" page="tools" icon={I.tool} label="Ferramentas"/>,
         <Item key="ct" page="contratos" icon={I.doc} label="Contratos"/>,
-        <Item key="an" page="analise" icon={I.chart} label="Análise de Carteira"/>])}
+        <Item key="an" page="analise" icon={I.chart} label="Análise de Carteira"/>,
+        <Item key="no" page="noticias" icon={I.book||I.doc} label="Notícias"/>])}
       {grupo('Sistema',[
         <Item key="fg" page="funcionamento" icon={I.book||I.folder} label="Funcionamento Geral"/>,
         <Item key="hi" page="historico" icon={I.hist} label="Histórico"/>,
@@ -5502,7 +5905,7 @@ function Sidebar({open,min,setMin}){
   </aside>);
 }
 
-const PAGE_TITLES={historico:['Histórico','Tudo o que foi feito no sistema, por quem e quando'],dashboard:['Dashboard','Tarefas atrasadas, próximas reuniões e entregas, sinaleiras dos clientes'],analise:['Análise de Carteira','Horas, contratos e evolução comercial'],contratos:['Contratos','Ticket, horas, vigência, reajustes e encerramentos de cada cliente'],funcionamento:['Funcionamento Geral','Como o sistema se organiza e de onde vem cada dado'],tools:['Ferramentas','Sistemas internos e sites dos clientes'],tasks:['Tarefas','Todas as tarefas da operação · clientes e gerais'],sprint:['Sprint Atual','Gestão das tarefas da quinzena'],projects:['Clientes','Carteira de clientes'],calendar:['Calendário','Agenda, prazos e marcos'],team:['Equipe','Capacidade, alocação e permissões'],internal:['Projetos Internos','Iniciativas estratégicas'],settings:['Configurações','Base de dados e personalização']};
+const PAGE_TITLES={noticias:['Notícias','O que saiu sobre o setor de cada cliente nos últimos dias'],historico:['Histórico','Tudo o que foi feito no sistema, por quem e quando'],dashboard:['Dashboard','Tarefas atrasadas, próximas reuniões e entregas, sinaleiras dos clientes'],analise:['Análise de Carteira','Horas, contratos e evolução comercial'],contratos:['Contratos','Ticket, horas, vigência, reajustes e encerramentos de cada cliente'],funcionamento:['Funcionamento Geral','Como o sistema se organiza e de onde vem cada dado'],tools:['Ferramentas','Sistemas internos e sites dos clientes'],tasks:['Tarefas','Todas as tarefas da operação · clientes e gerais'],sprint:['Sprint Atual','Gestão das tarefas da quinzena'],projects:['Clientes','Carteira de clientes'],calendar:['Calendário','Agenda, prazos e marcos'],team:['Equipe','Capacidade, alocação e permissões'],internal:['Projetos Internos','Iniciativas estratégicas'],settings:['Configurações','Base de dados e personalização']};
 /* ------------------------------------------------------------
    SALVAR O HTML
    O sistema é um arquivo só: os dados moram no navegador, mas o que
@@ -7867,8 +8270,9 @@ function TaskModal({db,init,close,onSave,fixo}){
             {t.rep.modo==='sprint'? 'Na virada de cada sprint nasce uma nova, no mesmo dia da quinzena.' : 'Nasce no sprint que contém o dia '+(t.rep.dia||1)+' de cada mês.'}
             {' '}Se a anterior ainda estiver aberta, ela é repassada e a nova não nasce.</div>}
           {!(t.rep&&t.rep.modo)&&t.repSerie&&<div className="muted" style={{fontSize:'.72rem',marginTop:4}}>Ao salvar, a repetição para (vale para a série inteira).</div>}</div>
-        <div className="fld"><label>Começa às (opcional)</label>
-          <input type="time" className="inp" value={t.hora||''} onChange={e=>set('hora',e.target.value)}/></div>
+        <div className="fld"><label>Começa às {t.type==='Reunião'?<span className="lab-agenda">vai para a agenda</span>:'(opcional)'}</label>
+          <input type="time" className="inp" value={t.hora||''} onChange={e=>set('hora',e.target.value)}/>
+          {t.type==='Reunião'&&<AvisoAgenda t={t}/>}</div>
         <div className="fld"><label>Duração</label>
           <select className="sel" value={t.durMin||0} onChange={e=>set('durMin',+e.target.value)}>
             {DURACOES.map(([m,l])=><option key={m} value={m}>{l}</option>)}</select>
@@ -8157,6 +8561,8 @@ function ProjectDetail(){
   const {arquivar,excluir}=useProjectActions();
   const p=db.projects.find(x=>x.id===route.projectId);
   const [tab,setTab]=useState('overview'); const [editName,setEditName]=useState(false);
+  /* selinho de notícias não vistas na aba Radar */
+  const nRadar=(()=>{ try{ return radarNaoVistas(RADAR_CACHE||[],p); }catch(e){ return 0; } })();
   if(!p) return <div className="empty">Cliente não encontrado. <button className="btn btn-ghost btn-sm" onClick={()=>go('projects')}>Voltar</button></div>;
   const pr=projProgress(p); const s=sinaleira(p);
   const mutate=(fn)=>update(d=>{const proj=d.projects.find(x=>x.id===p.id);fn(proj,d);return d;});
@@ -8194,9 +8600,11 @@ function ProjectDetail(){
         O plano no formato do método entra na próxima etapa da construção. */}
     <div className="tabs">{[['overview','Cockpit'],['trilha','Trilha'],['matriz','Matriz ★'],['ogsm','Plano · OGSM'],['projetos','Projetos'],['cronograma','Cronograma'],
       ...(temBSC(p)?[['estrategia','Objetivos ★'],['pes','Projetos ('+todosPEs(p).length+')']]:[]),
-      ['tarefas','Tarefas'],['deliverables','Entregáveis'],...(podeVer(auth,'contratos')?[['contratos','Contratos']]:[]),['activities','Histórico'],['files','Arquivos']].map(([k,l])=>(
+      ['tarefas','Tarefas'],['deliverables','Entregáveis'],...(podeVer(auth,'contratos')?[['contratos','Contratos']]:[]),['activities','Histórico'],['files','Arquivos'],
+      ...(podeVer(auth,'noticias')?[['radar','Radar'+(nRadar?' ('+nRadar+')':'')]]:[])].map(([k,l])=>(
       <button key={k} className={"tab "+(tab===k?'on':'')} onClick={()=>setTab(k)}>{l}</button>))}</div>
     {tab==='overview'&&<Cockpit p={p} mutate={mutate}/>}
+    {tab==='radar'&&podeVer(auth,'noticias')&&<TabRadar p={p} mutate={mutate}/>}
     {tab==='contratos'&&podeVer(auth,'contratos')&&<TabContratosCliente p={p}/>}
     {tab==='estrategia'&&<TabEstrategia p={p} mutate={mutate}/>}
     {tab==='pes'&&<TabProjetosEst p={p} mutate={mutate}/>}
@@ -8391,6 +8799,27 @@ function Cockpit({p,mutate}){
             <Avatares db={db} t={a}/></div>))}
           {semPrazo.length>4&&<div className="muted" style={{fontSize:'.72rem',marginTop:6}}>e mais {semPrazo.length-4}.</div>}
         </div>}
+
+        {/* Classificação do cliente. Estes campos só existiam na hora de
+            criar o cliente; sem eles a análise de carteira por setor e os
+            termos do radar de notícias ficam sem base. */}
+        <div className="card card-pad">
+          <div className="card-h"><h3>Classificação</h3><span className="sub">usada nas análises da carteira</span></div>
+          <Info label="Tier"><select className="mini-sel" value={p.tier||''} onChange={e=>mutate(pr=>pr.tier=e.target.value)}>
+            <option value="">— não definido —</option>
+            {(db.tiers||[]).concat((p.tier&&(db.tiers||[]).indexOf(p.tier)<0)?[p.tier]:[]).map(x=><option key={x}>{x}</option>)}</select></Info>
+          <Info label="Tipo"><select className="mini-sel" value={p.tipo||''} onChange={e=>mutate(pr=>pr.tipo=e.target.value)}>
+            <option value="">— não definido —</option>
+            {(db.tipos||[]).concat((p.tipo&&(db.tipos||[]).indexOf(p.tipo)<0)?[p.tipo]:[]).map(x=><option key={x}>{x}</option>)}</select></Info>
+          <Info label="Setor"><select className="mini-sel" value={p.setor||''} onChange={e=>mutate(pr=>pr.setor=e.target.value)}>
+            <option value="">— não definido —</option>
+            {(db.setores||[]).concat((p.setor&&(db.setores||[]).indexOf(p.setor)<0)?[p.setor]:[]).map(x=><option key={x}>{x}</option>)}</select></Info>
+          <Info label="Perfil"><select className="mini-sel" value={p.perfil||''} onChange={e=>mutate(pr=>pr.perfil=e.target.value)}>
+            <option value="">— não definido —</option>
+            {(db.perfis||[]).concat((p.perfil&&(db.perfis||[]).indexOf(p.perfil)<0)?[p.perfil]:[]).map(x=><option key={x}>{x}</option>)}</select></Info>
+          <div className="muted" style={{fontSize:'.72rem',marginTop:8}}>
+            As opções de cada lista saem de Configurações.</div>
+        </div>
 
         <TimeDoCliente p={p} mutate={mutate}/>
 
@@ -13887,6 +14316,49 @@ function SalaEquipe({onAbrir}){
     </div>);})}</div>);
 }
 
+/* Sem e-mail na Equipe, duas coisas não funcionam: a pessoa não consegue
+   entrar no sistema e não recebe convite das reuniões. Como os dois
+   problemas ficam invisíveis até alguém reclamar, o aviso fica aqui. */
+/* Numa reunião, o horário é o que decide se ela entra no Google Agenda.
+   Sem ele o evento não existe — e isso precisa estar visível na hora. */
+function AvisoAgenda({t}){
+  const {db}=useDB();
+  const quem=respsDe(t);
+  const comEmail=quem.filter(id=>{ const m=(db.team||[]).find(x=>x.id===id); return m&&String(m.email||'').trim(); });
+  if(!t.date||!t.hora) return (<div className="muted" style={{fontSize:'.72rem',marginTop:4}}>
+    Sem {(!t.date&&!t.hora)?'prazo e horário':(!t.date?'prazo':'horário')}, esta reunião não vira evento na agenda.</div>);
+  if(!quem.length) return (<div className="muted" style={{fontSize:'.72rem',marginTop:4}}>
+    O evento vai ser criado, mas sem ninguém convidado.</div>);
+  if(!comEmail.length) return (<div className="muted" style={{fontSize:'.72rem',marginTop:4,color:'#8a5115'}}>
+    Quem vai não tem e-mail cadastrado na Equipe — o evento é criado sem convite.</div>);
+  return (<div className="muted" style={{fontSize:'.72rem',marginTop:4}}>
+    Convite para {comEmail.length} pessoa(s){comEmail.length<quem.length? ' — '+(quem.length-comEmail.length)+' sem e-mail na Equipe':''}.</div>);
+}
+
+function AvisoEmails(){
+  const {db,auth}=useDB();
+  const admin=auth&&auth.papel==='admin';
+  const time=(db.team||[]).filter(m=>(m.perm||'editor')!=='nenhum');
+  const sem=time.filter(m=>!String(m.email||'').trim());
+  if(!sem.length) return null;
+  const reunioes=allTasks(db).filter(t=>t.type==='Reunião'&&t.date&&t.hora).length;
+  return (<div className="aviso-email">
+    <div>
+      <b>{sem.length===time.length? 'Ninguém da equipe tem e-mail cadastrado' : sem.length+' pessoa(s) sem e-mail'}</b>
+      {' — '}{sem.map(m=>m.name).join(', ')}.
+      <div style={{marginTop:6}}>
+        Sem o e-mail do Google, essas pessoas <b>não conseguem entrar no sistema</b>
+        {' '}e <b>não recebem o convite</b> das reuniões na agenda delas.
+        {reunioes>0&&<> Hoje há {reunioes} reunião(ões) com data e hora esperando convidados.</>}
+      </div>
+      <div className="muted" style={{fontSize:'.74rem',marginTop:6}}>
+        {admin? 'Clique na pessoa abaixo e preencha o campo E-mail com a conta Google dela.'
+              : 'Só um administrador pode preencher esse campo.'}
+      </div>
+    </div>
+  </div>);
+}
+
 function TeamPage(){
   const {db,update,flash}=useDB();
   const [modal,setModal]=useState(null);
@@ -13901,6 +14373,7 @@ function TeamPage(){
       <div className="row" style={{gap:8}}>{NAV_OK()&&<button className="btn btn-ghost btn-sm" title="Liga ou desliga, neste aparelho, a comemoração ao concluir tarefas, entregáveis, projetos e sprints"
         onClick={()=>{ const v=!fes; setFes(v); try{ localStorage.setItem('nav_festas',v?'1':'0'); }catch(e){} }}>Comemorações: {fes?'ligadas':'desligadas'}</button>}
       <button className="btn btn-primary" onClick={()=>setModal({id:'',name:'',role:'Consultora',color:AVATAR_COLORS[0],cap:40,email:'',perm:'editor'})}>{I.plus} Adicionar membro</button></div></div>
+    <AvisoEmails/>
     <SalaEquipe onAbrir={(t)=>setModal({...t})}/>
     <div className="proj-grid">{db.team.map(t=>{const l=load(t.id),aw=actsWeek(t.id);const pct=Math.min(100,Math.round(l/6*100));return(
       <div key={t.id} className="pcard" style={{cursor:'default'}}>
