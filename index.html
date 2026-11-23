@@ -618,6 +618,45 @@ a{color:inherit}
 .hist-data{width:54px;flex:none;text-align:center;font-size:.78rem;font-weight:800;color:var(--text-2);line-height:1.1}
 .hist-data span{display:block;font-size:.62rem;font-weight:600;color:var(--text-3)}
 .grupo-t{font-weight:800;font-size:.92rem;letter-spacing:-.01em}
+.ac-fx{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-bottom:18px}
+.ac-ficha{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 22px}
+.ac-i{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #f0f1f7;font-size:.8rem}
+.ac-i span{color:var(--text-3)}
+.ac-i b{font-weight:700;text-align:right}
+.ac-res{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;margin-bottom:12px;background:#fbfcfc}
+.ac-res div{flex:1;min-width:132px;padding:9px 13px;border-right:1px solid var(--border)}
+.ac-res div:last-child{border-right:none}
+.ac-res i{display:block;font-style:normal;font-size:.68rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3)}
+.ac-res b{font-size:.98rem;font-weight:800;color:var(--navy)}
+.ac-g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:1100px){.ac-g2{grid-template-columns:1fr}}
+.ac-sin{display:flex;gap:10px;flex-wrap:wrap}
+.ac-sin-c{flex:1;min-width:180px;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.ac-sin-c b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);margin-bottom:5px}
+.ac-sin-n{font-size:.76rem;color:var(--text-2);margin-top:5px;line-height:1.45}
+.ac-vazio{font-size:.8rem;color:var(--text-3);padding:10px 0}
+.dtl-topo{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.dtl-val{font-size:1.9rem;font-weight:800;color:var(--navy);line-height:1.1}
+.dtl-sub{font-size:.8rem;color:var(--text-3);margin-top:2px}
+.dtl-exp{font-size:.78rem;color:var(--text-2);background:#f7f9f9;border:1px solid var(--border);
+  border-radius:10px;padding:9px 12px;margin-bottom:14px;line-height:1.5}
+.dtl-bloco{margin-bottom:16px}
+.dtl-h{display:flex;align-items:baseline;gap:10px;font-size:.74rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--text-3);margin-bottom:8px}
+.dtl-h .muted{font-size:.72rem;font-weight:600;letter-spacing:0;text-transform:none}
+.dtl-rol{max-height:330px;overflow:auto;border:1px solid var(--border);border-radius:10px}
+.dtl-rol .tbl th{position:sticky;top:0;background:#fff;z-index:1}
+.dtl-busca{margin-bottom:8px;max-width:260px}
+.dtl-num{text-align:right;font-variant-numeric:tabular-nums}
+.dtl-tot td{font-weight:800;background:#f7f9f9;border-top:1px solid var(--border)}
+.dtl-vazio{font-size:.8rem;color:var(--text-3);padding:14px 2px}
+.kpi.clicavel{cursor:pointer;transition:.14s}
+.kpi.clicavel:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(15,66,69,.10)}
+.kpi .lupa{position:absolute;top:10px;right:11px;font-size:.62rem;color:var(--text-3);opacity:0;transition:.14s;letter-spacing:.4px}
+.kpi.clicavel:hover .lupa{opacity:1}
+.hb-l.clicavel{cursor:pointer;border-radius:8px}
+.hb-l.clicavel:hover{background:#f7f9f9}
 .tbl.tarefas{font-size:.82rem}
 .tbl.tarefas thead th{font-size:.66rem;letter-spacing:.6px;text-transform:uppercase;color:var(--text-3);
   font-weight:700;padding:7px 8px;background:#fcfcff;border-bottom:1px solid var(--border);white-space:nowrap}
@@ -1661,6 +1700,10 @@ table.tbl.dist tr:hover td{background:#fafbfb}
 .ch-rot{font-size:11px;fill:#4a5a5c;font-weight:600}
 .ch-rot-forte{font-size:12px;fill:#011E3C;font-weight:800}
 .ch-rot-alerta{font-size:11px;fill:#9a5a16;font-weight:800}
+.ch-dado,.ch-dado-f{font-family:'JetBrains Mono',monospace;pointer-events:none;
+  paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.ch-dado{font-size:9px;fill:#5a6a6c;font-weight:700}
+.ch-dado-f{font-size:9.5px;fill:#011E3C;font-weight:800}
 .ch-nome{font-size:11.5px;fill:#011E3C;font-weight:600}
 .ch-dica{position:absolute;z-index:30;pointer-events:none;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(1,30,60,.14);padding:9px 11px;min-width:190px;max-width:260px;font-size:.74rem}
 .ch-dt{font-weight:800;color:var(--navy);margin-bottom:5px;font-size:.78rem}
@@ -5696,7 +5739,7 @@ function App({nuvem}={}){
     document.addEventListener('visibilitychange',vis);
     return ()=>{ clearTimeout(t0); clearInterval(t); document.removeEventListener('visibilitychange',vis); };
   },[db.currentSprint,auth.papel]);
-  const go=(page,projectId=null)=>{setRoute({page,projectId});setSbOpen(false);try{window.scrollTo(0,0);}catch(e){}};
+  const go=(page,projectId=null,tab=null)=>{setRoute({page,projectId,tab});setSbOpen(false);try{window.scrollTo(0,0);}catch(e){}};
   const filterActive=Object.entries(filter).some(([k,v])=> k==='arquivo' ? v!=='Ativos' : (v!=='Todos'&&v!=='Todas'));
   const filtered=useMemo(()=> db.projects.filter(p=>{
     if(filter.arquivo==='Ativos'&&p.archived)return false;
@@ -8979,7 +9022,9 @@ function ProjectDetail(){
   const {db,route,update,go,flash,auth}=useDB();
   const {arquivar,excluir}=useProjectActions();
   const p=db.projects.find(x=>x.id===route.projectId);
-  const [tab,setTab]=useState('overview'); const [editName,setEditName]=useState(false);
+  const [tab,setTab]=useState(route.tab||'overview'); const [editName,setEditName]=useState(false);
+  /* quem chega por um link de outra tela já cai na aba certa */
+  useEffect(()=>{ if(route.tab) setTab(route.tab); },[route.projectId,route.tab]);
   /* selinho de notícias não vistas na aba Radar */
   const nRadar=(()=>{ try{ return radarNaoVistas(RADAR_CACHE||[],p,db); }catch(e){ return 0; } })();
   if(!p) return <div className="empty">Cliente não encontrado. <button className="btn btn-ghost btn-sm" onClick={()=>go('projects')}>Voltar</button></div>;
@@ -9017,12 +9062,13 @@ function ProjectDetail(){
     </div>
     {/* As abas do plano antigo (BSC) só aparecem em clientes que ainda o tenham.
         O plano no formato do método entra na próxima etapa da construção. */}
-    <div className="tabs">{[['overview','Cockpit'],['trilha','Trilha'],['matriz','Matriz ★'],['ogsm','Plano · OGSM'],['projetos','Projetos'],['cronograma','Cronograma'],
+    <div className="tabs">{[['overview','Cockpit'],['analise','Análise'],['trilha','Trilha'],['matriz','Matriz ★'],['ogsm','Plano · OGSM'],['projetos','Projetos'],['cronograma','Cronograma'],
       ...(temBSC(p)?[['estrategia','Objetivos ★'],['pes','Projetos ('+todosPEs(p).length+')']]:[]),
       ['tarefas','Tarefas'],['deliverables','Entregáveis'],...(podeVer(auth,'contratos')?[['contratos','Contratos']]:[]),['activities','Histórico'],['files','Arquivos'],
       ...(podeVer(auth,'noticias')?[['radar','Radar'+(nRadar?' ('+nRadar+')':'')]]:[])].map(([k,l])=>(
       <button key={k} className={"tab "+(tab===k?'on':'')} onClick={()=>setTab(k)}>{l}</button>))}</div>
     {tab==='overview'&&<Cockpit p={p} mutate={mutate}/>}
+    {tab==='analise'&&<TabAnaliseCliente p={p}/>}
     {tab==='radar'&&podeVer(auth,'noticias')&&<TabRadar p={p} mutate={mutate}/>}
     {tab==='contratos'&&podeVer(auth,'contratos')&&<TabContratosCliente p={p}/>}
     {tab==='estrategia'&&<TabEstrategia p={p} mutate={mutate}/>}
@@ -9036,6 +9082,313 @@ function ProjectDetail(){
     {tab==='tarefas'&&<TabTarefas p={p} mutate={mutate}/>}
     {tab==='activities'&&<TabActivities p={p} mutate={mutate}/>}
     {tab==='files'&&<TabFiles p={p} mutate={mutate}/>}
+  </div>);
+}
+
+/* ============================================================
+   ANÁLISE DO CLIENTE
+   Tudo o que a Análise de Carteira sabe sobre ESTE cliente, num
+   lugar só: os números, a ficha, a evolução do ticket, as horas
+   contra o contrato, as entregas e o histórico. Só lê — nada aqui
+   grava nada.
+   ============================================================ */
+function TabAnaliseCliente({p}){
+  const {db,go,auth}=useDB();
+  const [dtl,setDtl]=useState(null);
+  const dinheiro=podeVer(auth,'contratos');
+  const hoje=hojeISO(), d0=dLocal(hoje), ano=d0.getFullYear(), mes=d0.getMonth();
+
+  const meses=useMemo(()=>Array.from({length:12},(_,i)=>{
+    const k=11-i, d1=new Date(ano,mes-k,1), ult=new Date(d1.getFullYear(),d1.getMonth()+1,0);
+    return {ano:d1.getFullYear(),mes:d1.getMonth(),ini:isoDate(d1),fim:isoDate(ult),
+      iso:k===0?hoje:isoDate(ult),
+      rot:MES[d1.getMonth()].slice(0,3).toLowerCase()+'/'+String(d1.getFullYear()).slice(2)};
+  }),[hoje]);
+
+  /* --- contrato --- */
+  const tk=recEm(p,hoje);
+  const iniCt=ctIni(p), fimCt=ctFim(p);
+  const tk12=recEm(p,meses[0].iso);
+  const hist=(p.ticketHist||[]).slice().sort((a,b)=>String(a.data||'').localeCompare(String(b.data||'')));
+  const tk1=hist.length? (+hist[0].valor||0) : (+p.ticket||0);
+  const casa=mesesDeCasa(p);
+  const hp=+p.horasPlan||0;
+  const dias=fimCt? Math.round((dLocal(fimCt)-dLocal(hoje))/86400000) : null;
+  const mesesResta=fimCt? Math.max(0,(dLocal(fimCt)-dLocal(hoje))/86400000/30.44) : 0;
+  const carteira=tk*mesesResta;
+  const mrrTot=ativos(db).reduce((a,x)=>a+recEm(x,hoje),0);
+
+  /* --- o que já faturou, desde que entrou --- */
+  const acum=useMemo(()=>{
+    if(!iniCt) return {total:0,n:0};
+    let d=new Date(dLocal(iniCt).getFullYear(),dLocal(iniCt).getMonth(),1), tot=0, nm=0, g=0;
+    const fimD=dLocal(hoje);
+    while(d<=fimD&&g++<300){
+      const ult=new Date(d.getFullYear(),d.getMonth()+1,0);
+      const iso=(ult>fimD)? hoje : isoDate(ult);
+      const v=recEm(p,iso)+avulsoNoMes(p,d.getFullYear(),d.getMonth());
+      if(v>0){ tot+=v; nm++; }
+      d=new Date(d.getFullYear(),d.getMonth()+1,1);
+    }
+    return {total:tot,n:nm};
+  },[p,hoje]);
+
+  /* --- horas lançadas neste cliente, mês a mês --- */
+  const horas=useMemo(()=>{
+    let ls=[]; try{ ls=horasDoSprint(db,meses[0].ini,hoje).filter(l=>l.pid===p.id); }catch(e){ ls=[]; }
+    let ac=0;
+    return meses.map(m=>{ const f=ls.filter(l=>l.iso>=m.ini&&l.iso<=m.fim);
+      const real=emHoras(somaMin(f));
+      /* o contratado só conta nos meses em que o cliente estava pagando */
+      const prev=recEm(p,m.iso)>0? hp : 0;
+      ac+=real-prev;
+      return {rot:m.rot,v:real,a:prev,b:real,saldo:real-prev,acum:ac,linhas:f,
+        det:[{rot:'Tarefas no mês',val:String(new Set(f.map(l=>l.tid)).size)},
+             {rot:'Pessoas',val:String(new Set(f.map(l=>l.who).filter(Boolean)).size)}]}; });
+  },[db,p.id,hoje,hp]);
+  const hMes=horas[11]?horas[11].v:0;
+  const hMedia=horas.filter(x=>x.v>0).length? horas.reduce((a,x)=>a+x.v,0)/horas.filter(x=>x.v>0).length : 0;
+  const rhPrev=hp? tk/hp : 0;
+  const rhReal=hMes? tk/hMes : 0;
+  /* o período inteiro: o que foi contratado, o que foi gasto e o saldo */
+  /* o uso do contrato só faz sentido nos meses em que havia contrato */
+  const comCt=horas.filter(x=>x.a>0);
+  const hPrevT=comCt.reduce((a,x)=>a+x.a,0), hRealT=comCt.reduce((a,x)=>a+x.b,0);
+  const hFora=horas.filter(x=>!x.a).reduce((a,x)=>a+x.b,0);
+  const hSaldo=hRealT-hPrevT, hAcima=horas.filter(x=>x.a>0&&x.b>x.a).length;
+  /* valor da hora mês a mês: o ticket daquele mês dividido pelas horas.
+     Sem contrato ou sem horas, não existe valor da hora — fica em branco. */
+  const vhReal=meses.map((m,i)=>{ const tkm=recEm(p,m.iso), h=horas[i];
+    return {rot:m.rot,v:(h.b&&tkm)? tkm/h.b : null,
+      det:[{rot:'Horas no mês',val:fmtHoras(h.b)+'h'},
+           {rot:'Ticket do mês',val:tkm?fmtRS(tkm):'sem contrato'}]}; });
+  const vhPrev=meses.map((m,i)=>{ const tkm=recEm(p,m.iso);
+    return {rot:m.rot,v:(horas[i].a&&tkm)? tkm/horas[i].a : null}; });
+  /* média ponderada: a média das razões é dominada por um mês de uma hora */
+  const vhMedia=(()=>{ let r=0,h=0; meses.forEach((m,i)=>{ const tkm=recEm(p,m.iso);
+    if(horas[i].b&&tkm){ r+=tkm; h+=horas[i].b; } }); return h? r/h : 0; })();
+  /* mês com quase nenhuma hora distorce: fica fora do melhor e do pior */
+  const vhBons=vhReal.filter((x,i)=>x.v!=null&&(horas[i].a? horas[i].b>=horas[i].a*.25 : horas[i].b>=4));
+  const vhExt=(maior)=>{ const v=vhBons.length?vhBons:vhReal.filter(x=>x.v!=null);
+    if(!v.length) return '—';
+    const m=v.reduce((a,x)=>(maior? x.v>a.v : x.v<a.v)?x:a);
+    return fmtRS(m.v)+'/h · '+m.rot; };
+
+  /* --- entregas --- */
+  const atvs=(p.activities||[]).filter(t=>t.column!=='cancelado');
+  const feitas=atvs.filter(t=>t.column==='concluido');
+  const atrasadas=atvs.filter(t=>t.column!=='concluido'&&t.date&&t.date<hoje);
+  const entregues=meses.map(m=>{ const f=feitas.filter(t=>String(t.concluidoEm||'').slice(0,7)===m.ini.slice(0,7));
+    return {rot:m.rot,v:f.length,det:f.slice(0,5).map(t=>({rot:t.name,val:fmtHoras(emHoras(horasDaTarefa(t)))+'h'}))}; });
+  const pr=projProgress(p);
+
+  /* --- o detalhe que abre ao clicar --- */
+  const C={nome:{k:'nome',rot:'Quando'}};
+  function montar(qual,arg){
+    switch(qual){
+    case 'ticket': return {titulo:p.name+' · evolução do ticket',valor:fmtRS(tk),
+      sub:[iniCt?'entrou em '+fmtBR(iniCt):'',fimCt?'vigência até '+fmtBR(fimCt):'sem prazo',casa+' meses de casa'].filter(Boolean).join(' · '),
+      explica:'O ticket deste cliente no fim de cada mês, e cada mudança registrada no contrato dele.',
+      serie:meses.map(m=>({rot:m.rot,v:recEm(p,m.iso)})),fmtV:fmtK,rotV:'Ticket do mês',
+      cols:[{k:'nome',rot:'Quando',sortK:'ord'},{k:'valor',rot:'Valor',num:1,fmt:fmtRS},
+        {k:'dif',rot:'Variação',num:1,fmt:v=>v?((v>0?'+':'')+fmtRS(v)):'—'},{k:'motivo',rot:'O que foi'}],
+      linhas:hist.map((y,i)=>({k:'h'+i,ord:y.data||'',nome:y.data?fmtBR(y.data):'—',valor:+y.valor||0,
+          dif:i?(+y.valor||0)-(+hist[i-1].valor||0):0,motivo:y.motivo||'—'}))
+        .concat((p.contratos||[]).filter(c=>c&&(c.tipo==='aditivo'||c.tipo==='novo')).map((c,i)=>({k:'a'+i,ord:c.inicio||'',
+          nome:c.inicio?fmtBR(c.inicio):'—',valor:+c.valor||0,dif:0,
+          motivo:(c.tipo==='novo'?'contrato novo':'aditivo')+(c.nome?' · '+c.nome:'')}))),
+      ord:'nome',ordAsc:true,semIr:true,tabRot:'Histórico do contrato'};
+
+    case 'horas': { const m=meses[arg==null?11:arg], hx=horas[arg==null?11:arg];
+      const porT={}; (hx.linhas||[]).forEach(l=>{ const t=porT[l.tid]=porT[l.tid]||{k:l.tid,nome:l.nome,min:0,quem:[],feito:l.feito};
+        t.min+=l.min; if(l.who&&t.quem.indexOf(l.who)<0) t.quem.push(l.who); });
+      return {titulo:p.name+' · horas em '+m.rot,valor:fmtHoras(hx.v)+'h',
+        sub:hx.a? ('contrato prevê '+fmtHoras(hx.a)+'h · '+fmtPct(hx.b/hx.a)+' do contratado · '
+            +(hx.saldo>0? fmtHoras(hx.saldo)+'h acima' : hx.saldo<0? fmtHoras(-hx.saldo)+'h abaixo' : 'na conta')
+            +' · '+(recEm(p,m.iso)&&hx.b? fmtRS(recEm(p,m.iso)/hx.b)+'/h real':'sem valor da hora'))
+          : 'o contrato não tem horas/mês preenchidas neste mês',
+        explica:'As horas das tarefas deste cliente com data no mês. Uma tarefa com três pessoas conta três vezes, porque é isso que ela custa de equipe.',
+        serie:horas,fmtV:v=>fmtHoras(v)+'h',rotV:'Horas lançadas',onMes:(x,i)=>abrir('horas',i),
+        cols:[{k:'nome',rot:'Tarefa'},{k:'h',rot:'Horas',num:1,soma:1,fmt:v=>fmtHoras(v)+'h'},
+          {k:'quem',rot:'Quem'},{k:'sit',rot:'Situação'}],
+        linhas:Object.values(porT).map(t=>({k:t.k,nome:t.nome,h:emHoras(t.min),
+          quem:t.quem.map(w=>member(db,w).name).filter(Boolean).join(', ')||'—',
+          sit:t.feito?'concluída':'em aberto'})),ord:'h',semIr:true}; }
+
+    case 'entregas': { const m=meses[arg==null?11:arg];
+      const f=feitas.filter(t=>String(t.concluidoEm||'').slice(0,7)===m.ini.slice(0,7));
+      return {titulo:p.name+' · entregas de '+m.rot,valor:String(f.length),
+        sub:f.length?'tarefa(s) concluída(s) no mês':'nenhuma tarefa concluída neste mês',
+        explica:'As tarefas deste cliente marcadas como concluídas em cada mês.',
+        serie:entregues,fmtV:v=>String(Math.round(v)),rotV:'Entregues no mês',onMes:(x,i)=>abrir('entregas',i),
+        cols:[{k:'nome',rot:'Tarefa'},{k:'h',rot:'Horas',num:1,soma:1,fmt:v=>fmtHoras(v)+'h'},
+          {k:'quem',rot:'Quem'},{k:'quando',rot:'Concluída em',sortK:'ord'}],
+        linhas:f.map(t=>({k:t.id,nome:t.name,h:emHoras(horasDaTarefa(t)),
+          quem:respsDe(t).map(w=>member(db,w).name).filter(Boolean).join(', ')||'—',
+          ord:t.concluidoEm||'',quando:t.concluidoEm?fmtBR(t.concluidoEm):'—'})),ord:'quando',semIr:true}; }
+
+    case 'carteira': return {titulo:p.name+' · receita em carteira',valor:fmtRS(carteira),cor:COR_COM.sobe,
+      sub:fimCt? 'ticket × os '+Math.round(mesesResta)+' meses que faltam de vigência' : 'sem data de fim: não dá para somar prazo que não existe',
+      explica:'Quanto este contrato ainda garante até a data de fim. Se a vigência for renovada, o número sobe junto.',
+      serie:meses.map(m=>({rot:m.rot,v:(fimCt&&fimCt>=m.iso)? recEm(p,m.iso)*Math.max(0,(dLocal(fimCt)-dLocal(m.iso))/86400000/30.44) : 0})),
+      fmtV:fmtK,rotV:'Em carteira',
+      cols:[{k:'nome',rot:'Item'},{k:'v',rot:'Valor',num:1,fmt:(v,l)=>l.txt||fmtRS(v)}],
+      linhas:[{k:'a',nome:'Ticket mensal de hoje',v:tk},
+        {k:'b',nome:'Vigência até',v:0,txt:fimCt?fmtBR(fimCt):'sem prazo'},
+        {k:'c',nome:'Meses que faltam',v:mesesResta,txt:fimCt?Math.round(mesesResta)+' meses':'—'},
+        {k:'d',nome:'Total ainda contratado',v:carteira}],ord:'',semIr:true};
+
+    default: return null; }
+  }
+  const abrir=(qual,arg)=>setDtl(montar(qual,arg));
+
+  const Tile=({rot,val,sub,cor,qual,arg})=>(<div className={'kpi'+(qual?' clicavel':'')} onClick={qual?()=>abrir(qual,arg):null}>
+    <div className="bar" style={{background:cor||COR_COM.base}}></div>
+    {qual&&<span className="lupa">ver detalhe</span>}
+    <div className="lab">{rot}</div><div className="val" style={{color:'var(--navy)'}}>{val}</div>
+    <div className="sub">{sub}</div></div>);
+  const Lin=({r,children})=><div className="ac-i"><span>{r}</span><b>{children||'—'}</b></div>;
+  const sin=sinaisDe(p);
+  const nomes=(ids)=>(ids||[]).map(x=>member(db,x).name).filter(Boolean).join(', ');
+
+  return (<div>
+    <div className="ac-fx">
+      {dinheiro&&<Tile rot="Ticket mensal" val={fmtRS(tk)} qual="ticket"
+        sub={tk12? (tk===tk12?'igual a 12 meses atrás':(tk>tk12?'+':'')+fmtPct((tk-tk12)/tk12,1)+' em 12 meses') : 'entrou nos últimos 12 meses'}
+        cor={tk12&&tk<tk12?COR_COM.desce:COR_COM.base}/>}
+      {dinheiro&&<Tile rot="Participação na carteira" val={mrrTot? fmtPct(tk/mrrTot,1):'—'}
+        sub={'de '+fmtK(mrrTot)+' da carteira toda'}/>}
+      {dinheiro&&<Tile rot="Já faturado" val={fmtK(acum.total)}
+        sub={acum.n? 'em '+acum.n+(acum.n===1?' mês de contrato':' meses de contrato') : 'sem início de contrato preenchido'}/>}
+      {dinheiro&&<Tile rot="Receita em carteira" val={fmtK(carteira)} cor={COR_COM.sobe} qual="carteira"
+        sub={fimCt? Math.round(mesesResta)+' meses até o fim da vigência' : 'sem data de fim'}/>}
+      <Tile rot="Tempo de casa" val={casa+(casa===1?' mês':' meses')}
+        sub={iniCt? 'desde '+fmtBR(iniCt) : 'sem início preenchido'}/>
+      <Tile rot="Vigência" val={dias==null?'sem prazo':(dias<0? Math.abs(dias)+' dias vencida' : dias+' dias')}
+        cor={dias!=null&&dias<60?COR_COM.desce:COR_COM.base}
+        sub={fimCt? 'termina em '+fmtBR(fimCt) : 'contrato sem data de fim'}/>
+      {dinheiro&&<Tile rot="R$/hora contratado" val={rhPrev? fmtRS(rhPrev)+'/h':'—'}
+        sub={hp? fmtHoras(hp)+'h/mês no contrato' : 'preencha horas/mês no contrato'}/>}
+      {dinheiro&&<Tile rot="R$/hora real" val={rhReal? fmtRS(rhReal)+'/h':'—'} qual="horas"
+        cor={rhPrev&&rhReal&&rhReal<rhPrev*.8?COR_COM.desce:COR_COM.base}
+        sub={hMes? 'com as '+fmtHoras(hMes)+'h deste mês' : 'sem horas lançadas no mês'}/>}
+      <Tile rot="Horas no mês" val={fmtHoras(hMes)+'h'} qual="horas"
+        cor={hp&&hMes>hp*1.15?COR_COM.desce:COR_COM.base}
+        sub={hp? fmtPct(hMes/hp)+' das '+fmtHoras(hp)+'h contratadas' : 'média de '+fmtHoras(hMedia)+'h/mês'}/>
+      <Tile rot="Saldo de horas · 12m" val={(hSaldo>0?'+':'')+fmtHoras(hSaldo)+'h'}
+        cor={hSaldo>0?COR_COM.desce:COR_COM.sobe} qual="horas"
+        sub={hPrevT? fmtHoras(hRealT)+'h de '+fmtHoras(hPrevT)+'h contratadas ('+fmtPct(hRealT/hPrevT)+')' : 'sem horas contratadas no período'}/>
+      <Tile rot="Tarefas" val={feitas.length+'/'+atvs.length} qual="entregas"
+        sub={atrasadas.length? atrasadas.length+' em atraso' : 'nada em atraso'}
+        cor={atrasadas.length?COR_COM.desce:COR_COM.sobe}/>
+      <Tile rot={pr.acoes?'Ações do plano':'Entregáveis'} val={pr.done+'/'+pr.total}
+        sub={fmtPct(pr.pct/100)+' concluído'}/>
+      {dinheiro&&<Tile rot="Reajuste acumulado" val={tk1? ((tk>=tk1?'+':'')+fmtPct((tk-tk1)/tk1,1)) : '—'}
+        cor={tk1&&tk<tk1?COR_COM.desce:COR_COM.sobe}
+        sub={tk1? 'entrou em '+fmtRS(tk1)+', hoje '+fmtRS(tk) : 'sem histórico de ticket'}/>}
+    </div>
+
+    <div className="ac-g2">
+      <div className="card card-pad">
+        <div className="card-h"><h3>Ficha</h3><span className="sub">o cadastro deste cliente</span></div>
+        <div className="ac-ficha">
+          <div>
+            <Lin r="Tier">{p.tier}</Lin><Lin r="Tipo">{p.tipo}</Lin><Lin r="Setor">{p.setor}</Lin>
+            <Lin r="Perfil">{p.perfil}</Lin><Lin r="Etapa">{p.phase}</Lin><Lin r="Status">{p.status}</Lin>
+            <Lin r="Origem">{p.origemCli}</Lin>
+          </div>
+          <div>
+            <Lin r="Liderança">{member(db,p.coordinator).name}</Lin>
+            <Lin r="Consultores">{nomes(p.consultants)}</Lin>
+            <Lin r="Contato">{p.owner}</Lin><Lin r="Telefone">{p.phone}</Lin>
+            {dinheiro&&<Lin r="Forma de pagamento">{p.formaPag}</Lin>}
+            {dinheiro&&<Lin r="Dia de vencimento">{p.diaVenc?('dia '+p.diaVenc):''}</Lin>}
+            {dinheiro&&<Lin r="Horas/mês">{hp?fmtHoras(hp)+'h':''}</Lin>}
+          </div>
+        </div>
+      </div>
+      <div className="card card-pad">
+        <div className="card-h"><h3>Sinaleiras</h3><span className="sub">como a conta está hoje</span></div>
+        <div className="ac-sin">
+          {SINAL_CATS.map(c=>{ const x=sin[c[0]]||{};
+            const cor=x.cor==='vermelho'?'#B33A3A':x.cor==='amarelo'?'#C58B2A':x.cor==='verde'?'#2F8F6E':'#c8d2d2';
+            return (<div key={c[0]} className="ac-sin-c" style={{borderLeft:'3px solid '+cor}}>
+              <b>{c[1]}</b>
+              <span style={{color:cor,fontWeight:800,fontSize:'.84rem'}}>
+                {x.cor==='vermelho'?'Vermelho':x.cor==='amarelo'?'Amarelo':x.cor==='verde'?'Verde':'Sem avaliação'}</span>
+              {x.nota&&<div className="ac-sin-n">{x.nota}</div>}
+            </div>); })}
+        </div>
+        {!!(p.notes||'').trim()&&<><div className="card-h" style={{marginTop:16}}><h3>Anotações</h3></div>
+          <div className="ac-sin-n" style={{whiteSpace:'pre-wrap'}}>{p.notes}</div></>}
+      </div>
+    </div>
+
+    {dinheiro&&<div className="card card-pad" style={{marginBottom:16}}>
+      <div className="card-h"><h3>Ticket mês a mês</h3><span className="sub">últimos 12 meses · clique para ver o histórico do contrato</span></div>
+      <LinhaTempo serie={meses.map(m=>({rot:m.rot,v:recEm(p,m.iso)}))} fmtV={fmtK} rotV="Ticket do mês"
+        onMes={()=>abrir('ticket')}/>
+    </div>}
+
+    <div className="card card-pad" style={{marginBottom:16}}>
+      <div className="card-h"><h3>Horas contratadas × realizadas</h3>
+        <span className="sub">{hp? 'últimos 12 meses · clique num mês para ver as tarefas' : 'preencha horas/mês no contrato para comparar'}</span></div>
+      <div className="ac-res">
+        <div><i>Contratadas no período</i><b>{fmtHoras(hPrevT)}h</b></div>
+        <div><i>Realizadas</i><b>{fmtHoras(hRealT)}h</b></div>
+        <div><i>Saldo</i><b style={{color:hSaldo>0?'#B33A3A':'#2F8F6E'}}>
+          {hSaldo>0? fmtHoras(hSaldo)+'h acima' : hSaldo<0? fmtHoras(-hSaldo)+'h abaixo' : 'na conta'}</b></div>
+        <div><i>Uso do contrato</i><b>{hPrevT? fmtPct(hRealT/hPrevT) : '—'}</b></div>
+        <div><i>Meses acima</i><b style={{color:hAcima?'#B33A3A':'inherit'}}>{hAcima} de {comCt.length||12}</b></div>
+      </div>
+      {hFora>0&&<div className="muted" style={{fontSize:'.72rem',marginBottom:10}}>
+        O quadro conta só os {comCt.length} mês(es) em que havia contrato. Fora deles o time
+        ainda lançou {fmtHoras(hFora)}h neste cliente — elas aparecem no gráfico, sem barra de contratado ao lado.</div>}
+      {hp? <BarrasDuplas serie={horas} fmtV={v=>fmtHoras(v)+'h'} rot1="contratadas" rot2="realizadas"
+            onMes={(x,i)=>abrir('horas',i)}/>
+        : <BarrasMes serie={horas} fmtV={v=>fmtHoras(v)+'h'} rotV="Horas lançadas" onMes={(x,i)=>abrir('horas',i)}/>}
+    </div>
+
+    {dinheiro&&<div className="card card-pad" style={{marginBottom:16}}>
+      <div className="card-h"><h3>Valor da hora, mês a mês</h3>
+        <span className="sub">o ticket do mês dividido pelas horas daquele mês</span></div>
+      <div className="ac-res">
+        <div><i>Hoje, contratado</i><b>{rhPrev? fmtRS(rhPrev)+'/h' : '—'}</b></div>
+        <div><i>Hoje, real</i><b style={{color:(rhPrev&&rhReal&&rhReal<rhPrev*.8)?'#B33A3A':'inherit'}}>
+          {rhReal? fmtRS(rhReal)+'/h' : '—'}</b></div>
+        <div><i>Média de 12 meses</i><b>{vhMedia? fmtRS(vhMedia)+'/h' : '—'}</b></div>
+        <div><i>Melhor mês</i><b>{vhExt(true)}</b></div>
+        <div><i>Pior mês</i><b>{vhExt(false)}</b></div>
+      </div>
+      <LinhaTempo serie={vhReal} serie2={vhPrev} fmtV={v=>fmtRS(v)} rotV="R$/hora real"
+        rot2="R$/hora contratado" onMes={(x,i)=>abrir('horas',i)}/>
+      <div className="muted" style={{fontSize:'.72rem',marginTop:8}}>
+        Mês sem horas lançadas ou sem contrato fica em branco. A média é ponderada —
+        receita total ÷ horas totais — e não a média dos meses, que um mês de poucas horas
+        distorceria. Melhor e pior deixam de fora os meses com quase nenhuma hora.</div>
+    </div>}
+
+    <div className="card card-pad" style={{marginBottom:16}}>
+      <div className="card-h"><h3>Entregas por mês</h3><span className="sub">tarefas concluídas · clique num mês para ver quais</span></div>
+      {feitas.length? <BarrasMes serie={entregues} cor={COR_COM.sobe} rotV="Tarefas concluídas" onMes={(x,i)=>abrir('entregas',i)}/>
+        : <div className="ac-vazio">Nenhuma tarefa concluída ainda neste cliente.</div>}
+    </div>
+
+    {dinheiro&&<div className="card card-pad">
+      <div className="card-h"><h3>Histórico do contrato</h3><span className="sub">cada mudança registrada, em ordem</span></div>
+      <TabelaDetalhe ordAsc ord="nome"
+        cols={[{k:'nome',rot:'Quando',sortK:'ord'},{k:'valor',rot:'Valor',num:1,fmt:fmtRS},
+          {k:'dif',rot:'Variação',num:1,fmt:v=>v?((v>0?'+':'')+fmtRS(v)):'—'},{k:'motivo',rot:'O que foi'}]}
+        linhas={hist.map((y,i)=>({k:'h'+i,ord:y.data||'',nome:y.data?fmtBR(y.data):'—',valor:+y.valor||0,
+            dif:i?(+y.valor||0)-(+hist[i-1].valor||0):0,motivo:y.motivo||'—'}))
+          .concat((p.contratos||[]).filter(c=>c&&(c.tipo==='aditivo'||c.tipo==='novo')).map((c,i)=>({k:'a'+i,ord:c.inicio||'',
+            nome:c.inicio?fmtBR(c.inicio):'—',valor:+c.valor||0,dif:0,
+            motivo:(c.tipo==='novo'?'contrato novo':'aditivo')+(c.nome?' · '+c.nome:'')})))
+          .concat(p.ctEncerradoEm?[{k:'enc',ord:p.ctEncerradoEm,nome:fmtBR(p.ctEncerradoEm),valor:0,dif:0,
+            motivo:'contrato encerrado'+(p.ctMotivo?' · '+p.ctMotivo:'')}]:[])}/>
+    </div>}
+
+    <DetalheCarteira d={dtl} close={()=>setDtl(null)} go={go}/>
   </div>);
 }
 
@@ -17151,6 +17504,7 @@ const fmtK=(v)=>{ const a=Math.abs(v||0), sn=v<0?'−':'';
   if(a>=1e4) return sn+'R$ '+Math.round(a/1e3)+' mil';
   if(a>=1e3) return sn+'R$ '+(a/1e3).toFixed(1).replace('.',',')+' mil';
   return sn+'R$ '+Math.round(a); };
+const fmtCurto=(v)=>String(fmtK(v)).replace('R$ ','').replace(' mil','k').replace(' mi','M');
 const fmtPct=(x,dig)=> (x==null||!isFinite(x))? '—' : (Math.round(x*100*(dig?10:1))/(dig?10:1)).toString().replace('.',',')+'%';
 function escalaBonita(max,partes){
   if(!(max>0)) return {max:1,ticks:[0,1]};
@@ -17172,7 +17526,7 @@ function useDica(){
 const LinhaDica=({cor,rot,val,forte})=>(<div className="ch-dl">{cor&&<i style={{background:cor}}></i>}<span>{rot}</span><b style={{fontWeight:forte?800:600}}>{val}</b></div>);
 
 /* ---------- 1. Evolução da receita recorrente (linha + área) ---------- */
-function GraficoMRR({serie}){
+function GraficoMRR({serie,onMes}){
   const W=560,H=230,L=58,R=18,T=18,B=30, iw=W-L-R, ih=H-T-B;
   const esc=escalaBonita(Math.max(...serie.map(x=>x.mrr)));
   const X=(i)=>L+(serie.length<2? iw/2 : i*iw/(serie.length-1)), Y=(v)=>T+ih-(v/esc.max)*ih;
@@ -17192,9 +17546,11 @@ function GraficoMRR({serie}){
       {foco!==null&&<line x1={X(foco)} x2={X(foco)} y1={T} y2={T+ih} stroke={COR_COM.eixo} strokeWidth="1"/>}
       {foco!==null&&<circle cx={X(foco)} cy={Y(serie[foco].mrr)} r="4.5" fill={COR_COM.base} stroke="#fff" strokeWidth="2"/>}
       <circle cx={X(serie.length-1)} cy={Y(ult.mrr)} r="4.5" fill={COR_COM.base} stroke="#fff" strokeWidth="2"/>
-      <text x={X(serie.length-1)-6} y={Y(ult.mrr)-10} textAnchor="end" className="ch-rot-forte">{fmtK(ult.mrr)}</text>
+      {serie.map((x,i)=>(<text key={'d'+i} x={X(i)} y={Y(x.mrr)-9} textAnchor="middle"
+        className={i===serie.length-1?'ch-dado-f':'ch-dado'}>{fmtCurto(x.mrr)}</text>))}
       {serie.map((x,i)=>(<rect key={'h'+i} x={X(i)-iw/(serie.length-1||1)/2} y={T} width={iw/(serie.length-1||1)} height={ih+B}
-        fill="transparent" onMouseMove={(e)=>{ setFoco(i); dica.mostrar(e,<>
+        fill="transparent" style={{cursor:onMes?'pointer':'default'}} onClick={()=>onMes&&onMes(i)}
+        onMouseMove={(e)=>{ setFoco(i); dica.mostrar(e,<>
           <div className="ch-dt">{x.rot}</div>
           <LinhaDica rot="Receita recorrente" val={fmtRS(x.mrr)} forte/>
           <LinhaDica rot="Contratos vigentes" val={x.n}/>
@@ -17202,6 +17558,7 @@ function GraficoMRR({serie}){
           {x.sobe>0&&<LinhaDica cor={COR_COM.sobe} rot="Reajustes para cima" val={'+'+fmtRS(x.sobe)}/>}
           {x.desce>0&&<LinhaDica cor={COR_COM.desce} rot="Reduções" val={'−'+fmtRS(x.desce)}/>}
           {x.saiu>0&&<LinhaDica cor={COR_COM.desce} rot={'Saíram · '+x.nomes.saiu.join(', ')} val={'−'+fmtRS(x.saiu)}/>}
+          {onMes&&<div className="ch-nota">clique para ver este mês</div>}
         </>); }}/>))}
     </svg>
     <dica.Balao/>
@@ -17209,7 +17566,7 @@ function GraficoMRR({serie}){
 }
 
 /* ---------- 2. Ponte da receita: de onde veio a variação ---------- */
-function PonteMRR({ini,mov,fim}){
+function PonteMRR({ini,mov,fim,onPasso}){
   const W=560,H=230,L=12,R=12,T=26,B=40, iw=W-L-R, ih=H-T-B;
   const passos=[
     {k:'ini',rot:'Há 12 meses',v:ini,tot:true},
@@ -17232,8 +17589,11 @@ function PonteMRR({ini,mov,fim}){
       {barras.map((x,i)=>{ const cx=L+slot*i+slot/2, y0=Y(Math.max(x.a,x.b)), y1=Y(Math.min(x.a,x.b));
         const cor=x.tot? COR_COM.base : (x.v>=0? COR_COM.sobe : COR_COM.desce);
         const h=Math.max(x.v?2:0,y1-y0);
-        return (<g key={x.k} onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
-            <LinhaDica cor={cor} rot={x.tot?'Receita recorrente':'Variação em 12 meses'} val={(x.tot?'':(x.v>=0?'+':'−'))+fmtRS(Math.abs(x.v))} forte/></>)}>
+        const clica=onPasso&&!x.tot;
+        return (<g key={x.k} style={{cursor:clica?'pointer':'default'}} onClick={()=>clica&&onPasso(x.k)}
+            onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
+            <LinhaDica cor={cor} rot={x.tot?'Receita recorrente':'Variação em 12 meses'} val={(x.tot?'':(x.v>=0?'+':'−'))+fmtRS(Math.abs(x.v))} forte/>
+            {clica&&<div className="ch-nota">clique para ver os clientes</div>}</>)}>
           {i<barras.length-1&&<line x1={cx+bw/2} x2={cx+slot-bw/2} y1={Y(x.b)} y2={Y(x.b)} stroke={COR_COM.eixo} strokeWidth="1"/>}
           <rect x={cx-bw/2} y={y0} width={bw} height={h} rx="3" fill={cor}/>
           <text x={cx} y={y0-7} textAnchor="middle" className={x.tot?'ch-rot-forte':'ch-rot'}>{x.tot? fmtK(x.v) : (x.v? (x.v>0?'+':'')+fmtK(x.v) : '0')}</text>
@@ -17247,18 +17607,19 @@ function PonteMRR({ini,mov,fim}){
 }
 
 /* ---------- 3. Barras horizontais em HTML (concentração, mix) ---------- */
-function BarrasH({itens,total,mostrarAcum,cor}){
+function BarrasH({itens,total,mostrarAcum,cor,onItem}){
   const max=Math.max(1,...itens.map(x=>x.v));
   const dica=useDica();
   let acum=0;
   return (<div className="hb" ref={dica.ref} onMouseLeave={dica.esconder}>
     {itens.map(x=>{ acum+=x.v; const sh=total?x.v/total:0, ac=total?acum/total:0;
-      return (<div key={x.k} className="hb-l" onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
+      return (<div key={x.k} className={'hb-l'+(onItem?' clicavel':'')} onClick={()=>onItem&&onItem(x)}
+          onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
           <LinhaDica cor={x.cor||cor} rot="Receita mensal" val={fmtRS(x.v)} forte/>
           <LinhaDica rot="Participação" val={fmtPct(sh,1)}/>
           {mostrarAcum&&<LinhaDica rot="Acumulado" val={fmtPct(ac,1)}/>}
           {x.n!=null&&<LinhaDica rot="Clientes" val={x.n}/>}
-          {x.extra}</>)}>
+          {x.extra}{onItem&&<div className="ch-nota">clique para ver o detalhe</div>}</>)}>
         <div className="hb-n" title={x.rot}>{x.marca}{x.rot}</div>
         <div className="hb-t"><div className="hb-f" style={{width:(x.v/max*100)+'%',background:x.cor||cor}}></div>
           <span className="hb-v">{fmtK(x.v)} · {fmtPct(sh)}</span></div>
@@ -17269,7 +17630,7 @@ function BarrasH({itens,total,mostrarAcum,cor}){
 }
 
 /* ---------- 4. Haltere: R$/hora contratado × R$/hora real ---------- */
-function HaltereRH({linhas,media}){
+function HaltereRH({linhas,media,onCliente}){
   const W=560, rowH=28, T=30, B=26, L=118, R=70;
   const H=T+B+linhas.length*rowH, iw=W-L-R;
   const esc=escalaBonita(Math.max(media||0,...linhas.map(x=>Math.max(x.prev||0,x.real||0))));
@@ -17283,11 +17644,13 @@ function HaltereRH({linhas,media}){
         <text x={X(media)} y={T-18} textAnchor="middle" className="ch-rot">média {fmtRS(media)}/h</text></g>}
       {linhas.map((x,i)=>{ const y=T+i*rowH+rowH/2, ruim=x.prev&&x.real&&x.real<x.prev*0.85;
         const corReal=ruim?COR_COM.desce:COR_COM.base;
-        return (<g key={x.p.id} onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.p.name}</div>
+        return (<g key={x.p.id} style={{cursor:onCliente?'pointer':'default'}} onClick={()=>onCliente&&onCliente(x.p)}
+            onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.p.name}</div>
             <LinhaDica rot="Ticket mensal" val={fmtRS(x.tk)}/>
             <LinhaDica rot={'Contratado · '+(x.hp||0)+'h/mês'} val={x.prev?fmtRS(x.prev)+'/h':'—'}/>
             <LinhaDica cor={corReal} rot={'Real · '+fmtHoras(emHoras(x.min))+'h no mês'} val={x.real?fmtRS(x.real)+'/h':'—'} forte/>
-            {ruim&&<div className="ch-nota">O time está usando mais horas do que o contrato prevê.</div>}</>)}>
+            {ruim&&<div className="ch-nota">O time está usando mais horas do que o contrato prevê.</div>}
+            {onCliente&&<div className="ch-nota">clique para ver a linha do tempo deste cliente</div>}</>)}>
           <rect x="0" y={y-rowH/2} width={W} height={rowH} fill="transparent"/>
           <text x={L-10} y={y+4} textAnchor="end" className="ch-nome">{x.p.name.length>16?x.p.name.slice(0,15)+'…':x.p.name}</text>
           {x.prev&&x.real? <line x1={X(x.prev)} x2={X(x.real)} y1={y} y2={y} stroke={ruim?COR_COM.desce:'#b9c6c4'} strokeWidth="2"/> : null}
@@ -17301,7 +17664,7 @@ function HaltereRH({linhas,media}){
 }
 
 /* ---------- 5. Vencimentos: receita que chega ao fim do contrato, mês a mês ---------- */
-function GraficoVenc({meses}){
+function GraficoVenc({meses,onMes}){
   const W=560,H=200,L=12,R=12,T=24,B=28, iw=W-L-R, ih=H-T-B;
   const esc=escalaBonita(Math.max(1,...meses.map(x=>x.v)));
   const slot=iw/meses.length, bw=Math.min(24,slot*.6), Y=(v)=>T+ih-(v/esc.max)*ih;
@@ -17310,13 +17673,16 @@ function GraficoVenc({meses}){
     <svg viewBox={'0 0 '+W+' '+H} className="ch-svg" role="img" aria-label="Receita com contrato vencendo nos próximos 12 meses">
       <line x1={L} x2={W-R} y1={Y(0)} y2={Y(0)} stroke={COR_COM.eixo}/>
       {meses.map((x,i)=>{ const cx=L+slot*i+slot/2, y0=Y(x.v);
-        return (<g key={x.rot} onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
+        const clica=onMes&&x.cli.length;
+        return (<g key={x.rot} style={{cursor:clica?'pointer':'default'}} onClick={()=>clica&&onMes(i)}
+            onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
             <LinhaDica cor={COR_COM.desce} rot="Receita que vence" val={fmtRS(x.v)} forte/>
             {x.cli.map(c=><LinhaDica key={c.id} rot={c.name+' · '+fmtBR(ctFim(c))} val={fmtRS(+c.ticket||0)}/>)}
-            {!x.cli.length&&<div className="ch-nota">Nenhum contrato vence neste mês.</div>}</>)}>
+            {!x.cli.length&&<div className="ch-nota">Nenhum contrato vence neste mês.</div>}
+            {clica&&<div className="ch-nota">clique para ver os contratos</div>}</>)}>
           <rect x={cx-slot/2} y={T} width={slot} height={ih+B} fill="transparent"/>
           {x.v>0&&<path d={'M'+(cx-bw/2)+' '+Y(0)+' V'+(y0+3)+' Q'+(cx-bw/2)+' '+y0+' '+(cx-bw/2+3)+' '+y0+' H'+(cx+bw/2-3)+' Q'+(cx+bw/2)+' '+y0+' '+(cx+bw/2)+' '+(y0+3)+' V'+Y(0)+' Z'} fill={COR_COM.desce}/>}
-          {x.v>0&&<text x={cx} y={y0-6} textAnchor="middle" className="ch-rot">{fmtK(x.v)}</text>}
+          {x.v>0&&<text x={cx} y={y0-6} textAnchor="middle" className="ch-dado">{fmtCurto(x.v)}</text>}
           <text x={cx} y={H-10} textAnchor="middle" className="ch-eixo">{x.rot}</text>
         </g>);})}
     </svg>
@@ -17324,8 +17690,202 @@ function GraficoVenc({meses}){
   </div>);
 }
 
-const TileCom=({rot,val,sub,cor,dica})=>(<div className="kpi" title={dica||''}><div className="bar" style={{background:cor||COR_COM.base}}></div>
+const TileCom=({rot,val,sub,cor,dica,abrir})=>(<div className={'kpi'+(abrir?' clicavel':'')} title={dica||''} onClick={abrir}>
+  <div className="bar" style={{background:cor||COR_COM.base}}></div>
+  {abrir&&<span className="lupa">ver detalhe</span>}
   <div className="lab">{rot}</div><div className="val" style={{color:'var(--navy)'}}>{val}</div><div className="sub">{sub}</div></div>);
+
+/* =====================================================================
+   DETALHE DE UM INDICADOR — linha do tempo + tabela
+   Todo card e todo gráfico da Análise de Carteira abre isto: como o
+   número andou nos últimos 12 meses e quais clientes estão por trás
+   dele agora. Daqui dá para ir direto ao cliente.
+   ===================================================================== */
+
+/* A linha do tempo: um ponto por mês, com o que mudou naquele mês */
+function LinhaTempo({serie,fmtV,cor,onMes,rotV,serie2,rot2,cor2}){
+  const W=720,H=200,L=64,R=16,T=24,B=32, iw=W-L-R, ih=H-T-B;
+  const f=fmtV||fmtK, c=cor||COR_COM.base, c2=cor2||'#12122b';
+  const num=(v)=>(v!=null&&isFinite(v));
+  const todos=serie.map(x=>x.v).concat((serie2||[]).map(x=>x&&x.v)).filter(num);
+  const esc=escalaBonita(Math.max(1,...(todos.length?todos:[1])));
+  const slot=iw/Math.max(1,serie.length);
+  const X=(i)=>L+slot*i+slot/2, Y=(v)=>T+ih-(Math.max(0,v||0)/esc.max)*ih;
+  const [foco,setFoco]=useState(null);
+  const dica=useDica();
+  /* mês sem valor abre um buraco na linha em vez de puxá-la para o chão */
+  const caminho=(arr)=>{ let d='', abre=true;
+    (arr||[]).forEach((x,i)=>{ const v=x&&x.v;
+      if(!num(v)){ abre=true; return; }
+      d+=(abre?'M':'L')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' '; abre=false; });
+    return d.trim(); };
+  const linha=caminho(serie);
+  const cheia=!serie2&&serie.every(x=>num(x.v));
+  const ultI=(()=>{ for(let i=serie.length-1;i>=0;i--) if(num(serie[i].v)) return i; return -1; })();
+  const curto=(v)=>String(f(v)).replace('R$ ','').replace(' mil','k').replace(' mi','M');
+  return (<div className="ch-wrap" ref={dica.ref} onMouseLeave={()=>{setFoco(null);dica.esconder();}}>
+    <svg viewBox={'0 0 '+W+' '+H} className="ch-svg" role="img" aria-label="Como este número andou nos últimos meses">
+      {esc.ticks.map(t=>(<g key={t}><line x1={L} x2={W-R} y1={Y(t)} y2={Y(t)} stroke={COR_COM.grade}/>
+        <text x={L-8} y={Y(t)+3.5} textAnchor="end" className="ch-eixo">{f(t)}</text></g>))}
+      {cheia&&<path d={linha+' L'+X(serie.length-1)+' '+(T+ih)+' L'+X(0)+' '+(T+ih)+' Z'} fill={c} fillOpacity=".09"/>}
+      {serie2&&<path d={caminho(serie2)} fill="none" stroke={c2} strokeWidth="1.8" strokeDasharray="5 4" strokeLinejoin="round"/>}
+      <path d={linha} fill="none" stroke={c} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round"/>
+      {foco!==null&&<line x1={X(foco)} x2={X(foco)} y1={T} y2={T+ih} stroke={COR_COM.eixo}/>}
+      {serie.map((x,i)=>((x.det||[]).length&&num(x.v)? <circle key={'m'+i} cx={X(i)} cy={Y(x.v)} r="3.5" fill={c} fillOpacity=".55"/> : null))}
+      {ultI>=0&&<circle cx={X(ultI)} cy={Y(serie[ultI].v)} r="4.5" fill={c} stroke="#fff" strokeWidth="2"/>}
+      {serie.map((x,i)=>(num(x.v)? <text key={'d'+i} x={X(i)} y={Y(x.v)-9} textAnchor="middle"
+        className={i===ultI?'ch-dado-f':'ch-dado'}>{curto(x.v)}</text> : null))}
+      {serie.map((x,i)=>(<g key={x.rot} style={{cursor:onMes?'pointer':'default'}} onClick={()=>onMes&&onMes(x,i)}
+          onMouseMove={(e)=>{ setFoco(i); dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
+            <LinhaDica cor={c} rot={rotV||'Valor'} val={num(x.v)?f(x.v):'—'} forte/>
+            {serie2&&serie2[i]&&<LinhaDica cor={c2} rot={rot2||'Referência'} val={num(serie2[i].v)?f(serie2[i].v):'—'}/>}
+            {(x.det||[]).map((d,j)=><LinhaDica key={j} cor={d.cor} rot={d.rot} val={d.val}/>)}
+            {onMes&&<div className="ch-nota">clique para ver este mês</div>}</>); }}>
+        <rect x={X(i)-slot/2} y={T-14} width={slot} height={ih+B+14} fill="transparent"/>
+        <text x={X(i)} y={H-10} textAnchor="middle" className="ch-eixo">{x.rot}</text>
+      </g>))}
+    </svg>
+    {serie2&&<div className="ch-leg"><span><i style={{background:c}}></i>{rotV||'realizado'}</span>
+      <span><i style={{background:c2}}></i>{rot2||'contratado'} (tracejado)</span></div>}
+    <dica.Balao/>
+  </div>);
+}
+
+/* Duas barras lado a lado por mês: o contratado e o que de fato aconteceu */
+function BarrasDuplas({serie,fmtV,cor1,cor2,rot1,rot2,onMes}){
+  const W=760,H=210,L=58,R=14,T=26,B=32, iw=W-L-R, ih=H-T-B;
+  const f=fmtV||((v)=>String(Math.round(v)));
+  const c1=cor1||'#9fb4b5', c2=cor2||COR_COM.base;
+  const esc=escalaBonita(Math.max(1,...serie.map(x=>Math.max(x.a||0,x.b||0))));
+  const slot=iw/Math.max(1,serie.length), bw=Math.min(15,slot*.30), gap=2;
+  const Y=(v)=>T+ih-(Math.max(0,v||0)/esc.max)*ih;
+  const dica=useDica();
+  return (<div className="ch-wrap" ref={dica.ref} onMouseLeave={dica.esconder}>
+    <svg viewBox={'0 0 '+W+' '+H} className="ch-svg">
+      {esc.ticks.map(t=>(<g key={t}><line x1={L} x2={W-R} y1={Y(t)} y2={Y(t)} stroke={COR_COM.grade}/>
+        <text x={L-8} y={Y(t)+3.5} textAnchor="end" className="ch-eixo">{f(t)}</text></g>))}
+      {serie.map((x,i)=>{ const cx=L+slot*i+slot/2, xa=cx-bw-gap/2, xb=cx+gap/2;
+        const sobra=(x.b||0)-(x.a||0);
+        return (<g key={x.rot} style={{cursor:onMes?'pointer':'default'}} onClick={()=>onMes&&onMes(x,i)}
+            onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
+              <LinhaDica cor={c1} rot={rot1||'Contratado'} val={f(x.a||0)}/>
+              <LinhaDica cor={c2} rot={rot2||'Realizado'} val={f(x.b||0)} forte/>
+              {!!x.a&&<LinhaDica rot="Uso do contrato" val={fmtPct((x.b||0)/x.a)}/>}
+              {!!x.a&&<div className="ch-nota">{sobra>0? 'passou '+f(sobra)+' do contrato' : sobra<0? 'sobraram '+f(-sobra) : 'bateu exatamente'}</div>}
+              {(x.det||[]).map((d,j)=><LinhaDica key={j} cor={d.cor} rot={d.rot} val={d.val}/>)}
+              {onMes&&<div className="ch-nota">clique para ver este mês</div>}</>)}>
+          <rect x={cx-slot/2} y={T-12} width={slot} height={ih+B+12} fill="transparent"/>
+          {x.a>0&&<rect x={xa} y={Y(x.a)} width={bw} height={Math.max(1,T+ih-Y(x.a))} rx="2.5" fill={c1}/>}
+          {x.b>0&&<rect x={xb} y={Y(x.b)} width={bw} height={Math.max(1,T+ih-Y(x.b))} rx="2.5"
+            fill={(x.a&&x.b>x.a)?COR_COM.desce:c2} fillOpacity={i===serie.length-1?1:.82}/>}
+          {x.b>0&&<text x={xb+bw/2} y={Y(x.b)-6} textAnchor="middle" className={i===serie.length-1?'ch-dado-f':'ch-dado'}>{f(x.b)}</text>}
+          <text x={cx} y={H-10} textAnchor="middle" className="ch-eixo">{x.rot}</text>
+        </g>); })}
+    </svg>
+    <div className="ch-leg"><span><i style={{background:c1}}></i>{rot1||'contratado'}</span>
+      <span><i style={{background:c2}}></i>{rot2||'realizado'}</span>
+      <span><i style={{background:COR_COM.desce}}></i>mês que passou do contrato</span></div>
+    <dica.Balao/>
+  </div>);
+}
+
+/* Barras mês a mês, com o valor em cima e uma linha de referência
+   opcional (as horas contratadas, por exemplo) */
+function BarrasMes({serie,fmtV,cor,marca,rotMarca,rotV,onMes}){
+  const W=760,H=200,L=58,R=14,T=26,B=30, iw=W-L-R, ih=H-T-B;
+  const f=fmtV||((v)=>String(Math.round(v)));
+  const c=cor||COR_COM.base;
+  const esc=escalaBonita(Math.max(1,...serie.map(x=>x.v||0),marca||0));
+  const slot=iw/Math.max(1,serie.length), bw=Math.min(42,slot*.58);
+  const Y=(v)=>T+ih-(Math.max(0,v||0)/esc.max)*ih;
+  const dica=useDica();
+  return (<div className="ch-wrap" ref={dica.ref} onMouseLeave={dica.esconder}>
+    <svg viewBox={'0 0 '+W+' '+H} className="ch-svg">
+      {esc.ticks.map(t=>(<g key={t}><line x1={L} x2={W-R} y1={Y(t)} y2={Y(t)} stroke={COR_COM.grade}/>
+        <text x={L-8} y={Y(t)+3.5} textAnchor="end" className="ch-eixo">{f(t)}</text></g>))}
+      {marca>0&&<g><line x1={L} x2={W-R} y1={Y(marca)} y2={Y(marca)} stroke="#12122b" strokeWidth="1.6" strokeDasharray="5 4"/>
+        <text x={W-R} y={Y(marca)-5} textAnchor="end" className="ch-rot">{rotMarca||f(marca)}</text></g>}
+      {serie.map((x,i)=>{ const cx=L+slot*i+slot/2, y0=Y(x.v);
+        return (<g key={x.rot} style={{cursor:onMes?'pointer':'default'}} onClick={()=>onMes&&onMes(x,i)}
+            onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">{x.rot}</div>
+              <LinhaDica cor={c} rot={rotV||'Valor'} val={f(x.v)} forte/>
+              {(x.det||[]).map((d,j)=><LinhaDica key={j} cor={d.cor} rot={d.rot} val={d.val}/>)}
+              {onMes&&<div className="ch-nota">clique para ver este mês</div>}</>)}>
+          <rect x={cx-slot/2} y={T-12} width={slot} height={ih+B+12} fill="transparent"/>
+          {x.v>0&&<rect x={cx-bw/2} y={y0} width={bw} height={Math.max(1,T+ih-y0)} rx="3" fill={c} fillOpacity={i===serie.length-1?1:.72}/>}
+          {x.v>0&&<text x={cx} y={y0-6} textAnchor="middle" className={i===serie.length-1?'ch-dado-f':'ch-dado'}>{f(x.v)}</text>}
+          <text x={cx} y={H-10} textAnchor="middle" className="ch-eixo">{x.rot}</text>
+        </g>); })}
+    </svg>
+    <dica.Balao/>
+  </div>);
+}
+
+/* A tabela do detalhe: ordena por qualquer coluna, soma o que faz sentido
+   somar e leva ao cliente quando a linha é um cliente */
+function TabelaDetalhe({cols,linhas,ord,ordAsc,ir}){
+  const [por,setPor]=useState(ord||(cols[0]||{}).k);
+  const [desc,setDesc]=useState(!ordAsc);
+  const [q,setQ]=useState('');
+  const busca=linhas.length>8;
+  const vis=linhas.filter(l=>!q||String(l.nome||'').toLowerCase().indexOf(q.toLowerCase())>=0);
+  const cOrd=cols.find(c=>c.k===por)||{};
+  const campo=cOrd.sortK||por;
+  const ordenadas=vis.slice().sort((a,b)=>{
+    const x=a[campo], y=b[campo];
+    if(typeof x==='number'||typeof y==='number') return desc? (y||0)-(x||0) : (x||0)-(y||0);
+    return desc? String(y||'').localeCompare(String(x||'')) : String(x||'').localeCompare(String(y||''));
+  });
+  const clicar=(k)=>{ if(k===por) setDesc(d=>!d); else { setPor(k); setDesc(true); } };
+  const somas=cols.filter(c=>c.soma);
+  if(!linhas.length) return <div className="dtl-vazio">Nada para mostrar aqui.</div>;
+  return (<>
+    {busca&&<input className="in dtl-busca" placeholder="Procurar…" value={q} onChange={e=>setQ(e.target.value)}/>}
+    <div className="dtl-rol"><table className="tbl">
+      <thead><tr>{cols.map(c=><th key={c.k} className={c.num?'dtl-num':''} onClick={()=>clicar(c.k)}>
+        {c.rot}{por===c.k?(desc?' ↓':' ↑'):''}</th>)}</tr></thead>
+      <tbody>
+        {ordenadas.map((l,i)=>(<tr key={l.id||l.k||i} className={ir&&l.id?'click':''} onClick={()=>ir&&l.id&&ir(l.id)}>
+          {cols.map(c=><td key={c.k} className={c.num?'dtl-num':''}>{c.fmt? c.fmt(l[c.k],l) : (l[c.k]==null||l[c.k]===''?'—':l[c.k])}</td>)}
+        </tr>))}
+        {somas.length>0&&ordenadas.length>1&&<tr className="dtl-tot">
+          {cols.map((c,j)=><td key={c.k} className={c.num?'dtl-num':''}>
+            {j===0? 'Total ('+ordenadas.length+')' : (c.soma? (c.fmt? c.fmt(ordenadas.reduce((a,l)=>a+(+l[c.k]||0),0)) : ordenadas.reduce((a,l)=>a+(+l[c.k]||0),0)) : '')}</td>)}
+        </tr>}
+      </tbody>
+    </table></div>
+  </>);
+}
+
+/* A janela */
+function DetalheCarteira({d,close,go}){
+  if(!d) return null;
+  const ir=(id)=>{ close(); go('projects',id,'analise'); };
+  return (<div className="overlay" onClick={close}>
+    <div className="modal wide" style={{maxWidth:1000,width:'96vw'}} onClick={e=>e.stopPropagation()}>
+      <div className="modal-h"><h3>{d.titulo}</h3><button className="x" onClick={close}>{I.x}</button></div>
+      <div className="modal-b">
+        <div className="dtl-topo"><div>
+          <div className="dtl-val">{d.valor}</div>
+          <div className="dtl-sub">{d.sub||''}</div></div>{d.extra}</div>
+        {d.explica&&<div className="dtl-exp">{d.explica}</div>}
+        {(d.serie||[]).length>1&&<div className="dtl-bloco">
+          <div className="dtl-h">Linha do tempo<span className="muted">{d.serieSub||'últimos 12 meses'}</span></div>
+          <LinhaTempo serie={d.serie} fmtV={d.fmtV} cor={d.cor} onMes={d.onMes} rotV={d.rotV}
+            serie2={d.serie2} rot2={d.rot2}/>
+        </div>}
+        <div className="dtl-bloco">
+          <div className="dtl-h">{d.tabRot||'Quem está por trás do número'}
+            <span className="muted">{(d.linhas||[]).length} linha(s)</span></div>
+          <TabelaDetalhe cols={d.cols} linhas={d.linhas||[]} ord={d.ord} ordAsc={d.ordAsc} ir={d.semIr?null:ir}/>
+        </div>
+      </div>
+      <div className="modal-f"><span className="muted" style={{fontSize:'.74rem'}}>
+        {d.rodape||(d.semIr?'':'Clique numa linha para abrir o cliente.')}</span>
+        <button className="btn btn-ghost" onClick={close}>Fechar</button></div>
+    </div>
+  </div>);
+}
 
 /* ---------- O painel ---------- */
 function AnaliseComercial({db,go,update,onEditar}){
@@ -17357,6 +17917,7 @@ function AnaliseComercial({db,go,update,onEditar}){
     return top; })();
   /* mix da carteira */
   const [dim,setDim]=useState('tier');
+  const [dtl,setDtl]=useState(null);
   const DIMS=[['tier','Tier'],['tipo','Tipo'],['setor','Setor'],['phase','Etapa'],['coord','Coordenação'],['casa','Tempo de casa'],['origem','Origem']];
   const grupoDe=(p)=>{
     if(dim==='origem') return p.origemCli||'Não informada';
@@ -17420,6 +17981,328 @@ function AnaliseComercial({db,go,update,onEditar}){
   const origemTop=origens.find(x=>x.k!=='Não informada')||origens[0];
   const semOrigem=ativosT.filter(p=>!p.origemCli).length;
 
+  /* ---------------------------------------------------------------
+     O detalhe de cada número: a linha do tempo dos últimos 12 meses e
+     a tabela de quem está por trás dele. Tudo é calculado na hora, a
+     partir dos mesmos contratos — nada disso grava nada.
+     --------------------------------------------------------------- */
+  const refMeses=useMemo(()=>Array.from({length:12},(_,i)=>{
+    const k=11-i, d1=new Date(anoAtual,mesAtual-k,1);
+    return {iso: k===0? hoje : isoDate(new Date(anoAtual,mesAtual-k+1,0)),
+            rot: MES[d1.getMonth()].slice(0,3).toLowerCase()+'/'+String(d1.getFullYear()).slice(2)};
+  }),[hoje,anoAtual,mesAtual]);
+  const isoIni12=isoDate(new Date(anoAtual,mesAtual-11,0));
+  const serieDe=(fn)=>refMeses.map((m,i)=>({rot:m.rot,iso:m.iso,v:fn(m.iso,i)||0}));
+
+  /* Horas da carteira, mês a mês: o que os contratos preveem contra o que
+     o time de fato lançou. Só horas com cliente — tarefa interna não tem
+     contrato para comparar. */
+  const horas12=useMemo(()=>{
+    const ini=isoDate(new Date(anoAtual,mesAtual-11,1));
+    let ls=[]; try{ ls=horasDoSprint(db,ini,hoje).filter(l=>l.pid); }catch(e){ ls=[]; }
+    let ac=0;
+    return refMeses.map((m,i)=>{
+      const d1=new Date(anoAtual,mesAtual-(11-i),1);
+      const mIni=isoDate(d1), mFim=isoDate(new Date(d1.getFullYear(),d1.getMonth()+1,0));
+      const f=ls.filter(l=>l.iso>=mIni&&l.iso<=mFim);
+      const real=emHoras(somaMin(f));
+      const prev=todos.reduce((a,x)=>a+((recEm(x,m.iso)>0)?(+x.horasPlan||0):0),0);
+      ac+=real-prev;
+      const porCli={};
+      f.forEach(l=>{ porCli[l.pid]=(porCli[l.pid]||0)+l.min; });
+      return {rot:m.rot,iso:m.iso,v:real,a:prev,b:real,saldo:real-prev,acum:ac,linhas:f,porCli:porCli,
+        mrr:(L.serie[i]?L.serie[i].mrr:0)};
+    });
+  },[db,hoje,todos.length]);
+  const comCtT=horas12.filter(x=>x.a>0);
+  const hPrevT=comCtT.reduce((a,x)=>a+x.a,0), hRealT=comCtT.reduce((a,x)=>a+x.b,0);
+  const hSaldoT=hRealT-hPrevT, hAcimaT=horas12.filter(x=>x.a>0&&x.b>x.a).length;
+  const vhCart=horas12.map(x=>({rot:x.rot,v:(x.b&&x.mrr)? x.mrr/x.b : null,
+    det:[{rot:'Horas no mês',val:fmtHoras(x.b)+'h'},{rot:'Receita do mês',val:fmtRS(x.mrr)}]}));
+  const vhCartPrev=horas12.map(x=>({rot:x.rot,v:(x.a&&x.mrr)? x.mrr/x.a : null}));
+  const vhCartMedia=(()=>{ let r=0,h=0; horas12.forEach(x=>{ if(x.b&&x.mrr){ r+=x.mrr; h+=x.b; } });
+    return h? r/h : 0; })();
+  const vhCartBons=vhCart.filter((x,i)=>x.v!=null&&(horas12[i].a? horas12[i].b>=horas12[i].a*.25 : horas12[i].b>=4));
+  const vhCartExt=(maior)=>{ const v=vhCartBons.length?vhCartBons:vhCart.filter(x=>x.v!=null);
+    if(!v.length) return '—';
+    const m=v.reduce((a,x)=>(maior? x.v>a.v : x.v<a.v)?x:a);
+    return fmtRS(m.v)+'/h · '+m.rot; };
+  const nInt=(v)=>String(Math.round(v));
+  const pct=(v)=>fmtPct(v);
+  const nomeCoord=(p)=>((p.coordinator&&member(db,p.coordinator))||{}).name||'—';
+  const vermelhasDe=(p)=>SINAL_CATS.filter(c=>((sinaisDe(p)[c[0]]||{}).cor==='vermelho')).map(c=>c[1]).join(', ');
+  const ultTk=(p)=>{ const h=p.ticketHist||[]; return h.length? (+h[h.length-1].valor||0) : (+p.ticket||0); };
+  const detMes=(i)=>{ const m=L.serie[i]; if(!m) return [];
+    const d=[];
+    if(m.novo>0) d.push({cor:COR_COM.sobe,rot:'Entraram · '+m.nomes.novo.join(', '),val:'+'+fmtRS(m.novo)});
+    if(m.sobe>0) d.push({cor:COR_COM.sobe,rot:'Reajustes',val:'+'+fmtRS(m.sobe)});
+    if(m.desce>0) d.push({cor:COR_COM.desce,rot:'Reduções',val:'−'+fmtRS(m.desce)});
+    if(m.saiu>0) d.push({cor:COR_COM.desce,rot:'Saíram · '+m.nomes.saiu.join(', '),val:'−'+fmtRS(m.saiu)});
+    return d; };
+  const C={
+    nome:{k:'nome',rot:'Cliente'},
+    tk:{k:'tk',rot:'Ticket/mês',num:1,soma:1,fmt:fmtRS},
+    part:{k:'part',rot:'Participação',num:1,fmt:v=>fmtPct(v,1)},
+    hp:{k:'hp',rot:'Horas/mês',num:1,soma:1,fmt:v=>v?fmtHoras(v)+'h':'—'},
+    rh:{k:'rh',rot:'R$/hora',num:1,fmt:v=>v?fmtRS(v):'—'},
+    ini:{k:'ini',rot:'Entrou em',fmt:v=>v?fmtBR(v):'—'},
+    fim:{k:'fim',rot:'Vigência até',fmt:v=>v?fmtBR(v):'sem prazo'},
+    tier:{k:'tier',rot:'Tier'},
+    coord:{k:'coord',rot:'Coordenação'}};
+  const CLI_COLS=[C.nome,C.tk,C.part,C.hp,C.rh,C.ini,C.fim];
+  const linhaCli=(p)=>{ const v=recEm(p,hoje), hp=+p.horasPlan||0;
+    return {id:p.id,nome:p.name,tk:v,part:mrr?v/mrr:0,hp:hp,rh:hp?v/hp:0,
+      ini:ctIni(p),fim:ctFim(p),tier:p.tier||'—',coord:nomeCoord(p)}; };
+  const clientesDe=(lista)=>lista.map(linhaCli);
+
+  function montar(qual,arg){
+    switch(qual){
+    case 'mrr': return {titulo:'Receita recorrente',valor:fmtRS(mrr),
+      sub:n+(n===1?' contrato vigente':' contratos vigentes')+' · ticket médio '+fmtRS(ticketMedio),
+      explica:'A soma do ticket mensal de todos os contratos vigentes. Cada ponto da linha do tempo é a situação no último dia daquele mês.',
+      serie:serieDe((iso,i)=>L.serie[i]?L.serie[i].mrr:0).map((x,i)=>({...x,det:detMes(i)})),
+      fmtV:fmtK,rotV:'Receita recorrente',onMes:(x,i)=>abrir('mes',i),
+      cols:CLI_COLS,linhas:clientesDe(ativosT),ord:'tk'};
+
+    case 'mes': { const m=L.serie[arg]||L.serie[L.serie.length-1];
+      const dentro=todos.filter(x=>recEm(x,m.iso)>0);
+      return {titulo:'Receita em '+m.rot,valor:fmtRS(m.mrr),
+        sub:m.n+(m.n===1?' contrato vigente':' contratos vigentes')+' no fim de '+m.rot,
+        explica:'Quem estava pagando no último dia de '+m.rot+', com o ticket daquela data. A coluna da direita mostra como está hoje.',
+        serie:serieDe((iso,i)=>L.serie[i]?L.serie[i].mrr:0).map((x,i)=>({...x,det:detMes(i)})),
+        fmtV:fmtK,rotV:'Receita recorrente',onMes:(x,i)=>abrir('mes',i),
+        cols:[C.nome,{k:'tk',rot:'Ticket em '+m.rot,num:1,soma:1,fmt:fmtRS},
+          {k:'agora',rot:'Ticket hoje',num:1,soma:1,fmt:v=>v?fmtRS(v):'saiu'},C.ini,C.fim],
+        linhas:dentro.map(x=>({id:x.id,nome:x.name,tk:recEm(x,m.iso),agora:recEm(x,hoje),ini:ctIni(x),fim:ctFim(x)})),
+        ord:'tk'}; }
+
+    case 'anual': return {titulo:'Receita anualizada',valor:fmtRS(mrr*12),
+      sub:'a receita recorrente de hoje × 12 meses',
+      explica:'É a conta mais simples: o que a carteira fatura por mês, vezes doze. Não desconta contratos que vencem no meio do caminho nem soma reajustes futuros — para isso, veja Receita em carteira.',
+      serie:serieDe((iso,i)=>(L.serie[i]?L.serie[i].mrr:0)*12),fmtV:fmtK,rotV:'Anualizada',
+      cols:CLI_COLS.concat([{k:'ano',rot:'No ano',num:1,soma:1,fmt:fmtRS}]),
+      linhas:ativosT.map(x=>({...linhaCli(x),ano:recEm(x,hoje)*12})),ord:'tk'};
+
+    case 'carteira': { const comFim=ativosT.filter(x=>ctFim(x)&&ctFim(x)>=hoje);
+      const faltam=(x,iso)=>Math.max(0,(dLocal(ctFim(x))-dLocal(iso))/86400000/30.44);
+      return {titulo:'Receita em carteira',valor:fmtRS(carteira),cor:COR_COM.sobe,
+        sub:'já contratada até o fim das vigências'+(semFim.length?' · '+semFim.length+' sem data de fim':''),
+        explica:'Para cada cliente: o ticket × os meses que faltam até a data de fim do contrato. Quem não tem data de fim fica de fora, porque não dá para somar um prazo que não existe.',
+        serie:serieDe(iso=>todos.reduce((a,x)=>{ const f=ctFim(x),r=recEm(x,iso);
+          return (!r||!f||f<iso)? a : a+r*Math.max(0,(dLocal(f)-dLocal(iso))/86400000/30.44); },0)),
+        fmtV:fmtK,rotV:'Em carteira',
+        cols:[C.nome,C.tk,C.fim,{k:'meses',rot:'Meses que faltam',num:1,fmt:v=>Math.round(v)+' meses'},
+          {k:'total',rot:'Total contratado',num:1,soma:1,fmt:fmtRS}],
+        linhas:comFim.map(x=>({id:x.id,nome:x.name,tk:recEm(x,hoje),fim:ctFim(x),
+          meses:faltam(x,hoje),total:recEm(x,hoje)*faltam(x,hoje)})),ord:'total',
+        rodape:semFim.length? semFim.length+' cliente(s) sem data de fim ficam fora desta conta: '+semFim.map(x=>x.name).join(', ') : ''}; }
+
+    case 'ticket': return {titulo:'Ticket médio',valor:fmtRS(ticketMedio),
+      sub:'receita recorrente ÷ '+n+(n===1?' contrato':' contratos'),
+      explica:'A média simples dos contratos vigentes. Um cliente grande puxa a média para cima: a curva ABC, no card de Concentração, mostra o quanto.',
+      serie:serieDe((iso,i)=>{const m=L.serie[i]; return m&&m.n? m.mrr/m.n:0;}),fmtV:fmtK,rotV:'Ticket médio',
+      cols:CLI_COLS,linhas:clientesDe(ativosT),ord:'tk'};
+
+    case 'nrr': { const co=todos.filter(x=>recEm(x,isoIni12)>0);
+      return {titulo:'Retenção líquida em 12 meses',valor:L.nrr==null?'—':fmtPct(L.nrr),
+        cor:(L.nrr!=null&&L.nrr<1)?COR_COM.desce:COR_COM.sobe,
+        sub:'retenção bruta '+fmtPct(L.grr)+' · '+co.length+' cliente(s) na base de comparação',
+        explica:'Quanto os clientes que já pagavam há doze meses pagam hoje, comparado com o que pagavam então. Acima de 100%, os reajustes compensaram as perdas. Cliente novo não entra nesta conta.',
+        serie:serieDe(iso=>{ const d=dLocal(iso), ant=isoDate(new Date(d.getFullYear()-1,d.getMonth()+1,0));
+          const base=todos.reduce((a,x)=>a+recEm(x,ant),0);
+          return base? todos.reduce((a,x)=>a+(recEm(x,ant)>0?recEm(x,iso):0),0)/base : 0; }),
+        fmtV:pct,rotV:'Retenção líquida',
+        cols:[C.nome,{k:'antes',rot:'Pagava há 12 meses',num:1,soma:1,fmt:fmtRS},
+          {k:'agora',rot:'Paga hoje',num:1,soma:1,fmt:v=>v?fmtRS(v):'saiu'},
+          {k:'dif',rot:'Variação',num:1,soma:1,fmt:v=>v?((v>0?'+':'')+fmtRS(v)):'igual'}],
+        linhas:co.map(x=>({id:x.id,nome:x.name,antes:recEm(x,isoIni12),agora:recEm(x,hoje),
+          dif:recEm(x,hoje)-recEm(x,isoIni12)})),ord:'antes'}; }
+
+    case 'cancel': return {titulo:'Cancelamentos em 12 meses',valor:String(L.perdidos.length),
+      cor:L.perdidos.length?COR_COM.desce:COR_COM.sobe,
+      sub:L.perdidos.length? fmtRS(L.mov.saiu)+'/mês que deixaram de entrar' : 'nenhum cliente saiu',
+      explica:'Clientes que pagavam em algum dos últimos doze meses e não pagam mais. A linha do tempo conta quantos saíram em cada mês.',
+      serie:serieDe((iso,i)=>L.serie[i]?L.serie[i].nomes.saiu.length:0).map((x,i)=>({...x,
+        det:(L.serie[i]&&L.serie[i].nomes.saiu.length)?[{cor:COR_COM.desce,
+          rot:L.serie[i].nomes.saiu.join(', '),val:'−'+fmtRS(L.serie[i].saiu)}]:[]})),
+      fmtV:nInt,rotV:'Saíram no mês',
+      cols:[C.nome,{k:'tk',rot:'Último ticket',num:1,soma:1,fmt:fmtRS},C.ini,
+        {k:'saiu',rot:'Saiu em',fmt:v=>v?fmtBR(v):'—'},{k:'motivo',rot:'Motivo'},
+        {k:'casa',rot:'Meses de casa',num:1}],
+      linhas:L.perdidos.map(x=>({id:x.id,nome:x.name,tk:ultTk(x),ini:ctIni(x),
+        saiu:x.ctEncerradoEm||'',motivo:x.ctMotivo||'—',casa:mesesDeCasa(x)})),ord:'tk'};
+
+    case 'conc': return {titulo:'Concentração da receita',valor:fmtPct(mrr?top3/mrr:0),
+      cor:hhi>2500?COR_COM.desce:COR_COM.base,
+      sub:'nos 3 maiores clientes · concentração '+nivelHHI+' (HHI '+hhi+')',
+      explica:'O quanto a receita depende de poucos clientes. A = os que somam os primeiros 80%; B = os 15% seguintes; C = o resto. O HHI abaixo de 1.500 é concentração baixa; acima de 2.500, alta.',
+      serie:serieDe(iso=>{ const v=todos.map(x=>recEm(x,iso)).filter(x=>x>0).sort((a,b)=>b-a);
+        const t=v.reduce((a,x)=>a+x,0); return t? v.slice(0,3).reduce((a,x)=>a+x,0)/t : 0; }),
+      fmtV:pct,rotV:'Nos 3 maiores',
+      cols:[C.nome,{k:'classe',rot:'Curva ABC'},C.tk,C.part,{k:'acum',rot:'Acumulado',num:1,fmt:v=>fmtPct(v,1)}],
+      linhas:(()=>{ let ac=0; return porTk.map(x=>{ ac+=x.v;
+        return {id:x.p.id,nome:x.p.name,classe:classe[x.p.id],tk:x.v,part:mrr?x.v/mrr:0,acum:mrr?ac/mrr:0}; }); })(),
+      ord:'tk'};
+
+    case 'risco': return {titulo:'Receita em risco',valor:fmtRS(emRisco),
+      cor:emRisco?COR_COM.desce:COR_COM.sobe,
+      sub:vermelhos.length? vermelhos.length+' cliente(s) com sinaleira vermelha · '+fmtPct(mrr?emRisco/mrr:0)+' da receita' : 'nenhum cliente em vermelho',
+      explica:'A receita dos clientes que estão hoje com alguma sinaleira vermelha. A linha do tempo mostra quanto esses mesmos clientes vinham pagando — serve para ver se o problema já está afetando o faturamento.',
+      serie:serieDe(iso=>vermelhos.reduce((a,x)=>a+recEm(x,iso),0)),fmtV:fmtK,rotV:'Receita destes clientes',
+      cols:[C.nome,C.tk,C.part,{k:'sinais',rot:'Sinaleiras vermelhas'},C.coord,C.fim],
+      linhas:vermelhos.map(x=>({id:x.id,nome:x.name,tk:recEm(x,hoje),part:mrr?recEm(x,hoje)/mrr:0,
+        sinais:vermelhasDe(x),coord:nomeCoord(x),fim:ctFim(x)})),ord:'tk'};
+
+    case 'ano': return {titulo:'Receita bruta de '+anoAtual,valor:fmtRS(anoRealizado+anoAReal),
+      sub:fmtRS(anoRealizado)+' até '+MES[mesAtual].toLowerCase()+' · '+fmtRS(anoAReal)+' a faturar',
+      explica:'A soma dos doze meses do ano. Até o mês atual é o que os contratos faturaram; daí em diante é o que os contratos vigentes já garantem. Inclui os projetos avulsos, na parcela de cada mês.',
+      serie:MES.map((m,i)=>({rot:m.slice(0,3).toLowerCase()+'/'+String(anoAtual).slice(2),v:mesesAno[i],
+        det:[{rot:i<mesAtual?'já faturado':i===mesAtual?'mês atual':'previsto pelos contratos',val:fmtRS(mesesAno[i])}]})),
+      serieSub:'janeiro a dezembro de '+anoAtual,fmtV:fmtK,rotV:'Receita do mês',
+      cols:[{k:'nome',rot:'Mês',sortK:'i'},{k:'rec',rot:'Contratos',num:1,soma:1,fmt:fmtRS},
+        {k:'avu',rot:'Projetos avulsos',num:1,soma:1,fmt:v=>v?fmtRS(v):'—'},
+        {k:'tot',rot:'Total',num:1,soma:1,fmt:fmtRS},{k:'sit',rot:'Situação'}],
+      linhas:MES.map((m,i)=>{ const iso=i===mesAtual?hoje:isoDate(new Date(anoAtual,i+1,0));
+        const rec=todos.reduce((a,x)=>a+recEm(x,iso),0), avu=todos.reduce((a,x)=>a+avulsoNoMes(x,anoAtual,i),0);
+        return {k:'m'+i,i:i,nome:m,rec:rec,avu:avu,tot:rec+avu,
+          sit:i<mesAtual?'faturado':i===mesAtual?'mês atual':'previsto'}; }),
+      ord:'nome',ordAsc:true,semIr:true};
+
+    case 'ativos': return {titulo:'Clientes ativos',valor:String(n),
+      sub:'+'+novos.length+' novos e −'+L.perdidos.length+' cancelados em 12 meses',
+      explica:'Clientes com contrato vigente hoje. A linha do tempo conta quantos havia no fim de cada mês.',
+      serie:serieDe((iso,i)=>L.serie[i]?L.serie[i].n:0).map((x,i)=>({...x,det:detMes(i)})),
+      fmtV:nInt,rotV:'Contratos vigentes',onMes:(x,i)=>abrir('mes',i),
+      cols:[C.nome,C.tk,C.ini,{k:'casa',rot:'Tempo de casa',num:1,fmt:v=>v?v+' meses':'—'},C.tier,C.coord,C.fim],
+      linhas:ativosT.map(x=>({...linhaCli(x),casa:mesesDeCasa(x)})),ord:'tk'};
+
+    case 'novos': return {titulo:'Clientes novos em 12 meses',valor:String(novos.length),
+      cor:novos.length?COR_COM.sobe:COR_COM.base,
+      sub:novos.length? fmtRS(L.mov.novo)+'/mês trazidos · '+novosAno+' entraram em '+anoAtual : 'nenhum cliente novo',
+      explica:'Clientes que passaram a pagar em algum dos últimos doze meses. A linha do tempo conta quantos entraram em cada mês.',
+      serie:serieDe((iso,i)=>L.serie[i]?L.serie[i].nomes.novo.length:0).map((x,i)=>({...x,
+        det:(L.serie[i]&&L.serie[i].nomes.novo.length)?[{cor:COR_COM.sobe,
+          rot:L.serie[i].nomes.novo.join(', '),val:'+'+fmtRS(L.serie[i].novo)}]:[]})),
+      fmtV:nInt,rotV:'Entraram no mês',
+      cols:[C.nome,C.tk,C.ini,{k:'origem',rot:'Origem'},C.tier,C.coord],
+      linhas:novos.map(x=>({...linhaCli(x),origem:x.origemCli||'Não informada'})),ord:'ini'};
+
+    case 'pessoa': { const eq=(db.team||[]).filter(m=>m.perm!=='nenhum');
+      const porM=eq.map(m=>{ const ls=linhasH.filter(l=>l.who===m.id);
+        const cl=[...new Set(ls.map(l=>l.pid).filter(Boolean))];
+        return {k:m.id,nome:m.name,min:somaMin(ls),cl:cl.length,
+          rec:cl.reduce((a,pid)=>{ const x=todos.find(y=>y.id===pid); return a+(x?recEm(x,hoje):0); },0)}; });
+      return {titulo:'Receita por pessoa',valor:fmtRS(recPessoa),
+        sub:nPessoas+(nPessoas===1?' pessoa':' pessoas')+' na equipe · '+fmtRS(recPessoa*12)+' por ano',
+        explica:'A receita recorrente dividida pelas pessoas da equipe com acesso ao sistema. A tabela mostra o que cada uma tocou neste mês: as horas lançadas e a receita dos clientes que atendeu.',
+        serie:serieDe((iso,i)=>nPessoas?(L.serie[i]?L.serie[i].mrr:0)/nPessoas:0),fmtV:fmtK,rotV:'Por pessoa',
+        serieSub:'receita de cada mês ÷ o tamanho de hoje da equipe',
+        cols:[{k:'nome',rot:'Pessoa'},{k:'min',rot:'Horas no mês',num:1,soma:1,fmt:v=>fmtHoras(emHoras(v))+'h'},
+          {k:'cl',rot:'Clientes atendidos',num:1},{k:'rec',rot:'Receita desses clientes',num:1,fmt:fmtRS}],
+        linhas:porM,ord:'rec',semIr:true,
+        rodape:'As horas vêm das tarefas de '+MES[mesAtual].toLowerCase()+'.'}; }
+
+    case 'rh': return {titulo:'Ticket médio por hora',valor:tkHoraC? fmtRS(tkHoraC)+'/h':'—',
+      sub:mediaReal? 'real '+fmtRS(mediaReal)+'/h nas horas de '+MES[mesAtual].toLowerCase() : 'sem horas lançadas no mês',
+      explica:'Contratado: a receita ÷ as horas/mês dos contratos. Real: a receita dos clientes que tiveram horas ÷ as horas que o time lançou no mês (a tarefa conta vezes as pessoas nela). Quando o real fica bem abaixo do contratado, o time está gastando mais hora do que o contrato prevê.',
+      serie:vhCart,serie2:vhCartPrev,rot2:'R$/hora contratado',
+      serieSub:'real: receita do mês ÷ as horas lançadas naquele mês',fmtV:v=>fmtRS(v),rotV:'R$/hora real',
+      cols:[C.nome,C.tk,C.hp,{k:'prev',rot:'R$/h contratado',num:1,fmt:v=>v?fmtRS(v):'—'},
+        {k:'hr',rot:'Horas no mês',num:1,soma:1,fmt:v=>v?fmtHoras(v)+'h':'—'},
+        {k:'real',rot:'R$/h real',num:1,fmt:v=>v?fmtRS(v):'—'},
+        {k:'dif',rot:'Diferença',num:1,fmt:(v,l)=>(!l.prev||!l.real)?'—':((v>0?'+':'')+fmtPct(v,1))}],
+      linhas:halteres.map(x=>({id:x.p.id,nome:x.p.name,tk:x.tk,hp:x.hp,prev:x.prev,hr:emHoras(x.min),
+        real:x.real,dif:(x.prev&&x.real)?(x.real-x.prev)/x.prev:0})),ord:'real'};
+
+    case 'horasMes': { const m=horas12[arg==null?11:arg];
+      const linhas=Object.keys(m.porCli).map(pid=>{ const x=todos.find(y=>y.id===pid)||{};
+        const h=emHoras(m.porCli[pid]), prev=(recEm(x,m.iso)>0)?(+x.horasPlan||0):0, tkm=recEm(x,m.iso);
+        return {id:pid,nome:x.name||'(cliente removido)',prev:prev,real:h,saldo:h-prev,
+          vh:h?tkm/h:0,uso:prev?h/prev:0}; });
+      return {titulo:'Horas da carteira em '+m.rot,valor:fmtHoras(m.b)+'h',
+        cor:(m.a&&m.b>m.a)?COR_COM.desce:COR_COM.base,
+        sub:m.a? 'contra '+fmtHoras(m.a)+'h contratadas · '+fmtPct(m.b/m.a)+' do contrato' : 'nenhuma hora contratada neste mês',
+        explica:'As horas que o time lançou em tarefas de cliente no mês, contra a soma das horas/mês dos contratos vigentes. Uma tarefa com três pessoas conta três vezes, porque é isso que ela custa de equipe. Tarefa interna não entra: não tem contrato para comparar.',
+        serie:horas12,fmtV:v=>fmtHoras(v)+'h',rotV:'Horas realizadas',onMes:(x,i)=>abrir('horasMes',i),
+        cols:[C.nome,{k:'prev',rot:'Contratadas',num:1,soma:1,fmt:v=>v?fmtHoras(v)+'h':'—'},
+          {k:'real',rot:'Realizadas',num:1,soma:1,fmt:v=>fmtHoras(v)+'h'},
+          {k:'saldo',rot:'Saldo',num:1,soma:1,fmt:v=>v>0? '+'+fmtHoras(v)+'h' : v<0? fmtHoras(v)+'h' : '—'},
+          {k:'uso',rot:'Uso do contrato',num:1,fmt:v=>v?fmtPct(v):'—'},
+          {k:'vh',rot:'R$/hora real',num:1,fmt:v=>v?fmtRS(v):'—'}],
+        linhas:linhas,ord:'real'}; }
+
+    case 'origem': return {titulo:'Origem dos clientes',valor:origemTop&&mrr? fmtPct(origemTop.v/mrr):'—',
+      sub:origemTop? 'da receita vem de '+origemTop.k : 'informe a origem nos contratos',
+      explica:'De onde vêm os clientes da carteira, medido pela receita que cada origem representa. A origem é preenchida na aba Contratos de cada cliente.',
+      serie:serieDe(iso=>{ const t=todos.reduce((a,x)=>a+recEm(x,iso),0);
+        return (t&&origemTop)? todos.reduce((a,x)=>a+(((x.origemCli||'Não informada')===origemTop.k)?recEm(x,iso):0),0)/t : 0; }),
+      serieSub:origemTop? 'participação de '+origemTop.k+' na receita' : '',fmtV:pct,rotV:'Participação',
+      cols:[{k:'nome',rot:'Origem'},{k:'nc',rot:'Clientes',num:1,soma:1},
+        {k:'v',rot:'Receita/mês',num:1,soma:1,fmt:fmtRS},{k:'part',rot:'Participação',num:1,fmt:v=>fmtPct(v,1)},
+        {k:'tkm',rot:'Ticket médio',num:1,fmt:fmtRS}],
+      linhas:origens.map(o=>({k:o.k,nome:o.k,nc:o.n,v:o.v,part:mrr?o.v/mrr:0,tkm:o.n?o.v/o.n:0})),
+      ord:'v',semIr:true,
+      rodape:semOrigem? semOrigem+' cliente(s) ainda sem origem preenchida.' : ''};
+
+    case 'grupo': { const g=arg||{k:'',rot:'',v:0,n:0};
+      const lista=ativosT.filter(x=>grupoDe(x)===g.k);
+      const rotDim=(DIMS.find(x=>x[0]===dim)||['',''])[1];
+      return {titulo:rotDim+' · '+g.rot,valor:fmtRS(g.v),
+        sub:lista.length+(lista.length===1?' cliente':' clientes')+' · '+fmtPct(mrr?g.v/mrr:0,1)+' da receita · ticket médio '+fmtRS(lista.length?g.v/lista.length:0),
+        explica:'Os clientes vigentes deste grupo. A linha do tempo soma a receita deles mês a mês, usando a composição de hoje.',
+        serie:serieDe(iso=>lista.reduce((a,x)=>a+recEm(x,iso),0)),fmtV:fmtK,rotV:'Receita do grupo',
+        cols:CLI_COLS,linhas:clientesDe(lista),ord:'tk'}; }
+
+    case 'venc': { const m=meses12[arg]||{cli:[],rot:'',v:0};
+      return {titulo:'Contratos que vencem em '+m.rot,valor:fmtRS(m.v),cor:COR_COM.desce,
+        sub:m.cli.length+(m.cli.length===1?' contrato':' contratos')+' chegando ao fim da vigência',
+        explica:'A receita mensal que deixa de ser garantida se estes contratos não forem renovados até a data de fim.',
+        serie:meses12.map(x=>({rot:x.rot,v:x.v,det:x.cli.map(c=>({rot:c.name,val:fmtRS(+c.ticket||0)}))})),
+        serieSub:'próximos 12 meses',fmtV:fmtK,rotV:'Vence no mês',onMes:(x,i)=>abrir('venc',i),
+        cols:[C.nome,C.tk,C.fim,{k:'dias',rot:'Faltam',num:1,fmt:v=>v+' dias'},C.coord,{k:'sinais',rot:'Sinaleiras vermelhas'}],
+        linhas:m.cli.map(x=>({id:x.id,nome:x.name,tk:+x.ticket||0,fim:ctFim(x),
+          dias:Math.round((dLocal(ctFim(x))-dLocal(hoje))/86400000),coord:nomeCoord(x),
+          sinais:vermelhasDe(x)||'—'})),ord:'tk'}; }
+
+    case 'ponte': { const tipos={
+        novo:['Novos clientes em 12 meses',x=>!recEm(x,isoIni12)&&recEm(x,hoje)>0,COR_COM.sobe],
+        sobe:['Reajustes para cima',x=>recEm(x,isoIni12)>0&&recEm(x,hoje)>recEm(x,isoIni12),COR_COM.sobe],
+        desce:['Reduções de ticket',x=>recEm(x,isoIni12)>0&&recEm(x,hoje)>0&&recEm(x,hoje)<recEm(x,isoIni12),COR_COM.desce],
+        saiu:['Cancelados em 12 meses',x=>recEm(x,isoIni12)>0&&!recEm(x,hoje),COR_COM.desce]};
+      const t=tipos[arg]; if(!t) return montar('mrr');
+      const lista=todos.filter(t[1]);
+      return {titulo:t[0],valor:fmtRS(Math.abs(L.mov[arg]||0)),cor:t[2],
+        sub:lista.length+(lista.length===1?' cliente':' clientes')+' · comparando hoje com '+fmtBR(isoIni12),
+        explica:'A ponte compara o que a carteira faturava há doze meses com o que fatura hoje e separa a diferença em quatro pedaços: quem entrou, quem subiu de ticket, quem desceu e quem saiu.',
+        serie:serieDe(iso=>lista.reduce((a,x)=>a+recEm(x,iso),0)),fmtV:fmtK,rotV:'Receita destes clientes',
+        cols:[C.nome,{k:'antes',rot:'Há 12 meses',num:1,soma:1,fmt:v=>v?fmtRS(v):'—'},
+          {k:'agora',rot:'Hoje',num:1,soma:1,fmt:v=>v?fmtRS(v):'saiu'},
+          {k:'dif',rot:'Variação',num:1,soma:1,fmt:v=>v?((v>0?'+':'')+fmtRS(v)):'—'},C.ini,C.fim],
+        linhas:lista.map(x=>({id:x.id,nome:x.name,antes:recEm(x,isoIni12),agora:recEm(x,hoje),
+          dif:recEm(x,hoje)-recEm(x,isoIni12),ini:ctIni(x),fim:ctFim(x)})),ord:'dif'}; }
+
+    case 'cliente': { const x=arg; if(!x) return montar('mrr');
+      const h=(x.ticketHist||[]).slice().sort((a,b)=>String(a.data||'').localeCompare(String(b.data||'')));
+      const adit=(x.contratos||[]).filter(c=>c&&(c.tipo==='aditivo'||c.tipo==='novo'));
+      const linhasT=h.map((y,i)=>({k:'h'+i,ord:y.data||'',nome:y.data?fmtBR(y.data):'—',valor:+y.valor||0,
+          dif:i? (+y.valor||0)-(+h[i-1].valor||0) : 0,motivo:y.motivo||'—'}))
+        .concat(adit.map((c,i)=>({k:'a'+i,ord:c.inicio||'',nome:c.inicio?fmtBR(c.inicio):'—',valor:+c.valor||0,dif:0,
+          motivo:(c.tipo==='novo'?'contrato novo':'aditivo')+(c.nome?' · '+c.nome:'')})));
+      return {titulo:x.name,valor:fmtRS(recEm(x,hoje)),
+        sub:[ctIni(x)?'entrou em '+fmtBR(ctIni(x)):'',ctFim(x)?'vigência até '+fmtBR(ctFim(x)):'sem prazo',
+          mesesDeCasa(x)+' meses de casa'].filter(Boolean).join(' · '),
+        explica:'Como o ticket deste cliente andou nos últimos doze meses, e cada mudança registrada no contrato dele.',
+        serie:serieDe(iso=>recEm(x,iso)),fmtV:fmtK,rotV:'Ticket do mês',
+        cols:[{k:'nome',rot:'Quando',sortK:'ord'},{k:'valor',rot:'Valor',num:1,fmt:fmtRS},
+          {k:'dif',rot:'Variação',num:1,fmt:v=>v?((v>0?'+':'')+fmtRS(v)):'—'},{k:'motivo',rot:'O que foi'}],
+        linhas:linhasT,ord:'nome',ordAsc:true,semIr:true,tabRot:'Histórico do contrato',
+        extra:<button className="btn btn-primary" onClick={()=>{setDtl(null);go('projects',x.id,'analise');}}>Abrir a análise do cliente</button>,
+        rodape:'Os valores vêm da aba Contratos deste cliente.'}; }
+
+    default: return null; }
+  }
+  const abrir=(qual,arg)=>setDtl(montar(qual,arg));
+
   if(!mrr) return (<div className="card card-pad anc-vazio">
     <div className="anc-vazio-t">
       <h3>A análise comercial aparece aqui assim que os clientes tiverem contrato</h3>
@@ -17441,42 +18324,43 @@ function AnaliseComercial({db,go,update,onEditar}){
 
   return (<div className="anc">
     <div className="kpi-grid anc-kpis">
-      <TileCom rot="Receita recorrente" val={fmtK(mrr)} cor={COR_COM.base}
+      <TileCom rot="Receita recorrente" val={fmtK(mrr)} cor={COR_COM.base} abrir={()=>abrir('mrr')}
         sub={varAno==null? n+(n===1?' contrato vigente':' contratos vigentes') : (varAno>=0?'+':'')+fmtPct(varAno,1)+' em 12 meses · '+n+(n===1?' contrato':' contratos')}/>
-      <TileCom rot="Receita anualizada" val={fmtK(mrr*12)} sub="receita recorrente × 12"/>
-      <TileCom rot="Receita em carteira" val={fmtK(carteira)} cor={COR_COM.sobe}
+      <TileCom rot="Receita anualizada" val={fmtK(mrr*12)} sub="receita recorrente × 12" abrir={()=>abrir('anual')}/>
+      <TileCom rot="Receita em carteira" val={fmtK(carteira)} cor={COR_COM.sobe} abrir={()=>abrir('carteira')}
         sub={'contratada até o fim dos contratos'+(semFim.length?' · '+semFim.length+' sem data de fim':'')}
         dica="Soma do ticket de cada cliente pelos meses que faltam até a data de fim do contrato."/>
-      <TileCom rot="Ticket médio" val={fmtRS(ticketMedio)} sub={horasC? fmtRS(mrr/horasC)+'/h contratado em média' : 'informe as horas/mês'}/>
-      <TileCom rot="Retenção líquida 12m" val={L.nrr==null?'—':fmtPct(L.nrr)} cor={L.nrr!=null&&L.nrr<1?COR_COM.desce:COR_COM.sobe}
+      <TileCom rot="Ticket médio" val={fmtRS(ticketMedio)} abrir={()=>abrir('ticket')}
+        sub={horasC? fmtRS(mrr/horasC)+'/h contratado em média' : 'informe as horas/mês'}/>
+      <TileCom rot="Retenção líquida 12m" val={L.nrr==null?'—':fmtPct(L.nrr)} abrir={()=>abrir('nrr')} cor={L.nrr!=null&&L.nrr<1?COR_COM.desce:COR_COM.sobe}
         sub={L.nrr==null?'precisa de 12 meses de histórico':'retenção bruta '+fmtPct(L.grr)+' · reajustes incluídos'}
         dica="Quanto os clientes que já pagavam há 12 meses pagam hoje, em relação ao que pagavam. Acima de 100%, os reajustes compensam as perdas."/>
-      <TileCom rot="Cancelamentos 12m" val={L.perdidos.length} cor={L.perdidos.length?COR_COM.desce:COR_COM.sobe}
+      <TileCom rot="Cancelamentos 12m" val={L.perdidos.length} abrir={()=>abrir('cancel')} cor={L.perdidos.length?COR_COM.desce:COR_COM.sobe}
         sub={L.perdidos.length? fmtRS(L.mov.saiu)+'/mês perdidos · '+L.perdidos.map(p=>p.name).slice(0,3).join(', ')+(L.perdidos.length>3?'…':'') : 'nenhum cliente saiu'}/>
-      <TileCom rot="Concentração" val={fmtPct(mrr?top3/mrr:0)} cor={hhi>2500?COR_COM.desce:COR_COM.base}
+      <TileCom rot="Concentração" val={fmtPct(mrr?top3/mrr:0)} abrir={()=>abrir('conc')} cor={hhi>2500?COR_COM.desce:COR_COM.base}
         sub={'nos 3 maiores · concentração '+nivelHHI}
         dica={'Índice HHI '+hhi+': abaixo de 1.500 é baixa, de 1.500 a 2.500 moderada, acima de 2.500 alta.'}/>
-      <TileCom rot="Receita em risco" val={fmtK(emRisco)} cor={emRisco?COR_COM.desce:COR_COM.sobe}
+      <TileCom rot="Receita em risco" val={fmtK(emRisco)} abrir={()=>abrir('risco')} cor={emRisco?COR_COM.desce:COR_COM.sobe}
         sub="receita de clientes em vermelho na carteira"
         dica={vermelhos.length? fmtPct(emRisco/mrr)+' da receita · '+vermelhos.map(p=>p.name).join(', ') : 'Nenhum cliente com sinaleira vermelha.'}/>
     </div>
     <div className="kpi-grid anc-kpis anc-kpis2">
-      <TileCom rot={'Receita bruta '+anoAtual} val={fmtK(anoRealizado+anoAReal)} cor={COR_COM.base}
+      <TileCom rot={'Receita bruta '+anoAtual} val={fmtK(anoRealizado+anoAReal)} cor={COR_COM.base} abrir={()=>abrir('ano')}
         sub={fmtK(anoRealizado)+' até '+MES[mesAtual].slice(0,3).toLowerCase()+' · '+fmtK(anoAReal)+' a faturar'}
         dica={'Soma do ano, mês a mês: '+MES.map((m,i)=>m.slice(0,3)+' '+fmtK(mesesAno[i])).join(' · ')+'. Até o mês atual, o que os contratos faturaram; depois, o que os contratos vigentes garantem. Inclui os projetos avulsos (aditivos de projeto), nas parcelas de cada mês.'}/>
-      <TileCom rot="Clientes ativos" val={n} cor={COR_COM.base}
+      <TileCom rot="Clientes ativos" val={n} cor={COR_COM.base} abrir={()=>abrir('ativos')}
         sub={'+'+novos.length+' novos · −'+L.perdidos.length+' cancelados em 12 meses'}
         dica={ativosT.map(p=>p.name).join(', ')}/>
-      <TileCom rot="Clientes novos 12m" val={novos.length} cor={novos.length?COR_COM.sobe:COR_COM.base}
+      <TileCom rot="Clientes novos 12m" val={novos.length} abrir={()=>abrir('novos')} cor={novos.length?COR_COM.sobe:COR_COM.base}
         sub={novos.length? fmtRS(L.mov.novo)+'/mês trazidos · '+novosAno+' em '+anoAtual : 'nenhum cliente novo'}
         dica={novos.length? novos.map(p=>p.name+(ctIni(p)?' ('+fmtBR(ctIni(p))+')':'')).join(', ') : ''}/>
-      <TileCom rot="Receita por pessoa" val={fmtRS(recPessoa)} cor={COR_COM.base}
+      <TileCom rot="Receita por pessoa" val={fmtRS(recPessoa)} cor={COR_COM.base} abrir={()=>abrir('pessoa')}
         sub={nPessoas? nPessoas+(nPessoas===1?' pessoa':' pessoas')+' na equipe · '+fmtK(recPessoa*12)+'/ano' : 'cadastre a equipe'}
         dica="Receita recorrente do mês dividida pelas pessoas da equipe (página Equipe)."/>
-      <TileCom rot="Ticket médio por hora" val={tkHoraC? fmtRS(tkHoraC)+'/h' : '—'} cor={COR_COM.base}
+      <TileCom rot="Ticket médio por hora" val={tkHoraC? fmtRS(tkHoraC)+'/h' : '—'} cor={COR_COM.base} abrir={()=>abrir('rh')}
         sub={(mediaReal? 'real '+fmtRS(mediaReal)+'/h nas horas do mês' : 'sem horas lançadas no mês')+(horasC?'':' · informe as horas/mês')}
         dica="Contratado: receita ÷ horas/mês dos contratos. Real: receita dos clientes com horas ÷ horas das tarefas do mês (tarefa × pessoas)."/>
-      <TileCom rot="Origem principal" val={origemTop&&mrr? fmtPct(origemTop.v/mrr) : '—'} cor={COR_COM.base}
+      <TileCom rot="Origem principal" val={origemTop&&mrr? fmtPct(origemTop.v/mrr) : '—'} cor={COR_COM.base} abrir={()=>abrir('origem')}
         sub={origemTop? 'da receita vem de '+origemTop.k+' ('+origemTop.n+(origemTop.n===1?' cliente)':' clientes)')+(semOrigem?' · '+semOrigem+' sem origem':'') : 'informe a origem nos contratos'}
         dica={origens.map(x=>x.k+': '+fmtPct(mrr?x.v/mrr:0)+' ('+x.n+')').join(' · ')+'. Detalhe em Composição da carteira → Origem.'}/>
     </div>
@@ -17484,11 +18368,11 @@ function AnaliseComercial({db,go,update,onEditar}){
     <div className="anc-g2">
       <div className="card card-pad">
         <div className="card-h"><h3>Evolução da receita recorrente</h3><span className="sub">últimos 12 meses</span></div>
-        <GraficoMRR serie={L.serie}/>
+        <GraficoMRR serie={L.serie} onMes={(i)=>abrir('mes',i)}/>
       </div>
       <div className="card card-pad">
         <div className="card-h"><h3>De onde veio a variação</h3><span className="sub">ponte de 12 meses</span></div>
-        <PonteMRR ini={L.mrrIni} mov={L.mov} fim={mrr}/>
+        <PonteMRR ini={L.mrrIni} mov={L.mov} fim={mrr} onPasso={(k)=>abrir('ponte',k)}/>
         <div className="ch-leg"><span><i style={{background:COR_COM.base}}></i>receita no ponto</span>
           <span><i style={{background:COR_COM.sobe}}></i>aumenta</span><span><i style={{background:COR_COM.desce}}></i>diminui</span></div>
       </div>
@@ -17497,26 +18381,60 @@ function AnaliseComercial({db,go,update,onEditar}){
     <div className="anc-g2">
       <div className="card card-pad">
         <div className="card-h"><h3>Concentração da receita</h3><span className="sub">curva ABC · {nA} cliente{nA===1?'':'s'} fazem 80%</span></div>
-        <BarrasH itens={itensConc} total={mrr} mostrarAcum cor={COR_COM.barra}/>
+        <BarrasH itens={itensConc} total={mrr} mostrarAcum cor={COR_COM.barra}
+          onItem={(x)=>abrir(x.k==='outros'?'conc':'cliente',todos.find(c=>c.id===x.k))}/>
         <div className="ch-nota-b">A = clientes que somam os primeiros 80% da receita; B = os 15% seguintes; C = o restante. A última coluna é o acumulado.</div>
       </div>
       <div className="card card-pad">
         <div className="card-h"><h3>Composição da carteira</h3><span className="sub">receita por grupo</span></div>
         <div className="row" style={{gap:6,flexWrap:'wrap',marginBottom:12}}>{DIMS.map(([k,l])=><button key={k} className={'fpill '+(dim===k?'on':'')} onClick={()=>setDim(k)}>{l}</button>)}</div>
-        <BarrasH itens={itensMix} total={mrr} cor={COR_COM.barra}/>
+        <BarrasH itens={itensMix} total={mrr} cor={COR_COM.barra} onItem={(x)=>abrir('grupo',x)}/>
       </div>
     </div>
 
     <div className="anc-g2">
       <div className="card card-pad">
         <div className="card-h"><h3>R$ por hora: contratado × real</h3><span className="sub">{MES[TODAY.getMonth()]} · ticket ÷ horas</span></div>
-        {halteres.length? <HaltereRH linhas={halteres} media={mediaReal}/> : <div className="muted" style={{fontSize:'.8rem'}}>Sem horas contratadas nem alocadas neste mês.</div>}
+        {halteres.length? <HaltereRH linhas={halteres} media={mediaReal} onCliente={(c)=>abrir('cliente',c)}/> : <div className="muted" style={{fontSize:'.8rem'}}>Sem horas contratadas nem alocadas neste mês.</div>}
         <div className="ch-leg"><span><i className="ch-oco"></i>contratado (ticket ÷ horas/mês)</span><span><i style={{background:COR_COM.base,borderRadius:'50%'}}></i>real (ticket ÷ horas das tarefas do mês)</span>
           {nAbaixo>0&&<span><i style={{background:COR_COM.desce,borderRadius:'50%'}}></i>{nAbaixo} abaixo de 85% do contratado</span>}</div>
       </div>
+      <div className="card card-pad" style={{gridColumn:'1 / -1'}}>
+        <div className="card-h"><h3>Horas contratadas × realizadas</h3>
+          <span className="sub">últimos 12 meses · só horas lançadas em cliente · clique num mês</span></div>
+        <div className="ac-res">
+          <div><i>Contratadas no período</i><b>{fmtHoras(hPrevT)}h</b></div>
+          <div><i>Realizadas</i><b>{fmtHoras(hRealT)}h</b></div>
+          <div><i>Saldo</i><b style={{color:hSaldoT>0?'#B33A3A':'#2F8F6E'}}>
+            {hSaldoT>0? fmtHoras(hSaldoT)+'h acima' : hSaldoT<0? fmtHoras(-hSaldoT)+'h abaixo' : 'na conta'}</b></div>
+          <div><i>Uso do contrato</i><b>{hPrevT? fmtPct(hRealT/hPrevT) : '—'}</b></div>
+          <div><i>Meses acima</i><b style={{color:hAcimaT?'#B33A3A':'inherit'}}>{hAcimaT} de 12</b></div>
+        </div>
+        <BarrasDuplas serie={horas12} fmtV={v=>fmtHoras(v)+'h'} rot1="contratadas" rot2="realizadas"
+          onMes={(x,i)=>abrir('horasMes',i)}/>
+      </div>
+
+      <div className="card card-pad" style={{gridColumn:'1 / -1'}}>
+        <div className="card-h"><h3>Valor da hora, mês a mês</h3>
+          <span className="sub">a receita de cada mês dividida pelas horas daquele mês</span></div>
+        <div className="ac-res">
+          <div><i>Hoje, contratado</i><b>{tkHoraC? fmtRS(tkHoraC)+'/h' : '—'}</b></div>
+          <div><i>Hoje, real</i><b>{horas12[11]&&horas12[11].b? fmtRS(horas12[11].mrr/horas12[11].b)+'/h' : '—'}</b></div>
+          <div><i>Média de 12 meses</i><b>{vhCartMedia? fmtRS(vhCartMedia)+'/h' : '—'}</b></div>
+          <div><i>Melhor mês</i><b>{vhCartExt(true)}</b></div>
+          <div><i>Pior mês</i><b>{vhCartExt(false)}</b></div>
+        </div>
+        <LinhaTempo serie={vhCart} serie2={vhCartPrev} fmtV={v=>fmtRS(v)} rotV="R$/hora real"
+          rot2="R$/hora contratado" onMes={(x,i)=>abrir('horasMes',i)}/>
+        <div className="muted" style={{fontSize:'.72rem',marginTop:8}}>
+          O contratado é a receita do mês dividida pelas horas que os contratos daquele mês previam.
+          Mês sem horas lançadas fica em branco. A média é ponderada — receita total ÷ horas totais —
+          e melhor e pior deixam de fora os meses com quase nenhuma hora, que distorceriam a conta.</div>
+      </div>
+
       <div className="card card-pad">
         <div className="card-h"><h3>Vencimentos de contrato</h3><span className="sub">{fmtK(venc12)}/mês vencem em 12 meses</span></div>
-        <GraficoVenc meses={meses12}/>
+        <GraficoVenc meses={meses12} onMes={(i)=>abrir('venc',i)}/>
         <div className="anc-risco">
           <div className="anc-risco-h">Clientes em alerta <span className="muted">sinaleira vermelha ou contrato vencendo em até 30 dias</span></div>
           {risco.length? risco.slice(0,8).map(x=>(<div key={x.p.id} className="anc-risco-l" onClick={()=>go('projects',x.p.id)}>
@@ -17528,6 +18446,7 @@ function AnaliseComercial({db,go,update,onEditar}){
         </div>
       </div>
     </div>
+    <DetalheCarteira d={dtl} close={()=>setDtl(null)} go={go}/>
   </div>);
 }
 
@@ -19073,7 +19992,7 @@ function DestaqueMeta({x,onClick}){
 }
 /* Receita acumulada no ano: realizado (linha cheia), orçado (tracejada) e projeção pelos contratos (pontilhada) */
 function GraficoReceitaAno({r,mesRef}){
-  const W=520,H=150,L=56,R=12,T=10,B=22, iw=W-L-R, ih=H-T-B;
+  const W=520,H=178,L=56,R=12,T=14,B=22, iw=W-L-R, ih=H-T-B;
   const esc=escalaBonita(Math.max(1,...r.projAc,...r.orcAc.filter(x=>x!=null)),3);
   const X=(i)=>L+i*iw/11, Y=(v)=>T+ih-(v/esc.max)*ih;
   const caminho=(arr)=>{ let d='',on=false; arr.forEach((v,i)=>{ if(v==null){on=false;return;} d+=(on?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' '; on=true; }); return d; };
@@ -19089,6 +20008,8 @@ function GraficoReceitaAno({r,mesRef}){
       {ultimo>=0&&<path d={caminho(proj)} fill="none" stroke="#5B7FC4" strokeWidth="2" strokeDasharray="2 4" strokeLinecap="round"/>}
       <path d={caminho(r.realAc)} fill="none" stroke={COR_COM.base} strokeWidth="2.5" strokeLinejoin="round"/>
       {ultimo>=0&&<circle cx={X(ultimo)} cy={Y(r.realAc[ultimo])} r="4" fill={COR_COM.base} stroke="#fff" strokeWidth="2"/>}
+      {r.realAc.map((v,i)=> v==null? null : <text key={'d'+i} x={X(i)} y={Y(v)-8} textAnchor="middle"
+        className={i===ultimo?'ch-dado-f':'ch-dado'}>{fmtCurto(v)}</text>)}
       {MES_CURTO.map((m,i)=>(<rect key={'h'+i} x={X(i)-iw/22} y={T} width={iw/11} height={ih} fill="transparent"
         onMouseMove={(e)=>dica.mostrar(e,<><div className="ch-dt">até {MES[i].toLowerCase()}</div>
           <LinhaDica cor={COR_COM.base} rot="Realizado" val={r.realAc[i]==null?'—':fmtRS(r.realAc[i])} forte/>
@@ -19125,6 +20046,7 @@ function GraficoMeta({m,real,meta,mesRef,prev,anoPrev}){
               return 'M'+x+' '+(T+ih)+' V'+(y+rr)+' Q'+x+' '+y+' '+(x+rr)+' '+y+' H'+(x+w-rr)+' Q'+(x+w)+' '+y+' '+(x+w)+' '+(y+rr)+' V'+(T+ih)+' Z'; })()}
             fill={corAting(mt==null?null:a)} opacity={mt==null?.55:.9}/>}
           {mt!=null&&<line x1={x0+bw*.12} x2={x0+bw*.88} y1={Y(mt)} y2={Y(mt)} stroke="#12122b" strokeWidth="2.5" strokeLinecap="round"/>}
+          {r!=null&&<text x={x0+bw/2} y={Y(r)-6} textAnchor="middle" className={i===mesRef?'ch-dado-f':'ch-dado'}>{fmtMeta(r,m.un,true)}</text>}
           <text x={x0+bw/2} y={H-8} textAnchor="middle" className="ch-eixo" style={{fontWeight:i===mesRef?800:400}}>{rot}</text>
         </g>); })}
       {prev&&caminhoPrev&&<path d={caminhoPrev} fill="none" stroke="#9aa7a6" strokeWidth="2" strokeDasharray="4 3" pointerEvents="none"/>}
@@ -19189,6 +20111,8 @@ function GraficoCargoMeses({meses,prev,ano,mesRef}){
           <rect x={cx} y={P.t} width={bw} height={H-P.t-P.b} fill="transparent"/>
           {x&&[...NIVEIS.map(n=>n[0]),'sem'].map(k=>{ const v=x[k]; if(!v) return null; const y0=y(acc), y1=y(acc+v); acc+=v;
             return <rect key={k} x={cx+bw*.18} width={bw*.64} y={y1+1} height={Math.max(0,y0-y1-2)} rx="2" fill={infoNivel(k)[2]} opacity={i===mesRef?1:.85}/>; })}
+          {x&&tot[i]>0&&<text x={cx+bw/2} y={y(tot[i])-6} textAnchor="middle" fontSize="9"
+            fill={i===mesRef?'#011E3C':'#5a6a6c'} fontWeight={i===mesRef?800:700} style={{pointerEvents:'none'}}>{fmtHoras(tot[i])}h</text>}
           <text x={cx+bw/2} y={H-8} textAnchor="middle" fontSize="10" fill={i===mesRef?'#0F4245':'#8b9a99'} fontWeight={i===mesRef?800:500}>{MES_CURTO[i]}</text>
         </g>); })}
       <polyline fill="none" stroke="#8b9a99" strokeWidth="1.6" strokeDasharray="4 3"
